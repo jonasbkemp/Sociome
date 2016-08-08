@@ -3,14 +3,17 @@ var webpack = require('webpack');
 var path = require('path');
 
 module.exports = {
-  context: __dirname,
+  context: path.resolve(__dirname + '/'),
   devtool: debug ? "inline-sourcemap" : null,
-  entry: "./js/client.js",
+  entry: "./static/js/client.js",
+  resolveLoader: {
+    root: path.join(__dirname, 'node_modules')
+  },
   resolve: {
     extensions: ['', '.js'],
     alias: {
       webworkify: 'webworkify-webpack',
-      'mapbox-gl': path.resolve('./node_modules/mapbox-gl/dist/mapbox-gl.js')
+      'mapbox-gl': path.resolve(__dirname + '/node_modules/mapbox-gl/dist/mapbox-gl.js')
     }
   },
   module: {
@@ -30,15 +33,15 @@ module.exports = {
       },
       {
         test: /\.js$/,
-        include: path.resolve(__dirname, 'node_modules/webworkify/index.js'),
+        include: path.resolve(__dirname, '/node_modules/webworkify/index.js'),
         loader: 'worker'
       },
       {
         test: /mapbox-gl.+\.js$/,
-        include: path.resolve('node_modules/mapbox-gl-shaders/index.js'),
+        include: path.resolve(__dirname + '/node_modules/mapbox-gl-shaders/index.js'),
         loader: 'transform/cacheable?brfs'
-      }
-
+      },
+      { test: /\.css$/, loader: 'style!css' },
     ],
     postLoaders: [{
       include: /node_modules\/mapbox-gl-shaders/,
@@ -47,10 +50,16 @@ module.exports = {
     }]    
   },
   output: {
-    path: __dirname,
-    filename: "client.min.js"
+    path: __dirname + '/static/',
+    filename: 'client.min.js',
+    publicPath: '/',
   },
-  plugins: debug ? [] : [
+  plugins: debug ? 
+    [
+    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoErrorsPlugin()
+    ] : [
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false }),

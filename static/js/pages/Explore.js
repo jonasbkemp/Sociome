@@ -1,37 +1,15 @@
 import React, {Component} from 'react';
-import policyStore from '../stores/PolicyStore';
 var _ = require('underscore');
 import Map from '../components/Map';
+import PolicyMenu from '../components/PolicyMenu';
 
 export default class Explore extends Component{
-
-	constructor(){
-		super();
-		this.state = {
-			policies : policyStore.getPolicies(),
-			currentPolicy : undefined
-		}
-	}
-
-	_changePolicy(event){
-		console.log(event)
-		this.setState(_.extend({}, this.state, {currentPolicy : event.target.name}))
-	}
-
 	render(){
 		return(
 			<div>
 				<Map/>
 				<div style={styles.policyMenu}>
-					{
-						this.state.policies.map((policy) => 
-							<h4 key={policy}>
-								<a href="#" onClick={this._changePolicy.bind(this)} name={policy}>
-									{policy}
-								</a>
-							</h4>
-						)
-					}
+					<PolicyMenu style={styles.policyMenu}/>
 				</div>
 			</div>
 		)
