@@ -601,9 +601,4 @@ t_elec_11: [
 {value : 'Tcprp', label : 'Index of corporate PAC regulation, party contributions=tcorpac*tpacconp/20'},
 {value : 'Tlegses', label : 'Bans on contributions during legislative session (2=all donors, 1.5=lobbyists and all donors for certain fundraisers, 1=lobbyists only, 0.5=all donors for certain fundraisers only, 0=none)'},
 ],
-v_race_11: [
-{value : 'state', label : 'State Name'},
-{value : 'year', label : 'Year'},
-{value : 'vaaban', label : 'Affirmative action ban? (Are all racial preferences in public services banned in the state? =2 if yes, in constitution, =1 if yes, in statute, =0.5 if in education only, =0 if no)'},
-],
 }

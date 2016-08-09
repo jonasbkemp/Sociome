@@ -11,9 +11,9 @@ export default class PolicyMenu extends Component{
 		super(props)
 		this.state = {
 			policies : policyStore.getPolicies(),
-			currentPolicy : undefined,
+			currentPolicy : policyStore.getCurrentPolicy(),
 			policyFields : policyStore.getPolicyFields(),
-			currentPolicyField : undefined
+			currentPolicyField : policyStore.getCurrentPolicyField()
 		}
 		this.updatePolicy = () => {
 			this.setState(_.extend({}, this.state, {
@@ -25,28 +25,29 @@ export default class PolicyMenu extends Component{
 	}
 
 	_changePolicy(event){
-		PolicyActions.changePolicy(event ? event.value : undefined)
+		PolicyActions.changePolicy(event ? {code : event.value, label : event.label} : undefined)
 	}
 
 	_changePolicyField(event){
-		PolicyActions.changePolicyField(event ? event.value : undefined)
+		PolicyActions.changePolicyField(event ? {code : event.value, label : event.label} : undefined)
 	}
 
 	componentWillMount() {
-	    policyStore.on('change', this.updatePolicy)
+	    policyStore.on('change-policy', this.updatePolicy)
+	    policyStore.on('change-field', this.updatePolicy)
 	}
 
 	componentWillUnmount () {
-	    policyStore.removeListener('change', this.updatePolicy)
+	    policyStore.removeListener('change-policy', this.updatePolicy)
+	    policyStore.removeListener('change-field', this.updatePolicy)
 	}
 
 	render(){
-		console.log('Current policy = ' + this.state.currentPolicy)
 		return(
 			<div style={styles.policyMenu}>
 				<h3>Policies</h3>
 				<Select
-					value={this.state.currentPolicy}
+					value={this.state.currentPolicy ? this.state.currentPolicy.code : undefined}
 					addLabelText="Select Policy"
 					searchable={true}
 					name="policySelect"
@@ -55,7 +56,7 @@ export default class PolicyMenu extends Component{
 				/>
 				<h3>Policy Field</h3>
 				<Select
-					value={this.state.currentPolicyField}
+					value={this.state.currentPolicyField ? this.state.currentPolicyField.code : undefined}
 					disabled={this.state.currentPolicy == undefined}
 					addLabelText="Select Policy Field"
 					searchable={true}
