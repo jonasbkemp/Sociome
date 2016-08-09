@@ -4,6 +4,11 @@ var compiler = webpack(config)
 var express = require('express')
 var chokidar = require('chokidar');
 var path = require('path');
+require('dotenv').config();
+var pg = require('pg')
+
+var db = new pg.Client(process.env.DATABASE_URL + '?ssl=true');
+db.connect();
 
 var app = express()
 
@@ -16,12 +21,25 @@ app.use(require("webpack-dev-middleware")(compiler, {
   }
 }));
 
-
 app.use(require("webpack-hot-middleware")(compiler, {
   log : console.log
 }));
 
 //app.use(express.static(path.resolve(__dirname + '/../static')))
+
+app.get('/GetPolicyData', function(req, res){
+  var table = req.query.policy
+  var field = req.query.field
+  db.query('SELECT state, year, ' + field + ' FROM ' + table + ';').then(
+    function(data){
+      res.json(data.rows)
+    }
+  ).catch(
+    function(err){
+      console.log(err)
+    }
+  )
+})
 
 app.get('/', function(req, res){
     res.sendFile(path.resolve(__dirname + '/../static/index.html'));
