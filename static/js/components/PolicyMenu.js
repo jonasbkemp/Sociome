@@ -4,7 +4,7 @@ import Select from 'react-select';
 require('react-select/dist/react-select.css');
 var _ = require('underscore')
 import * as PolicyActions from '../actions/PolicyActions';
-
+import ReactBootstrapSlider from 'react-bootstrap-slider';
 
 export default class PolicyMenu extends Component{
 	constructor(props){
@@ -13,33 +13,50 @@ export default class PolicyMenu extends Component{
 			policies : policyStore.getPolicies(),
 			currentPolicy : policyStore.getCurrentPolicy(),
 			policyFields : policyStore.getPolicyFields(),
-			currentPolicyField : policyStore.getCurrentPolicyField()
-		}
-		this.updatePolicy = () => {
-			this.setState(_.extend({}, this.state, {
-				currentPolicy : policyStore.getCurrentPolicy(),
-		    	currentPolicyField : policyStore.getCurrentPolicyField(),
-		    	policyFields : policyStore.getPolicyFields(),
-			}))
+			currentPolicyField : policyStore.getCurrentPolicyField(),
+			years : policyStore.getYears(),
+			yearIndex : policyStore.getYearIndex(),
 		}
 	}
 
+	//Issue actions based on user interaction
 	_changePolicy(event){
 		PolicyActions.changePolicy(event ? {code : event.value, label : event.label} : undefined)
 	}
-
 	_changePolicyField(event){
 		PolicyActions.changePolicyField(event ? {code : event.value, label : event.label} : undefined)
 	}
+	_changeYear(event){
+		event.target.blur()
+		PolicyActions.changeYear(event.target.value)
+	}
 
+	//listener functions
+	updatePolicy = () => {
+		this.setState(_.extend({}, this.state, {
+			currentPolicy : policyStore.getCurrentPolicy(),
+	    	currentPolicyField : policyStore.getCurrentPolicyField(),
+	    	policyFields : policyStore.getPolicyFields(),
+	    	years : policyStore.getYears(),
+	    	yearIndex : policyStore.getYearIndex(),
+		}))
+	}
+	updateYear = () => {
+		this.setState(_.extend({}, this.state, {
+			yearIndex : policyStore.getYearIndex(),
+		}))
+	}
+
+	//Attach and detatch listeners from the policyStore
 	componentWillMount() {
 	    policyStore.on('change-policy', this.updatePolicy)
 	    policyStore.on('change-field', this.updatePolicy)
+	    policyStore.on('change-year', this.updateYear)
 	}
-
 	componentWillUnmount () {
 	    policyStore.removeListener('change-policy', this.updatePolicy)
 	    policyStore.removeListener('change-field', this.updatePolicy)
+	    policyStore.removeListener('change-year', this.updateYear)
 	}
 
 	render(){
@@ -52,8 +69,7 @@ export default class PolicyMenu extends Component{
 					searchable={true}
 					name="policySelect"
 					options={this.state.policies}
-					onChange={this._changePolicy.bind(this)}
-				/>
+					onChange={this._changePolicy.bind(this)}/>
 				<h3>Policy Field</h3>
 				<Select
 					value={this.state.currentPolicyField ? this.state.currentPolicyField.code : undefined}
@@ -62,8 +78,17 @@ export default class PolicyMenu extends Component{
 					searchable={true}
 					name="policyFieldSelect"
 					options={this.state.policyFields}
-					onChange={this._changePolicyField.bind(this)}
-				/>
+					onChange={this._changePolicyField.bind(this)}/>
+				<h3>Change Year</h3>
+				<div>
+				<input
+					type="range"
+					defaultValue={this.state.yearIndex ? this.state.yearIndex : 0}
+					min={0}
+					max={this.state.years.length-1}
+				    onChange={this._changeYear.bind(this)}/>
+				</div>
+				<h3 class="text-center">{this.state.years[this.state.yearIndex]}</h3>
 			</div>
 		)
 	}
@@ -74,6 +99,6 @@ const styles = {
 		position : 'absolute',
 		top : 50,
 		left : 0,
-		width : 140
-	}
+		width : 145
+	},
 }

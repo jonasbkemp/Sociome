@@ -30,7 +30,7 @@ app.use(require("webpack-hot-middleware")(compiler, {
 app.get('/GetPolicyData', function(req, res){
   var table = req.query.policy
   var field = req.query.field
-  db.query('SELECT state, year, ' + field + ' FROM ' + table + ';').then(
+  db.query('SELECT state, year, ' + field + ' FROM ' + table + ' ORDER BY year;').then(
     function(data){
       res.json(data.rows)
     }

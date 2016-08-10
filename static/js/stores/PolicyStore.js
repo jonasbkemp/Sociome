@@ -1,6 +1,9 @@
 import {EventEmitter} from 'events';
 import dispatcher from '../Dispatcher';
 import {fields} from './PolicyFields';
+var _ = require('underscore')
+
+const BACKEND_URL='http://localhost:8080/'
 
 class PolicyStore extends EventEmitter{
 	constructor(){
@@ -26,6 +29,25 @@ class PolicyStore extends EventEmitter{
 			{value : 'v_race_11', label : 'Race'}
 		]
 		this.currentPolicy = undefined
+		this.data = []
+		this.years = []
+		this.yearIndex = undefined
+	}
+
+	getData(){
+		return this.data
+	}
+
+	getYear(){
+		return this.years[this.yearIndex];
+	}
+
+	getYearIndex(){
+		return this.yearIndex;
+	}
+
+	getYears(){
+		return this.years;
 	}
 
 	getPolicyFields(){
@@ -51,7 +73,21 @@ class PolicyStore extends EventEmitter{
 
 	setPolicyField(field){
 		this.currentField = field;
-		this.emit('change-field')
+		console.log('changing field')
+		console.log(BACKEND_URL + 'GetPolicyData?policy=' + this.currentPolicy.code + '&field=' + field.code)
+		$.get(BACKEND_URL + 'GetPolicyData?policy=' + this.currentPolicy.code + '&field=' + field.code).then((data) => {
+			this.data = data
+			this.years = _.uniq(data.map((d) => d.year), true)
+			console.log(this.years)
+			this.yearIndex = 0;
+			console.log('emitting change')
+			this.emit('change-field')
+		})
+	}
+
+	setYear(year){
+		this.yearIndex = year;
+		this.emit('change-year')
 	}
  
 	handleActions(action){
@@ -61,6 +97,9 @@ class PolicyStore extends EventEmitter{
 				break;
 			case 'CHANGE_POLICY_FIELD':
 				this.setPolicyField(action.field)
+				break;
+			case 'CHANGE_YEAR':
+				this.setYear(action.year)
 				break;
 		}
 	}

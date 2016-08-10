@@ -13,3 +13,10 @@ export function changePolicyField(field){
 		field : field
 	})
 }
+
+export function changeYear(year){
+	dispatcher.dispatch({
+		type: 'CHANGE_YEAR',
+		year : year
+	})
+}

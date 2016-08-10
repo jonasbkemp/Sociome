@@ -15,12 +15,6 @@ export default class Explore extends Component{
 				<div style={styles.policyMenu}>
 					<PolicyMenu style={styles.policyMenu}/>
 				</div>
-				<Slider
-					min={1990}
-					max={2016}
-					value={1990}
-					onChange={this._changeYear.bind(this)}
-				/>
 			</div>
 		)
 	}
@@ -41,7 +35,7 @@ const styles={
 	},
 	slider : {
 		position : 'absolute',
-		top : 500,
+		top : 100,
 		left : 50
 	}
 }

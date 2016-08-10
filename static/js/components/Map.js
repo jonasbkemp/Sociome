@@ -9,26 +9,37 @@ const BACKEND_URL='http://localhost:8080/'
 
 export default class Map extends Component{
 
-	_updatePolicy(){
-		var policy = policyStore.getCurrentPolicy()
-		var field = policyStore.getCurrentPolicyField()
-		console.log(BACKEND_URL + 'GetPolicyData?policy=' + policy.code + '&field=' + field.code)
-		$.get(BACKEND_URL + 'GetPolicyData?policy=' + policy.code + '&field=' + field.code).then((data) => {
-			this.setState(_.extend({}, this.state, {
-				currentPolicy : policy,
-				currentPolicyField : field,
-				data : data
-			}))
-		})
+	updatePolicy = () => {
+		this.setState(_.extend({}, this.state, {
+			currentPolicy : policyStore.getCurrentPolicy(),
+			currentPolicyField : policyStore.getCurrentPolicyField(),
+			data : policyStore.getData(),
+			currentYear : policyStore.getYear(),
+		}))
+	}
+	updateYear = () => {
+		this.setState(_.extend({}, this.state, {
+			currentYear : policyStore.getYear(),
+		}))
+	}
+
+	componentWillMount() {
+	    policyStore.on('change-field', this.updatePolicy)
+	    policyStore.on('change-year', this.updateYear)
+	}
+
+	componentWillUnmount () {
+	    policyStore.removeListener('change-field', this.updatePolicy)
+	    policyStore.removeListener('change-year', this.updateYear)
 	}
 
 	constructor(props){
 		super(props)
-		this.updatePolicy = this._updatePolicy.bind(this)
 		this.state = {
 			currentPolicy : policyStore.getCurrentPolicy(),
 			currentPolicyField : policyStore.getCurrentPolicyField(),
-			data : []
+			data : policyStore.getData(),
+			currentYear : policyStore.getYear()
 		}
 	}
 
@@ -36,23 +47,25 @@ export default class Map extends Component{
 		var mapArgs = {
 			element : this.refs.container,
 			responsive : true,
-			scope : 'usa'
+			scope : 'usa',
+			geographyConfig : {
+				borderColor : '#000000',
+			}
 		}
 		if(this.state.currentPolicyField){
-			var rawVals = this.state.data.map((point) => point[this.state.currentPolicyField.code])
+			var yearlyData = _.filter(this.state.data, (d) => d.year === this.state.currentYear)
+			var rawVals = yearlyData.map((point) => point[this.state.currentPolicyField.code])
 
 	    	var minValue = d3.min(rawVals),
 	            maxValue = d3.max(rawVals);
-
-	        console.log('min = ' + minValue + ', max = ' + maxValue)
 
 	        var palette = d3.scaleLinear()
 					             .domain([minValue,maxValue])
 					             .range(["#EFEFFF","#02386F"]); // blue color
 
 			var data = {}
-			for(var i = 0; i < this.state.data.length; i++){
-				var val = this.state.data[i][this.state.currentPolicyField.code]
+			for(var i = 0; i < yearlyData.length; i++){
+				var val = yearlyData[i][this.state.currentPolicyField.code]
 				data[states[this.state.data[i].state]] = {
 					fillColor : palette(val),
 					value : val
@@ -60,22 +73,20 @@ export default class Map extends Component{
 			}
 			mapArgs.data = data;
 			mapArgs.geographyConfig = {
+				borderColor : '#000000',
 				highlightFillColor: function(geo) {
 	                return geo['fillColor'] || '#F5F5F5';
 	            },
 				popupTemplate: (geo, data) =>
 	                ['<div class="hoverinfo">',
-	                    '<strong>', this.state.currentPolicyField.label ,'</strong>',
+	                	'<strong>', geo.properties.name, '</strong>',
+	                    '<br><strong>', this.state.currentPolicyField.label ,'</strong>',
 	                    '<br>Value: <strong>', data.value, '</strong>',
 	                    '</div>'].join('')
 	            
 			}
 		}
 
-
-
-		console.log('Drawing map')
-		console.log(data)
 		var map = new Datamap(mapArgs)
 		this.map = map;
 	}
@@ -85,14 +96,6 @@ export default class Map extends Component{
 		for (const child of Array.from(container.childNodes)) {
 			container.removeChild(child);
 		}
-	}
-
-	componentWillMount() {
-	    policyStore.on('change-field', this.updatePolicy)
-	}
-
-	componentWillUnmount () {
-	    policyStore.removeListener('change-field', this.updatePolicy)
 	}
 
 	componentDidMount(){
