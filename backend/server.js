@@ -1,8 +1,4 @@
-var webpack = require('webpack')
-var config = require('../webpack.config')
-var compiler = webpack(config)
 var express = require('express')
-var chokidar = require('chokidar');
 var path = require('path');
 require('dotenv').config({silent : true});
 var pg = require('pg')
@@ -56,5 +52,5 @@ app.listen(port, ip, function (err) {
 	if (err) {
 	  	return console.error(err);
 	}
-	console.log('Listening at http://localhost:8080');
+	console.log('Listening at http://localhost:8082');
 });
