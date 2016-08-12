@@ -4,9 +4,8 @@ var compiler = webpack(config)
 var express = require('express')
 var chokidar = require('chokidar');
 var path = require('path');
-require('dotenv').config();
+require('dotenv').config({silent : true});
 var pg = require('pg')
-var R = require('r-script')
 
 var cors = require('cors')
 
