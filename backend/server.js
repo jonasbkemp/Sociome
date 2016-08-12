@@ -6,26 +6,15 @@ var chokidar = require('chokidar');
 var path = require('path');
 require('dotenv').config();
 var pg = require('pg')
+var R = require('r-script')
 
-var db = new pg.Client(process.env.DATABASE_URL + '?ssl=true');
+var cors = require('cors')
+
+var db = new pg.Client({database : 'sociome_db'});
 db.connect();
 
 var app = express()
-
-// Serve hot-reloading bundle to client
-app.use(require("webpack-dev-middleware")(compiler, {
-  publicPath: config.output.publicPath,
-  log : console.log,
-  stats : {
-    colors : true,
-  }
-}));
-
-app.use(require("webpack-hot-middleware")(compiler, {
-  log : console.log
-}));
-
-//app.use(express.static(path.resolve(__dirname + '/../static')))
+app.use(cors());
 
 app.get('/GetPolicyData', function(req, res){
   var table = req.query.policy
@@ -37,6 +26,22 @@ app.get('/GetPolicyData', function(req, res){
   ).catch(
     function(err){
       console.log(err)
+      res.json(err)
+    }
+  )
+})
+
+app.get('/GetHealthOutcomes', function(req, res){
+  var measure_name = req.query.measure_name;
+  var query = 'SELECT * FROM chr_2016_trend_data WHERE measure_name=$$' + measure_name + '$$;'
+  db.query(query).then(
+    function(data){
+      res.json(data.rows)
+    }
+  ).catch(
+    function(err){
+      console.log(err)
+      res.json({})
     }
   )
 })
@@ -45,7 +50,10 @@ app.get('/', function(req, res){
     res.sendFile(path.resolve(__dirname + '/../static/index.html'));
 });
 
-app.listen(8080, 'localhost', function (err) {
+var port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 8082;
+var ip = process.env.OPENSHIFT_NODEJS_IP || "localhost";
+
+app.listen(port, ip, function (err) {
 	if (err) {
 	  	return console.error(err);
 	}
