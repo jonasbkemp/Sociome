@@ -5,7 +5,9 @@ var pg = require('pg')
 
 var cors = require('cors')
 
-var db = new pg.Client({database : 'sociome_db'});
+//TODO set up openshift database
+var db = new pg.Client(process.env.OPENSHIFT_POSTGRESQL_DB_URL ? 
+                       process.env.OPENSHIFT_POSTGRESQL_DB_URL : {database : 'sociome_db'});
 db.connect();
 
 var app = express()
