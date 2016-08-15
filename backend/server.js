@@ -30,7 +30,7 @@ app.get('/GetPolicyData', function(req, res){
 
 app.get('/GetHealthOutcomes', function(req, res){
   var measure_name = req.query.measure_name;
-  var query = 'SELECT * FROM chr_2016_trend_data WHERE measure_name=$$' + measure_name + '$$;'
+  var query = 'SELECT * FROM ' + measure_name + ';'
   db.query(query).then(
     function(data){
       res.json(data.rows)
@@ -46,6 +46,13 @@ app.get('/GetHealthOutcomes', function(req, res){
 app.get('/', function(req, res){
     res.sendFile(path.resolve(__dirname + '/../static/index.html'));
 });
+
+// Openshift puts the app to sleep after 24 hours of innactivity.
+// Continually ping the server to keep it awake...
+app.get('/Wakeup', function(req, res){
+  res.json({})
+})
+setTimeout(function(){request('http://sociome-ml9951.rhcloud.com/Wakeup', function(){})}, 3600000)
 
 var port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 8082;
 var ip = process.env.OPENSHIFT_NODEJS_IP || "localhost";
