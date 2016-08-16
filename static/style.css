@@ -1,0 +1,48 @@
+.background {
+  fill: none;
+  pointer-events: all;
+}
+
+.feature {
+  fill: #ccc;
+  cursor: pointer;
+  stroke: #fff; 
+  stroke-width: .15px;
+}
+
+.state.active {
+  fill: orange;
+
+}
+
+.mesh {
+  fill: none;
+  stroke: #fff;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.county-boundary {
+  stroke: #fff;
+  stroke-width: .15px;
+}
+
+.state{
+  fill: #fff;
+  fill-opacity : 0.0;
+  cursor:pointer;
+   stroke: #fff;  
+}
+
+.hidden {
+      display: none;
+  }
+  div.tooltip {
+      color: #222;
+      background-color: #fff;
+      padding: .5em;
+      text-shadow: #f5f5f5 0 1px 0;
+      border-radius: 2px;
+      opacity: 0.9;
+      position: absolute;
+  }

@@ -1,9 +1,9 @@
 var d3 = require('d3')
 import Datamap from 'datamaps/dist/datamaps.usa.min'
 import React, {Component} from 'react';
-import policyStore from '../stores/PolicyStore';
+import {policyStore} from '../stores/PolicyStore';
 var _ = require('underscore')
-import {states} from '../data/StateCodes'
+import {getStateInfo} from '../data/StateCodes'
 
 const BACKEND_URL='http://localhost:8080/'
 
@@ -66,7 +66,7 @@ export default class Map extends Component{
 			var data = {}
 			for(var i = 0; i < yearlyData.length; i++){
 				var val = yearlyData[i][this.state.currentPolicyField.code]
-				data[states[this.state.data[i].state]] = {
+				data[getStateInfo(this.state.data[i].state)] = {
 					fillColor : palette(val),
 					value : val
 				}

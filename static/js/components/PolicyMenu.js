@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import policyStore from '../stores/PolicyStore';
+import {policyStore} from '../stores/PolicyStore';
 import Select from 'react-select';
 require('react-select/dist/react-select.css');
 var _ = require('underscore')

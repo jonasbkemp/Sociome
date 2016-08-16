@@ -27,11 +27,33 @@ class PolicyStore extends EventEmitter{
 			{value : 'r_enfor_11', label : 'Enforced'},
 			{value : 't_elect_11', label : 'Electricity'},
 			{value : 'v_race_11', label : 'Race'}
+		],
+		this.measures = [
+			{value:'children_in_poverty', label:'Children In Poverty'},
+			{value:'adult_obesity', label:'Adult Obesity'},
+			{value:'physical_inactivity', label:'Physical Inactivity'},
+			{value:'air_pollution_particulate_matter', label:'Air Pollution Particulate Matter'},
+			{value:'unemployment_rate', label:'Unemployment Rate'},
+			{value:'sexually_transmitted_infections', label:'Sexually Transmitted Infections'},
+			{value:'preventable_hospital_stays', label:'Preventable Hospital Stays'},
+			{value:'violent_crime_rate', label:'Violent Crime Rate'},
+			{value:'alcohol_impaired_driving_deaths', label:'Alcohol Impaired Driving Deaths'},
+			{value:'uninsured', label:'Uninsured'},
+			{value:'mammography_screening', label:'Mammography Screening'},
+			{value:'premature_death', label:'Premature Death'},
+			{value:'diabetic_monitoring', label:'Diabetic Monitoring'},
 		]
+		this.currentMeasure = undefined
+		this.dataset = undefined
+
 		this.currentPolicy = undefined
 		this.data = []
 		this.years = []
 		this.yearIndex = undefined
+	}
+
+	getMeasures(){
+		return this.measures
 	}
 
 	getData(){
@@ -50,10 +72,15 @@ class PolicyStore extends EventEmitter{
 		return this.years;
 	}
 
-	getPolicyFields(){
-		console.log(this)
-		return this.currentPolicy ? this.fields[this.currentPolicy.code] : []
+	getPolicyFields(policy){
+		if(arguments.length == 1){
+			return this.fields[policy];
+		}else{
+			return this.currentPolicy ? this.fields[this.currentPolicy.code] : []
+		}
 	}
+
+	getPolicyFields
 
 	getCurrentPolicyField(){
 		return this.currentField
@@ -70,6 +97,14 @@ class PolicyStore extends EventEmitter{
 	setPolicy(newPolicy){
 		this.currentPolicy = newPolicy;
 		this.emit('change-policy')
+	}
+
+	setDataset(dataset){
+		this.dataset = dataset;
+	}
+
+	setMeasure(measure){
+		this.currentMeasure = measure;
 	}
 
 	setPolicyField(field){
