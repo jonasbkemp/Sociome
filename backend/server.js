@@ -2,7 +2,7 @@ var express = require('express')
 var path = require('path');
 require('dotenv').config({silent : true});
 var pg = require('pg')
-
+var request = require('request')
 var cors = require('cors')
 
 //TODO set up openshift database
@@ -30,7 +30,7 @@ app.get('/GetPolicyData', function(req, res){
 
 app.get('/GetHealthOutcomes', function(req, res){
   var measure_name = req.query.measure_name;
-  var query = 'SELECT * FROM ' + measure_name + ';'
+  var query = 'SELECT * FROM ' + measure_name + ' ORDER BY start_year;'
   db.query(query).then(
     function(data){
       res.json(data.rows)
@@ -47,15 +47,16 @@ app.get('/', function(req, res){
     res.sendFile(path.resolve(__dirname + '/../static/index.html'));
 });
 
+var port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 8082;
+var ip = process.env.OPENSHIFT_NODEJS_IP || "localhost";
+
 // Openshift puts the app to sleep after 24 hours of innactivity.
 // Continually ping the server to keep it awake...
 app.get('/Wakeup', function(req, res){
   res.json({})
 })
-setTimeout(function(){request('http://sociome-ml9951.rhcloud.com/Wakeup', function(){})}, 3600000)
+setTimeout(function(){request(ip + ':' + port + '/Wakeup', function(){})}, 3600000)
 
-var port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 8082;
-var ip = process.env.OPENSHIFT_NODEJS_IP || "localhost";
 
 app.listen(port, ip, function (err) {
 	if (err) {
