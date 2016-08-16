@@ -1,9 +1,10 @@
 var express = require('express')
 var path = require('path');
 require('dotenv').config({silent : true});
-var pg = require('pg')
-var request = require('request')
-var cors = require('cors')
+var pg = require('pg');
+var request = require('request');
+var cors = require('cors');
+var R = require('r-script');
 
 //TODO set up openshift database
 var db = new pg.Client(process.env.OPENSHIFT_POSTGRESQL_DB_URL ? 
@@ -12,6 +13,9 @@ db.connect();
 
 var app = express()
 app.use(cors());
+
+app.use(express.static(__dirname + '/../static/'));
+
 
 app.get('/GetPolicyData', function(req, res){
   var table = req.query.policy
@@ -41,6 +45,19 @@ app.get('/GetHealthOutcomes', function(req, res){
       res.json({})
     }
   )
+})
+
+app.get('/TestR', function(req, res){
+  R(__dirname + '/R-scripts/test.r').call(function(err, result){
+    if(err){
+      console.log('Error: ' + err)
+      res.json({})
+    }else{
+      console.log(result)
+      res.json(result)
+    }
+    //res.json(result)
+  })
 })
 
 app.get('/', function(req, res){

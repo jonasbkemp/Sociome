@@ -5,8 +5,6 @@ import {policyStore} from '../stores/PolicyStore';
 var _ = require('underscore')
 import {getStateInfo} from '../data/StateCodes'
 
-const BACKEND_URL='http://localhost:8080/'
-
 export default class Map extends Component{
 
 	updatePolicy = () => {

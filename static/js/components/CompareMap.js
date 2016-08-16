@@ -6,8 +6,8 @@ var _ = require('underscore')
 var d3 = require('d3')
 var topojson = require('topojson')
 
-//const BACKEND_URL='http://sociome-ml9951.rhcloud.com/'
-const BACKEND_URL='http://localhost:8082/'
+const BACKEND_URL='http://sociome-ml9951.rhcloud.com/'
+//const BACKEND_URL='http://localhost:8082/'
 
 export default class CompareMap extends Component{
 	updatePolicy = () => {
