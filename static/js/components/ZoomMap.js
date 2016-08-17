@@ -56,6 +56,44 @@ export default class ZoomMap extends Component{
         .on('mouseout', () => this.tooltip.classed('hidden', true))
     }
 
+	// Data is sorted by `start_year`.  Run a binary search
+	// to find the first entry with that year
+	getFirstYear = (year) => {
+		var i = 0,
+			j = this.props.data.length - 1 ;
+
+		while(i <= j){
+			var mid = Math.round((i+j) / 2);
+			if(this.props.data[mid].start_year == year && (mid === 0 || this.props.data[mid-1].start_year !== year)){
+				return mid;
+			}
+			if(this.props.data[mid].start_year >= year){
+				j = mid-1;
+			}else{
+				i = mid+1;
+			}
+		}
+		throw "Error: Couldn\'t find year";
+	}
+
+	extractData = (year) => {
+		var i = this.getFirstYear(year),
+			data = [],
+			min = Number.MAX_VALUE,
+			max = Number.MIN_VALUE
+		while(i < this.props.data.length && this.props.data[i].start_year === year){
+			if(!data[this.props.data[i].statecode])
+				data[this.props.data[i].statecode] = [this.props.data[i]]
+			else
+				data[this.props.data[i].statecode][this.props.data[i].countycode] = this.props.data[i];
+			var raw = this.props.data[i].rawvalue
+			min = Math.min(min, raw)
+			max = Math.max(max, raw);
+			i++;
+		}
+		return {data : data, min : min, max : max};
+	}
+
 	drawMap = () => {
 		var path = d3.geoPath().projection(this.state.projection)
 
@@ -71,12 +109,39 @@ export default class ZoomMap extends Component{
 		
 			// draw county lines if we are plotting the Health Outcomes data
 			if(this.props.dataset === 'health-outcomes'){
+				var yearlyData = this.extractData(this.props.year)
+
+				var heatmap = d3.scaleLinear()
+			    	.domain([yearlyData.min, yearlyData.max])
+				    .interpolate(d3.interpolateRgb)
+				    .range(["#EFEFFF","#02386F"])
+
 				this.counties = this.g.selectAll('path')
 					.data(topojson.feature(GEO_JSON, GEO_JSON.objects.counties).features)
 					.enter()
 					.append('path')
 					.attr('d', path)
 					.attr('class', 'feature')
+					.style('fill', function(d){
+						var county = d.id % 1000
+						var state = Math.floor(d.id / 1000)
+						if(yearlyData.data[state] && yearlyData.data[state][county])
+							return heatmap(yearlyData.data[state][county].rawvalue)
+					})
+					.attr('value', (d) => {
+						var county = d.id % 1000
+						var state = Math.floor(d.id / 1000)
+						if(yearlyData.data[state] && yearlyData.data[state][county])
+							return yearlyData.data[state][county].rawvalue;
+					})
+					.on('mousemove', (d, i, children) => {
+	                    var mouse = d3.mouse(this.svg.node()).map((d) => parseInt(d));
+	                    this.tooltip.classed('hidden', false)
+	                        .attr('style', 'left:' + (mouse[0] + 15) +
+	                                'px; top:' + (mouse[1] - 35) + 'px')
+	                        .html('value: ' + children[i].getAttribute('value'));
+	                })
+	                .on('mouseout', () => this.tooltip.classed('hidden', true))
 
 				// Draw the state lines.  
 	            this.states = this.g.append('g').selectAll('path')
@@ -101,8 +166,6 @@ export default class ZoomMap extends Component{
 	                .style('fill', '#ccc')
 	            this.addStateHover()
 	            if(this.props.data){
-	            	
-
 					var stateData = {},
 						min = Number.MAX_VALUE,
 						max = Number.MIN_VALUE
@@ -142,47 +205,9 @@ export default class ZoomMap extends Component{
 	      	.attr("transform", "");
 	}
 
-	// Data is sorted by `start_year`.  Run a binary search
-	// to find the first entry with that year
-	getFirstYear = (year) => {
-		var i = 0,
-			j = this.props.data.length - 1 ;
-
-		while(i <= j){
-			var mid = Math.round((i+j) / 2);
-			if(this.props.data[mid].start_year == year && (mid === 0 || this.props.data[mid-1].start_year !== year)){
-				return mid;
-			}
-			if(this.props.data[mid].start_year >= year){
-				j = mid-1;
-			}else{
-				i = mid+1;
-			}
-		}
-		throw "Error: Couldn\'t find year";
-	}
-
-	extractData = (year) => {
-		var i = this.getFirstYear(year),
-			data = [],
-			min = Number.MAX_VALUE,
-			max = Number.MIN_VALUE
-		while(i < this.props.data.length && this.props.data[i].start_year === year){
-			data[this.props.data[i].countycode] = this.props.data[i];
-			var raw = this.props.data[i].rawvalue
-			min = Math.min(min, raw)
-			max = Math.max(max, raw);
-			i++;
-		}
-		return {data : data, min : min, max : max};
-	}
-
 	_stateClicked = () => {
 		var component = this
 		return function(d){
-			component.selectedState.style('fill', null) // removes the fill
-				.on('mousemove', null).on('mouseout', null)
-
 			if(component.active === this){
 				component.active = undefined;
 				return component.reset(component);
@@ -191,20 +216,7 @@ export default class ZoomMap extends Component{
 			component.active = this;
 
 			if(component.props.dataset === 'health-outcomes' && component.props.data){
-				var stateData = component.extractData(component.props.year)
-
-				var stateID = d.id;
-
-				var heatmap = d3.scaleLinear()
-			    	.domain([stateData.min, stateData.max])
-				    .interpolate(d3.interpolateRgb)
-				    .range(["#EFEFFF","#02386F"])
-
-				component.selectedState = component.counties.filter((d) => Math.floor(d.id/1000) === stateID)
-					.style('fill', function(d){
-						var county = d.id % 1000
-						return heatmap(stateData.data[county].rawvalue)
-					})
+				/*component.selectedState = component.counties.filter((d) => Math.floor(d.id/1000) === stateID)
 					.attr('value', (d) => stateData.data[d.id % 1000].rawvalue)
 					.on('mousemove', function(d, i, children) {
 			
@@ -218,7 +230,7 @@ export default class ZoomMap extends Component{
 	                })
 	                .on('mouseout', function() {
 	                    component.tooltip.classed('hidden', true);
-	                })
+	                })*/
 
 	            component.states.on('mousemove', component.passThru)
 			}
