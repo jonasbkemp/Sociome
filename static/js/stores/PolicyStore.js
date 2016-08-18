@@ -3,7 +3,9 @@ import dispatcher from '../Dispatcher';
 import {fields} from './PolicyFields';
 var _ = require('underscore')
 
-const BACKEND_URL='http://sociome-ml9951.rhcloud.com/'
+const BACKEND_URL = process.env.NODE_ENV === 'production' ? 
+					'http://sociome-ml9951.rhcloud.com/' : 
+					'http://localhost:8082/';
 
 class PolicyStore extends EventEmitter{
 	constructor(){
