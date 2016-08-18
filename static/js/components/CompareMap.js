@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import {states} from '../data/StateCodes'
 import Select from 'react-select';
 import ZoomMap from './ZoomMap';
 var _ = require('underscore')
