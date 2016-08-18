@@ -5,12 +5,12 @@ var path = require('path');
 module.exports = {
   context: path.resolve(__dirname + '/'),
   devtool: debug ? "inline-sourcemap" : null,
-  entry: "./static/js/client.js",
+  entry: "./static/js/client.jsx",
   resolveLoader: {
     root: path.join(__dirname, 'node_modules')
   },
   resolve: {
-    extensions: ['', '.js'],
+    extensions: ['', '.js', '.jsx'],
     alias: {
       webworkify: 'webworkify-webpack',
       'mapbox-gl': path.resolve(__dirname + '/node_modules/mapbox-gl/dist/mapbox-gl.js')
