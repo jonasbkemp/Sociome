@@ -32,11 +32,6 @@ module.exports = {
         loader: 'json-loader'
       },
       {
-        test: /\.js$/,
-        include: path.resolve(__dirname, '/node_modules/webworkify/index.js'),
-        loader: 'worker'
-      },
-      {
         test: /mapbox-gl.+\.js$/,
         include: path.resolve(__dirname + '/node_modules/mapbox-gl-shaders/index.js'),
         loader: 'transform/cacheable?brfs'

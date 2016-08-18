@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {states} from '../data/StateCodes'
 import Select from 'react-select';
 import {topoJsonStore} from '../stores/TopoJsonStore';
-import {getStateInfo} from '../data/StateCodes';
+import {getStateInfo, getCounty} from '../data/StateCodes';
 var _ = require('underscore')
 var d3 = require('d3')
 var topojson = require('topojson')
@@ -136,10 +136,13 @@ export default class ZoomMap extends Component{
 					})
 					.on('mousemove', (d, i, children) => {
 	                    var mouse = d3.mouse(this.svg.node()).map((d) => parseInt(d));
+	                    var county = d.id % 1000
+						var state = Math.floor(d.id / 1000)
 	                    this.tooltip.classed('hidden', false)
 	                        .attr('style', 'left:' + (mouse[0] + 15) +
 	                                'px; top:' + (mouse[1] - 35) + 'px')
-	                        .html('value: ' + children[i].getAttribute('value'));
+	                        .html('<b>' + getCounty(state, county) + '</b><br/>value: ' + 
+	                        	  children[i].getAttribute('value'));
 	                })
 	                .on('mouseout', () => this.tooltip.classed('hidden', true))
 
@@ -215,26 +218,9 @@ export default class ZoomMap extends Component{
 
 			component.active = this;
 
-			if(component.props.dataset === 'health-outcomes' && component.props.data){
-				/*component.selectedState = component.counties.filter((d) => Math.floor(d.id/1000) === stateID)
-					.attr('value', (d) => stateData.data[d.id % 1000].rawvalue)
-					.on('mousemove', function(d, i, children) {
-			
-	                    var mouse = d3.mouse(component.svg.node()).map(function(d) {
-	                        return parseInt(d);
-	                    });
-	                    component.tooltip.classed('hidden', false)
-	                        .attr('style', 'left:' + (mouse[0] + 15) +
-	                                'px; top:' + (mouse[1] - 35) + 'px')
-	                        .html('value: ' + children[i].getAttribute('value'));
-	                })
-	                .on('mouseout', function() {
-	                    component.tooltip.classed('hidden', true);
-	                })*/
-
+			if(component.props.dataset === 'health-outcomes'){
 	            component.states.on('mousemove', component.passThru)
 			}
-
 
 			var bbox = this.getBBox()
 			var bounds = [[bbox.x, bbox.y], [bbox.x+bbox.width, bbox.y+bbox.height]],
