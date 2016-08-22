@@ -47,7 +47,7 @@ export default class Map extends Component{
 			responsive : true,
 			scope : 'usa',
 			geographyConfig : {
-				borderColor : '#000000',
+				borderColor : '#FFFFFF',
 			},
 			fills : {
 				defaultFill : '#ccc',
@@ -74,9 +74,9 @@ export default class Map extends Component{
 			}
 			mapArgs.data = data;
 			mapArgs.geographyConfig = {
-				borderColor : '#000000',
+				borderColor : '#FFFFFF',
 				highlightFillColor: function(geo) {
-	                return geo['fillColor'] || '#F5F5F5';
+	                return geo['fillColor'] || '#ccc';
 	            },
 				popupTemplate: (geo, data) =>
 	                ['<div class="hoverinfo">',
