@@ -85,8 +85,8 @@ export default class PolicyMenu extends Component{
 				<div>
 				<input
 					type="range"
-					defaultValue={this.state.yearIndex ? this.state.yearIndex : 0}
 					min={0}
+					value = {this.state.yearIndex ? this.state.yearIndex : 0}
 					max={this.state.years.length-1}
 				    onChange={this._changeYear.bind(this)}
 				/>

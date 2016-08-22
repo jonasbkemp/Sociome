@@ -109,7 +109,7 @@ class ZoomMap extends Component{
 			this.g = this.svg.append('g')
 		
 			// draw county lines if we are plotting the Health Outcomes data
-			if(this.props.dataset === 'health-outcomes'){
+			if(this.props.dataset === 'health-outcomes' && this.props.data){
 				var yearlyData = this.extractData(this.props.year)
 
 				var heatmap = d3.scaleLinear()

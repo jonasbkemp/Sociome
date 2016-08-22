@@ -62,13 +62,20 @@ export default class CompareMap extends Component{
 			this.props.policyStore.setPolicy(event)
 		}else if(this.state.dataset === 'health-outcomes'){
 			this.props.policyStore.setMeasure(event)
-			console.log(BACKEND_URL + 'GetHealthOutcomes?measure_name=' + event.value)
-			$.get(BACKEND_URL + 'GetHealthOutcomes?measure_name=' + event.value).then((data) => {
+			if(event === null){
 				this.setState(_.extend({}, this.state, {
-					feature : event,
-					data : data
-				}))	
-			})
+					feature : undefined,
+					data : undefined,
+				}))
+			}else{
+				console.log(BACKEND_URL + 'GetHealthOutcomes?measure_name=' + event.value)
+				$.get(BACKEND_URL + 'GetHealthOutcomes?measure_name=' + event.value).then((data) => {
+					this.setState(_.extend({}, this.state, {
+						feature : event,
+						data : data
+					}))	
+				})
+			}	
 		}
 	}
 
