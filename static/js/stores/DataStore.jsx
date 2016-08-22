@@ -45,6 +45,20 @@ class PolicyStore extends EventEmitter{
 			{value:'premature_death', label:'Premature Death'},
 			{value:'diabetic_monitoring', label:'Diabetic Monitoring'},
 		]
+		this.demographics = [
+			{value:'pop_num', label : 'Population Number'},
+			{value:'age_lt_18', label : 'Percent of Population Under 18'},
+			{value:'age_gt_65', label : 'Percent of Population Over 65'},
+			{value:'african_american', label : 'Percent of Population African American'},
+			{value:'american_indian', label : 'Percent of Population American Indian/Alaskan Native'},
+			{value:'asian', label : 'Percent of Population Asian'},
+			{value:'hawaiian', label:'Percent of Population Native Hawaiian/Other Pacific Islander'},
+			{value:'hispanic', label : 'Percent of Population Hispanic'},
+			{value:'non_hispantic_white', label : 'Percent of Population Non-Hispanic White'},
+			{value:'not_proficient_english', label : 'Percent of Population not Proficient in English'},
+			{value:'female', label : 'Percent of Population Female'},
+			{value:'rural', label : 'Percent of Population Living in Rural Area'},
+		]
 		this.currentMeasure = undefined
 		this.dataset = undefined
 
@@ -52,6 +66,10 @@ class PolicyStore extends EventEmitter{
 		this.data = []
 		this.years = []
 		this.yearIndex = undefined
+	}
+
+	getDemographics(){
+		return this.demographics;
 	}
 
 	getMeasures(){
@@ -98,6 +116,8 @@ class PolicyStore extends EventEmitter{
 
 	setPolicy(newPolicy){
 		this.currentPolicy = newPolicy;
+		this.currentField = undefined;
+		this.yearIndex = 0;
 		this.emit('change-policy')
 	}
 
@@ -111,6 +131,7 @@ class PolicyStore extends EventEmitter{
 
 	setPolicyField(field){
 		this.currentField = field;
+		console.log(BACKEND_URL + 'GetPolicyData?policy=' + this.currentPolicy.code + '&field=' + field.code)
 		$.get(BACKEND_URL + 'GetPolicyData?policy=' + this.currentPolicy.code + '&field=' + field.code).then((data) => {
 			this.data = data
 			this.years = _.uniq(data.map((d) => d.year), true)
@@ -142,8 +163,10 @@ class PolicyStore extends EventEmitter{
 export const policyStore = new PolicyStore();
 export const leftStore = new PolicyStore();
 export const rightStore = new PolicyStore();
+
+/*
 dispatcher.register(policyStore.handleActions.bind(policyStore))
 dispatcher.register(policyStore.handleActions.bind(leftStore))
 dispatcher.register(policyStore.handleActions.bind(rightStore))
-
+*/
 

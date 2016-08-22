@@ -71,6 +71,8 @@ class PolicyStore extends EventEmitter{
 
 	setPolicy(newPolicy){
 		this.currentPolicy = newPolicy;
+		this.currentField = undefined;
+		this.yearIndex = 0;
 		this.emit('change-policy')
 	}
 
@@ -107,8 +109,10 @@ class PolicyStore extends EventEmitter{
 export const policyStore = new PolicyStore();
 export const leftStore = new PolicyStore();
 export const rightStore = new PolicyStore();
+
 dispatcher.register(policyStore.handleActions.bind(policyStore))
+/*
 dispatcher.register(policyStore.handleActions.bind(leftStore))
 dispatcher.register(policyStore.handleActions.bind(rightStore))
-
+*/
 

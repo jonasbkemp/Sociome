@@ -1,4 +1,4 @@
-const states = { Alabama: 'AL',
+export const states = { Alabama: 'AL',
   Alaska: 'AK',
   'American Samoa': 'AS',
   Arizona: 'AZ',
