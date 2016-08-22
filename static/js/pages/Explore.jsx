@@ -5,16 +5,15 @@ import PolicyMenu from '../components/PolicyMenu';
 import Slider from 'react-rangeslider';
 
 export default class Explore extends Component{
-	_changeYear(year){
-		console.log('year = ' + year)
-	}
 	render(){
 		return(
-			<div>
-				<Map/>
-				<div style={styles.policyMenu}>
-					<PolicyMenu style={styles.policyMenu}/>
-				</div>
+			<div style={{width : "100%", height : '100%', overflow: "hidden"}}>
+			 	<div style={{position : 'relative', bottom : 0, width : '20%', float : 'left'}}> 
+			    	<PolicyMenu/>
+			    </div>
+			    <div style={{position : 'relative', bottom : 0, marginLeft : '20%'}}> 
+			    	<Map/>
+			    </div>
 			</div>
 		)
 	}

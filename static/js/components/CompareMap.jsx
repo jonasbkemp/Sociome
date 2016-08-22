@@ -92,7 +92,7 @@ export default class CompareMap extends Component{
 	render(){
 		console.log(this.state.field)
 		return(
-			<div>
+			<div style={{width : '100%', height : '100%'}}>
 				<ZoomMap {...this.props} dataset={this.state.dataset} 
 						 feature={this.state.feature} policyField={this.state.field}
 						 data={this.state.data} year={this.getYear()}/>
@@ -121,17 +121,13 @@ export default class CompareMap extends Component{
 						: null
 					}
 				</div>
-				<div style={{height : 100}}></div>
+				<div style={{height : 200}}></div>
 			</div>
 		)
 	}
 }
 
 const styles = {
-	selectMenu : {
-		left : 200,
-		width : 150,
-	},
 	dropdowns : {
 		width : '50%',
 		margin : '0 auto',

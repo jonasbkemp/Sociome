@@ -3,26 +3,27 @@ import {states} from '../data/StateCodes'
 import Select from 'react-select';
 import {topoJsonStore} from '../stores/TopoJsonStore';
 import {getStateInfo, getCounty} from '../data/StateCodes';
+import Dimensions from 'react-dimensions';
 var _ = require('underscore')
 var d3 = require('d3')
 var topojson = require('topojson')
-
-
-
-
 
 // Note: the format of the county id's is a 5 digit 
 // number: ssccc, where "ss" corresponds to the two
 // digits representing the state and "ccc" is the 
 // three digit code corresponding to the county id.
 
-export default class ZoomMap extends Component{
+class ZoomMap extends Component{
 	constructor(props){
 		super(props)
 
+		console.log(this.props)
+
 		this.selectedState = d3.select(null)
-		this.width = 650;
-		this.height = 400;
+		console.log('width = ' + this.props.containerWidth)
+		this.width = this.props.containerWidth; //650;
+		this.height = this.props.containerWidth * 0.61538461538462;//400;
+		console.log(this)
 		var projection = d3.geoAlbersUsa().scale(750).translate([this.width/2, this.height/2])
 
 		this.state = {
@@ -47,7 +48,7 @@ export default class ZoomMap extends Component{
 
     addStateHover = (selection) => {
     	this.states.on('mousemove', (d, i, children) => {
-            var mouse = d3.mouse(this.svg.node()).map((d) => parseInt(d))
+            var mouse = d3.mouse(document.body)
             this.tooltip.classed('hidden', false)
                 .attr('style', 'left:' + (mouse[0] + 15) +
                         'px; top:' + (mouse[1] - 35) + 'px')
@@ -135,7 +136,7 @@ export default class ZoomMap extends Component{
 							return yearlyData.data[state][county].rawvalue;
 					})
 					.on('mousemove', (d, i, children) => {
-	                    var mouse = d3.mouse(this.svg.node()).map((d) => parseInt(d));
+	                    var mouse = d3.mouse(document.body);
 	                    var county = d.id % 1000
 						var state = Math.floor(d.id / 1000)
 	                    this.tooltip.classed('hidden', false)
@@ -266,3 +267,9 @@ export default class ZoomMap extends Component{
 		)
 	}
 }
+
+export default Dimensions()(ZoomMap)
+
+
+
+

@@ -6,13 +6,13 @@ import CompareMap from '../components/CompareMap';
 export default class CompareData extends Component{
 	render(){
 		return(
-			<div>
-				<div style={styles.leftMap}>
-					<CompareMap policyStore={leftStore}/>
-				</div>
-				<div style={styles.rightMap}>
-					<CompareMap policyStore={rightStore}/>
-				</div>
+			<div style={{width : "100%", overflow: "hidden"}}>
+			    <div style={{width : '50%', float : 'left'}}> 
+			    	<CompareMap policyStore={leftStore}/>
+			    </div>
+			    <div style={{marginLeft : '50%'}}> 
+			    	<CompareMap policyStore={rightStore}/>
+			    </div>
 			</div>
 		)
 	}

@@ -69,7 +69,8 @@ export default class PolicyMenu extends Component{
 					searchable={true}
 					name="policySelect"
 					options={this.state.policies}
-					onChange={this._changePolicy.bind(this)}/>
+					onChange={this._changePolicy.bind(this)}
+				/>
 				<h3>Policy Field</h3>
 				<Select
 					value={this.state.currentPolicyField ? this.state.currentPolicyField.code : undefined}
@@ -78,7 +79,8 @@ export default class PolicyMenu extends Component{
 					searchable={true}
 					name="policyFieldSelect"
 					options={this.state.policyFields}
-					onChange={this._changePolicyField.bind(this)}/>
+					onChange={this._changePolicyField.bind(this)}
+				/>
 				<h3>Change Year</h3>
 				<div>
 				<input
@@ -86,7 +88,8 @@ export default class PolicyMenu extends Component{
 					defaultValue={this.state.yearIndex ? this.state.yearIndex : 0}
 					min={0}
 					max={this.state.years.length-1}
-				    onChange={this._changeYear.bind(this)}/>
+				    onChange={this._changeYear.bind(this)}
+				/>
 				</div>
 				<h3 class="text-center">{this.state.years[this.state.yearIndex]}</h3>
 			</div>
@@ -96,9 +99,8 @@ export default class PolicyMenu extends Component{
 
 const styles = {
 	policyMenu : {
-		position : 'absolute',
-		top : 50,
-		left : 0,
-		width : 145
+		paddingTop : '30%',
+		width : '80%',
+		margin : '0 auto',
 	},
 }

@@ -48,6 +48,9 @@ export default class Map extends Component{
 			scope : 'usa',
 			geographyConfig : {
 				borderColor : '#000000',
+			},
+			fills : {
+				defaultFill : '#ccc',
 			}
 		}
 		if(this.state.currentPolicyField){
@@ -64,7 +67,7 @@ export default class Map extends Component{
 			var data = {}
 			for(var i = 0; i < yearlyData.length; i++){
 				var val = yearlyData[i][this.state.currentPolicyField.code]
-				data[getStateInfo(this.state.data[i].state)] = {
+				data[getStateInfo(yearlyData[i].state)] = {
 					fillColor : palette(val),
 					value : val
 				}
@@ -106,16 +109,13 @@ export default class Map extends Component{
 
 	render(){
 		return(
-			<div style={styles.map} ref='container'></div>
+			<div id='mapContainer' style={styles.map} ref='container'></div>
 		)
 	}
 }
 
 const styles={
 	map : {
-		position : 'absolute',
-		top : 0,
-		left : 0,
 		width : '100%',
 		height : '100%',
 	},
