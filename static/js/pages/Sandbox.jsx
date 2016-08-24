@@ -11,15 +11,17 @@ const BACKEND_URL = process.env.NODE_ENV === 'production' ?
 					'http://sociome-ml9951.rhcloud.com/' : 
 					'http://localhost:8082/';
 
+// TODO: multiple predictors and one dependant
 export default class Sandbox extends React.Component{
 	constructor(props){
 		super(props)
 		this.state = {
-			predVar : undefined,
-			depVars : [],
+			predVars : [],
+			depVar : undefined,
 			treatment : undefined,
 			controlIdentities : [],
-			yearOfTreatement : undefined,
+			years : [],
+			yearOfTreatment : undefined,
 		}
 		this.states = []
 		for(var state in states){
@@ -27,19 +29,20 @@ export default class Sandbox extends React.Component{
 		}
 		this.states.sort((a, b) => a.label < b.label ? -1 : (a.label === b.label) ? 0 : 1)
 	}
-	
+
 	runSynth = (event) => {
 		var component = this
-		var depVars = this.state.depVars.map((v) => 'depVars=' + v.value).join('&')
-		var controlIdentities = this.state.controlIdentities.map((i) => 'controlIdentities=' + i.value).join('&')
-		var url = util.format('%sSynth?predVar=%s&%s&treatment=%s&%s&yearOfTreatment=%d',
-							  BACKEND_URL, this.state.predVar, depVars, this.state.treatment, 
-							  controlIdentities, this.state.yearOfTreatement)
+		var predVars = this.state.predVars.map((v) => 'predVars=\"' + v.value + "\"").join('&')
+		var controlIdentities = this.state.controlIdentities.map((i) => 'controlIdentities=\"' + i.label + '\"').join('&')
+		var url = util.format('%sSynth?%s&depVar=\"%s\"&treatment=\"%s\"&%s&yearOfTreatment=%d',
+							  BACKEND_URL, predVars, this.state.depVar, this.state.treatment.label, 
+							  controlIdentities, this.state.yearOfTreatment)
+		console.log(url)
 		$.get(url, function(err, res){
 			if(err){
 				console.log(err)
 			}else{
-				//do something...
+				this.setState(_.extend({}, this.state, {result : res}))
 			}
 		})
 	}
@@ -47,27 +50,27 @@ export default class Sandbox extends React.Component{
 	setPredVar = (event) => {
 		if(event === null){
 			this.setState(_.extend({}, this.state, {
-				predVar : undefined,
-				depVars : [],
+				predVars : [],
+				depVar : undefined,
 				treatment : undefined,
 				controlIdentities : [],
-				yearOfTreatement : undefined,
+				yearOfTreatment : undefined,
 			}))
 		}else{
-			this.setState(_.extend({}, this.state, {predVar : event.value}))
+			this.setState(_.extend({}, this.state, {predVars : event}))
 		}
 	}
 
-	updateDepVars = (event) => {
+	setDepVar = (event) => {
 		if(event === null){
 			this.setState(_.extend({}, this.state, {
-				depVars : [],
+				depVar : undefined,
 				treatment : undefined,
 				controlIdentities : [],
-				yearOfTreatement : undefined,
+				yearOfTreatment : undefined,
 			}))
 		}else{
-			this.setState(_.extend({}, this.state, {depVars: event}))
+			this.setState(_.extend({}, this.state, {depVar: event.value}))
 		}
 	}
 
@@ -76,10 +79,10 @@ export default class Sandbox extends React.Component{
 			this.setState(_.extend({}, this.state, {
 				treatment : undefined,
 				controlIdentities : [],
-				yearOfTreatement : undefined,
+				yearOfTreatment : undefined,
 			}))
 		}else{
-			this.setState(_.extend({}, this.state, {treatment : event.value}))
+			this.setState(_.extend({}, this.state, {treatment : event}))
 		}
 	}
 
@@ -87,7 +90,7 @@ export default class Sandbox extends React.Component{
 		if(event === null){
 			this.setState(_.extend({}, this.state, {
 				controlIdentities : [],
-				yearOfTreatement : undefined,
+				yearOfTreatment : undefined,
 			}))
 		}else{
 			this.setState(_.extend({}, this.state, {controlIdentities : event}))
@@ -96,9 +99,9 @@ export default class Sandbox extends React.Component{
 
 	setYearOfTreatment = (event) => {
 		if(event === null){
-			this.setState(_.extend({}, this.state, {yearOfTreatement : undefined}))
+			this.setState(_.extend({}, this.state, {yearOfTreatment : undefined}))
 		}else{
-			this.setState(_.extend({}, this.state, {yearOfTreatement : event.value}))
+			this.setState(_.extend({}, this.state, {yearOfTreatment : event.value}))
 		}
 	}
 
@@ -112,23 +115,23 @@ export default class Sandbox extends React.Component{
 				    		<h3 style={{textAlign : 'center'}}>Predictor Variable</h3>
 					    	<Select
 					    		onChange={this.setPredVar}
-					    		options={policyStore.getMeasures()}
-					    		value={this.state.predVar}
+					    		options={policyStore.getDemographics()}
+					    		value={this.state.predVars}
+					    		multi
 					    	/>
 					    	<h3 style={{textAlign : 'center'}}>Dependent Variable</h3>
 					    	<Select
-					    		multi
-					    		onChange={this.updateDepVars}
-					    		options={policyStore.getDemographics()}
-					    		value={this.state.depVars}
-					    		disabled={this.state.predVar === undefined}
+					    		onChange={this.setDepVar}
+					    		options={policyStore.getMeasures()}
+					    		value={this.state.depVar}
+					    		disabled={this.state.predVars.length === 0}
 					    	/>
 					    	<h3 style={{textAlign : 'center'}}>Treatment</h3>
 					    	<Select
 					    		onChange={this.setTreatment}
 					    		options={this.states}
-					    		value={this.state.treatment}
-					    		disabled={this.state.depVars.length === 0}
+					    		value={this.state.treatment ? this.state.treatment.value : undefined}
+					    		disabled={this.state.depVar === undefined}
 					    	/>
 					    	<h3 style={{textAlign : 'center'}}>Control Identities</h3>
 					    	<Select
@@ -141,22 +144,22 @@ export default class Sandbox extends React.Component{
 					    	<h3 style={{textAlign : 'center'}}>Year of Treatment</h3>
 					    	<Select
 					    		onChange={this.setYearOfTreatment}
-					    		options={_.range(1990, 2016).map((y) => {return {value : y, label : y} }) }
-					    		value={this.state.yearOfTreatement}
+					    		options={_.range(1990, 2016).map((y) => {return{value:y,label:y}})}
+					    		value={this.state.yearOfTreatment}
 					    		disabled={this.state.controlIdentities.length === 0}	
 					    	/>
 					    	<Button 
 					    		bsStyle='primary' 
 					    		onClick={this.runSynth} 
 					    		style={{marginTop : 20}}
-					    		disabled={this.state.yearOfTreatement === undefined}
+					    		disabled={this.state.yearOfTreatment === undefined}
 					    	>
 					    		Run Synthetic Control
 					    	</Button>
 				    	</div>
 				    </div>
 				    <div style={{marginLeft : '30%'}}> 
-				    	
+				    
 				    </div>
 				</div>
 			</div>
