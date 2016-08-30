@@ -9,7 +9,7 @@ var child_process = require('child_process');
 var util = require('util')
 
 //Start `Rserve`
-const child = child_process.spawn('R', ['CMD', 'Rserve', '--no-save', '--RS-conf', 'rserve.config'])
+const child = child_process.spawn(process.env.R_PATH + '/R', ['CMD', 'Rserve', '--no-save', '--RS-conf', 'rserve.config'])
 
 child.stdout.on('data', (data) => {
   console.log(`stdout: ${data}`);
@@ -31,6 +31,41 @@ app.use(express.static(__dirname + '/../static/'));
 var port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 8082;
 var ip = process.env.OPENSHIFT_NODEJS_IP || "localhost";
 
+var health_outcomes = {
+  'children_in_poverty' : true
+ ,'adult_obesity' : true
+ ,'physical_inactivity' : true
+ ,'air_pollution_particulate_matter' : true
+ ,'unemployment_rate' : true
+ ,'sexually_transmitted_infections' : true
+ ,'preventable_hospital_stays' : true
+ ,'violent_crime_rate' : true
+ ,'alcohol_impaired_driving_deaths' : true
+ ,'uninsured' : true
+ ,'mammography_screening' : true
+ ,'premature_death' : true
+ ,'diabetic_monitoring' : true
+}
+
+
+//Get a distinct ordered array of years available
+app.get('/GetYears', function(req, res){
+  var table = req.query.table;
+  if(health_outcomes[table]){
+    db.query('SELECT DISTINCT start_year FROM ' + table + ' ORDER BY start_year;').then(function(data){
+      res.json(data.rows.map(function(x){return x.start_year}))
+    }).catch(function(err){
+      console.log(err)
+    })
+  }else{
+    db.query('SELECT DISTINCT year FROM ' + table + ' ORDER BY year;').then(function(data){
+      res.json(data.rows.map(function(x){return x.year}))
+    }).catch(function(err){
+      console.log(err)
+    })
+  }
+})
+
 app.get('/GetPolicyData', function(req, res){
   var table = req.query.policy
   var field = req.query.field
@@ -50,7 +85,13 @@ app.get('/GetPolicyData', function(req, res){
 
 app.get('/GetHealthOutcomes', function(req, res){
   var measure_name = req.query.measure_name;
-  var query = 'SELECT * FROM ' + measure_name + ' ORDER BY start_year;'
+  var year = req.query.year
+  var query = undefined;
+  if(year){
+    query = 'SELECT * FROM ' + measure_name + ' WHERE start_year = ' + year + ';'
+  }else{
+    query = 'SELECT * FROM ' + measure_name + ' ORDER BY start_year;'  
+  }
   db.query(query).then(
     function(data){
       res.json(data.rows)

@@ -4,6 +4,7 @@ import {Button} from 'react-bootstrap';
 import {policyStore} from '../stores/DataStore';
 import {states} from '../data/StateCodes';
 import util from 'util'
+import SynthResults from '../components/SynthResults';
 var _ = require('underscore')
 
 
@@ -11,6 +12,7 @@ const BACKEND_URL = process.env.NODE_ENV === 'production' ?
 					'http://sociome-ml9951.rhcloud.com/' : 
 					'http://localhost:8082/';
 
+				
 // TODO: multiple predictors and one dependant
 export default class Sandbox extends React.Component{
 	constructor(props){
@@ -23,9 +25,13 @@ export default class Sandbox extends React.Component{
 			years : [],
 			yearOfTreatment : undefined,
 		}
+		var exclude = {'AS' : true, 'DC' : true, 'FM' : true, 'GU' : true, 'MH' : true,
+					   'MP' : true, 'PW' : true, 'PR' : true, 'VI' : true}
 		this.states = []
 		for(var state in states){
-			this.states.push({value : states[state], label : state})
+			if(!exclude[states[state]]){
+				this.states.push({value : states[state], label : state})
+			}
 		}
 		this.states.sort((a, b) => a.label < b.label ? -1 : (a.label === b.label) ? 0 : 1)
 	}
@@ -37,13 +43,9 @@ export default class Sandbox extends React.Component{
 		var url = util.format('%sSynth?%s&depVar=\"%s\"&treatment=\"%s\"&%s&yearOfTreatment=%d',
 							  BACKEND_URL, predVars, this.state.depVar, this.state.treatment.label, 
 							  controlIdentities, this.state.yearOfTreatment)
-		console.log(url)
-		$.get(url, function(err, res){
-			if(err){
-				console.log(err)
-			}else{
-				this.setState(_.extend({}, this.state, {result : res}))
-			}
+		$.get(url, (res) => {
+			console.log(res)
+			this.setState(_.extend({}, this.state, {results : res}))
 		})
 	}
 
@@ -139,6 +141,20 @@ export default class Sandbox extends React.Component{
 					    		options={this.states}
 					    		disabled={this.state.treatment === undefined}
 					    		value={this.state.controlIdentities}
+					    		filterOptions={(options) => {
+					    			return options.filter((option) => {
+					    				if(this.state.treatment && option.value === this.state.treatment.value){
+					    					return false
+					    				}else{
+					    					for(var i = 0; this.state.controlIdentities && i < this.state.controlIdentities.length; i++){
+					    						if(this.state.controlIdentities[i].value === option.value){
+					    							return false;
+					    						}
+					    					}
+					    					return true;
+					    				}
+					    			})
+					    		}}
 					    		multi
 					    	/>
 					    	<h3 style={{textAlign : 'center'}}>Year of Treatment</h3>
@@ -159,7 +175,11 @@ export default class Sandbox extends React.Component{
 				    	</div>
 				    </div>
 				    <div style={{marginLeft : '30%'}}> 
-				    
+				    	{
+				    		this.state.results ? 
+				    			<SynthResults results={this.state.results} states={this.state.controlIdentities}/> : 
+				    			null
+				    	}
 				    </div>
 				</div>
 			</div>
