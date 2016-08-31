@@ -7,17 +7,8 @@ var cors = require('cors');
 var rio = require('rio');
 var child_process = require('child_process');
 var util = require('util')
-
-//Start `Rserve`
-const child = child_process.spawn(process.env.R_PATH + '/R', ['CMD', 'Rserve', '--no-save', '--RS-conf', 'rserve.config'])
-
-child.stdout.on('data', (data) => {
-  console.log(`stdout: ${data}`);
-});
-
-child.stderr.on('data', (data) => {
-  console.log(`stderr: ${data}`);
-});
+var rimraf = require('rimraf')
+var net = require('net')
 
 var db = new pg.Client(process.env.OPENSHIFT_POSTGRESQL_DB_URL ? 
                        process.env.OPENSHIFT_POSTGRESQL_DB_URL : {database : 'sociome_db'});
@@ -115,11 +106,18 @@ app.get('/Synth', function(req, res){
   var command = util.format('runSynth(c(%s), %s, %s, c(%s), %d)', predVars.join(','), 
     depVar, treatment, controlIdentities.join(','), yearOfTreatment)
 
-  rio.$e({command : command}).then(function(result){
-    res.json(result)
-  }).catch(function(err){
-    console.log(err)
-    res.json(err)
+  console.log('Synth')
+  rio.e({
+    command : command,
+    path : path.join(__dirname, 'rserve.sock'),
+    callback : function(err, result){
+      if(err){
+        console.log(err);
+        res.json(err);
+      }else{
+        res.json(result);
+      }
+    }
   })
 })
 
@@ -141,17 +139,53 @@ app.listen(port, ip, function (err) {
 	console.log('Listening at http://localhost:8082');
 });
 
-function shutdown(err){
-  if(err) console.log(err)
-  rio.shutdown({callback : function(err, res){
-    process.exit();
-  }});
-}
 
 // Shutdown `Rserve`
+function shutdown(err){
+  if(err) console.log(err)
+  rio.shutdown({
+    callback : function(err, res){
+      process.exit();
+    },
+    path : path.join(__dirname, 'rserve.sock'),
+  });
+}
+
 process.on('exit', shutdown);
 process.on('SIGINT', shutdown);
 process.on('uncaughtException', shutdown);
+
+// Setup the communication socket for Rserve:
+
+// Delete the old socket file if it exists.  Otherwise this gives
+// us an EADDRINUSE error
+rimraf.sync('./rserve.sock')
+
+var rserveSocket = net.createServer(function(c) {
+    console.log('Rserve socket connected!');
+});
+rserveSocket.listen('./rserve.sock', function() { //'listening' listener
+    console.log('server bound');
+
+    const child = child_process.spawn(process.env.R_PATH + '/R', 
+      ['CMD', 'Rserve', '--no-save', '--RS-conf', 'rserve.config', '--RS-socket', path.join(__dirname, 'rserve.sock')])
+
+    child.stdout.on('data', (data) => {
+      console.log(`stdout: ${data}`);
+    });
+
+    child.stderr.on('data', (data) => {
+      console.log(`stderr: ${data}`);
+    });
+});
+
+
+
+
+
+
+
+
 
 
 

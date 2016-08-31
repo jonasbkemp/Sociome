@@ -2,8 +2,6 @@ import React, {Component} from 'react';
 import Select from 'react-select';
 import ZoomMap from './ZoomMap';
 var _ = require('underscore')
-var d3 = require('d3')
-var topojson = require('topojson')
 
 const BACKEND_URL = process.env.NODE_ENV === 'production' ? 
 					'http://sociome-ml9951.rhcloud.com/' : 
@@ -27,13 +25,7 @@ export default class CompareMap extends Component{
 	constructor(props){
 		super(props)
 
-		this.active = d3.select(null)
-		this.width = 650;
-		this.height = 400;
-		var projection = d3.geoAlbersUsa().scale(750).translate([this.width/2, this.height/2])
-
 		this.state = {
-			projection : projection,
 			datasets : [{value : 'policy', label : 'Policy'}, {value : 'health-outcomes', label : 'Health Outcomes'}],
 			dataset : undefined,
 		}
@@ -45,14 +37,11 @@ export default class CompareMap extends Component{
 		}))
 	}
 
-
-
 	changePolicyField = (event) => {
-		console.log(BACKEND_URL + 'GetPolicyData?policy=' + this.state.feature.value + '&field=' + event.value)
-		$.get(BACKEND_URL + 'GetPolicyData?policy=' + this.state.feature.value + '&field=' + event.value).then((data) => {
+		$.get(BACKEND_URL + 'GetYears?table=' + this.state.feature.value).then((data) => {
 			this.setState(_.extend({}, this.state, {
-				data : data,
-				field : event,
+				years : data.map((y) => {return {value:y, label:y}}), 
+				field : event
 			}))
 		})
 	}
@@ -68,14 +57,34 @@ export default class CompareMap extends Component{
 					data : undefined,
 				}))
 			}else{
-				console.log(BACKEND_URL + 'GetHealthOutcomes?measure_name=' + event.value)
-				$.get(BACKEND_URL + 'GetHealthOutcomes?measure_name=' + event.value).then((data) => {
+				$.get(BACKEND_URL+'GetYears?table=' + event.value).then((data) => {
 					this.setState(_.extend({}, this.state, {
+						years : data.map((y) => {return{value:y,label:y}}),
 						feature : event,
-						data : data
-					}))	
+					}))
 				})
 			}	
+		}
+	}
+
+	changeYear = (event) => {
+		if(event === null){
+			this.setState(_.extend({}, this.state, {year : undefined}));
+		}else{
+			if(this.state.dataset === 'health-outcomes'){
+				console.log(BACKEND_URL + 'GetHealthOutcomes?measure_name=' + this.state.feature.value + 
+					'&year=' + event.value)
+				$.get(BACKEND_URL + 'GetHealthOutcomes?measure_name=' + this.state.feature.value + 
+					'&year=' + event.value).then((data) => {
+					this.setState(_.extend({}, this.state, {data : data,year:event}))	
+				})
+			}else if(this.state.dataset === 'policy'){
+				$.get(BACKEND_URL + 'GetPolicyData?policy=' + this.state.feature.value + '&field=' + this.state.field.value).then((data) => {
+					this.setState(_.extend({}, this.state, {data : data,year:event}))
+				})
+			}else{
+				throw "Unrecognized dataset in changeYear";
+			}
 		}
 	}
 
@@ -87,23 +96,14 @@ export default class CompareMap extends Component{
 		}
 	}
 
-	getYear = () =>{
-		if(this.state.dataset === 'policy' && this.state.data){
-			return this.state.data[0].year
-		}else if(this.state.dataset === 'health-outcomes' && this.state.data){
-			return this.state.data[0].start_year;
-		}
-		return undefined;
-	}
-
 	render(){
 		console.log(this.state.field)
 		return(
 			<div style={{width : '100%', height : '100%'}}>
 				<ZoomMap {...this.props} dataset={this.state.dataset} 
 						 feature={this.state.feature} policyField={this.state.field}
-						 data={this.state.data} year={this.getYear()}/>
-				<div style={styles.dropdowns}>
+						 data={this.state.data} year={this.state.year ? this.state.year.value : undefined}/>
+				<div style={{width : '50%', margin : '0 auto'}}>
 					<h3 class="text-center">Choose Data Set</h3>
 					<Select 
 						value={this.state.dataset}
@@ -113,7 +113,9 @@ export default class CompareMap extends Component{
 					<Select
 						options={this.getFeatures()}
 						value={this.state.feature ? this.state.feature.value : undefined}
-						onChange={this.changeFeature}/>
+						onChange={this.changeFeature}
+						disabled={this.state.dataset === undefined}
+					/>
 					{
 						this.state.dataset === 'policy' ? 
 						<div>
@@ -127,16 +129,18 @@ export default class CompareMap extends Component{
 						</div>
 						: null
 					}
+					<h3 class="text-center">Choose Year</h3>
+					<Select
+						options={this.state.years}
+						value={this.state.year ? this.state.year.value : undefined}
+						onChange={this.changeYear}
+						disabled={this.state.dataset === undefined || 
+								 (this.state.dataset === 'policy' && this.state.field === undefined) ||
+								 (this.state.dataset === 'health-outcomes' && this.state.feature === undefined)}
+					/>
 				</div>
 				<div style={{height : 200}}></div>
 			</div>
 		)
-	}
-}
-
-const styles = {
-	dropdowns : {
-		width : '50%',
-		margin : '0 auto',
 	}
 }

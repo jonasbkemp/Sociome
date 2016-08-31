@@ -5,6 +5,8 @@ import {policyStore} from '../stores/DataStore';
 import {states} from '../data/StateCodes';
 import util from 'util'
 import SynthResults from '../components/SynthResults';
+import Spinner from 'react-spinkit';
+
 var _ = require('underscore')
 
 
@@ -43,9 +45,10 @@ export default class Sandbox extends React.Component{
 		var url = util.format('%sSynth?%s&depVar=\"%s\"&treatment=\"%s\"&%s&yearOfTreatment=%d',
 							  BACKEND_URL, predVars, this.state.depVar, this.state.treatment.label, 
 							  controlIdentities, this.state.yearOfTreatment)
+		this.setState(_.extend({}, this.state, {runningSynth : true}))
 		$.get(url, (res) => {
 			console.log(res)
-			this.setState(_.extend({}, this.state, {results : res}))
+			this.setState(_.extend({}, this.state, {runningSynth : false, results : res}))
 		})
 	}
 
@@ -176,9 +179,11 @@ export default class Sandbox extends React.Component{
 				    </div>
 				    <div style={{marginLeft : '30%'}}> 
 				    	{
-				    		this.state.results ? 
-				    			<SynthResults results={this.state.results} states={this.state.controlIdentities}/> : 
-				    			null
+				    		this.state.runningSynth ? 
+    							<Spinner spinnerName='double-bounce'/> :
+    							this.state.results ? 
+				    				<SynthResults results={this.state.results} states={this.state.controlIdentities}/> : 
+				    				null
 				    	}
 				    </div>
 				</div>
