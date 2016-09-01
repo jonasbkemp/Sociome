@@ -15,7 +15,6 @@ const BACKEND_URL = process.env.NODE_ENV === 'production' ?
 					'http://localhost:8082/';
 
 				
-// TODO: multiple predictors and one dependant
 export default class Sandbox extends React.Component{
 	constructor(props){
 		super(props)
@@ -112,9 +111,9 @@ export default class Sandbox extends React.Component{
 
 	render(){
 		return(
-			<div>
+			<div style={{width : '100%', height : '100%'}}>
 				<h1 style={{textAlign : 'center'}}>Synthetic Control</h1>
-				<div style={{width : "100%", overflow: "hidden"}}>
+				<div style={{width : "100%", height : '100%', overflow: "hidden"}}>
 				    <div style={{width : '30%', float : 'left', paddingTop : '5%'}}> 
 				    	<div style={{width : '80%', margin : '0 auto'}}>
 				    		<h3 style={{textAlign : 'center'}}>Predictor Variable</h3>
@@ -177,13 +176,11 @@ export default class Sandbox extends React.Component{
 					    	</Button>
 				    	</div>
 				    </div>
-				    <div style={{marginLeft : '30%'}}> 
+				    <div style={{width : '100%', height : '100%', marginLeft : '30%'}}> 
 				    	{
 				    		this.state.runningSynth ? 
     							<Spinner spinnerName='double-bounce'/> :
-    							this.state.results ? 
-				    				<SynthResults results={this.state.results} states={this.state.controlIdentities}/> : 
-				    				null
+    							<SynthResults results={this.state.results} states={this.state.controlIdentities}/>
 				    	}
 				    </div>
 				</div>
