@@ -11,8 +11,6 @@ export default class SynthResults extends React.Component{
     }
 
 	render(){
-
-
 		var data = []
 		for(var i = 0; i < this.props.states.length; i++){
 			var obj = {name : this.props.states[i].label, synth : this.props.results ? this.props.results[i] : 0.0}
@@ -20,8 +18,8 @@ export default class SynthResults extends React.Component{
 		}
 
 		return(
-			<div style={{width : '100%', height : '100%', paddingTop : '5%'}}>
-				<ResponsiveContainer  width='60%' height='30%'>
+			<div style={{width : '70%', height : '100%', paddingTop : '10%'}}>
+				<ResponsiveContainer  width='90%' height='40%'>
 					<BarChart data={data}>
 						<Bar key='name' dataKey='synth' fill='#8884d8'/>
 						<Tooltip/>

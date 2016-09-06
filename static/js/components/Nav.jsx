@@ -44,6 +44,14 @@ export default class Nav extends React.Component {
                   Sandbox
               </BS.MenuItem>
             </LinkContainer>
+            <LinkContainer eventKey={1.4} to="/diff-in-diff">
+              <BS.MenuItem
+                  id="diff-in-diff" 
+                  key="diff-in-diff" 
+                  active={this.state.explore === 'diff-in-diff'}>
+                  Differences-In-Differences
+              </BS.MenuItem>
+            </LinkContainer>
           </BS.NavDropdown>
           <LinkContainer to="/purpose">
             <BS.NavItem eventKey={2}>

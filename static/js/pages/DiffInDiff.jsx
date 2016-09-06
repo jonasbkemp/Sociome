@@ -2,17 +2,111 @@ import React from 'react';
 import Select from 'react-select';
 import {Button} from 'react-bootstrap';
 import {policyStore} from '../stores/DataStore';
+import {states} from '../data/StateCodes';
+import util from 'util'
+import SynthResults from '../components/SynthResults';
+import Spinner from 'react-spinkit';
+
 var _ = require('underscore')
 
-export default class DiffInDiff extends React.Component{
 
+const BACKEND_URL = process.env.NODE_ENV === 'production' ? 
+					'http://sociome-ml9951.rhcloud.com/' : 
+					'http://localhost:8082/';
+
+				
+export default class DiffInDiff extends React.Component{
 	constructor(props){
 		super(props)
-		this.state = {}
+		this.state = {
+			predVars : [],
+			depVar : undefined,
+			treatment : undefined,
+			controlIdentities : [],
+			years : [],
+			yearOfTreatment : undefined,
+		}
+		var exclude = {'AS' : true, 'DC' : true, 'FM' : true, 'GU' : true, 'MH' : true,
+					   'MP' : true, 'PW' : true, 'PR' : true, 'VI' : true}
+		this.states = []
+		for(var state in states){
+			if(!exclude[states[state]]){
+				this.states.push({value : states[state], label : state})
+			}
+		}
+		this.states.sort((a, b) => a.label < b.label ? -1 : (a.label === b.label) ? 0 : 1)
 	}
 
-	setControl = (event) => {
-		this.setState({control : event})
+	runSynth = (event) => {
+		var component = this
+		var predVars = this.state.predVars.map((v) => 'predVars=\"' + v.value + "\"").join('&')
+		var controlIdentities = this.state.controlIdentities.map((i) => 'controlIdentities=\"' + i.label + '\"').join('&')
+		var url = util.format('%sSynth?%s&depVar=\"%s\"&treatment=\"%s\"&%s&yearOfTreatment=%d',
+							  BACKEND_URL, predVars, this.state.depVar, this.state.treatment.label, 
+							  controlIdentities, this.state.yearOfTreatment)
+		this.setState(_.extend({}, this.state, {runningSynth : true}))
+		$.get(url, (res) => {
+			console.log(res)
+			this.setState(_.extend({}, this.state, {runningSynth : false, results : res}))
+		})
+	}
+
+	setPredVar = (event) => {
+		if(event === null){
+			this.setState(_.extend({}, this.state, {
+				predVars : [],
+				depVar : undefined,
+				treatment : undefined,
+				controlIdentities : [],
+				yearOfTreatment : undefined,
+			}))
+		}else{
+			this.setState(_.extend({}, this.state, {predVars : event}))
+		}
+	}
+
+	setDepVar = (event) => {
+		if(event === null){
+			this.setState(_.extend({}, this.state, {
+				depVar : undefined,
+				treatment : undefined,
+				controlIdentities : [],
+				yearOfTreatment : undefined,
+			}))
+		}else{
+			this.setState(_.extend({}, this.state, {depVar: event.value}))
+		}
+	}
+
+	setTreatment = (event) => {
+		if(event === null){
+			this.setState(_.extend({}, this.state, {
+				treatment : undefined,
+				controlIdentities : [],
+				yearOfTreatment : undefined,
+			}))
+		}else{
+			this.setState(_.extend({}, this.state, {treatment : event}))
+		}
+	}
+
+	updateControlIdentities = (event) => {
+		if(event === null){
+			this.setState(_.extend({}, this.state, {
+				controlIdentities : [],
+				yearOfTreatment : undefined,
+			}))
+		}else{
+			this.setState(_.extend({}, this.state, {controlIdentities : event}))
+		}
+	}
+
+	setYearOfTreatment = (event) => {
+		if(event === null){
+			this.setState(_.extend({}, this.state, {yearOfTreatment : undefined}))
+		}else{
+			this.setState(_.extend({}, this.state, {yearOfTreatment : event.value}))
+		}
 	}
 
 	render(){
@@ -22,28 +116,52 @@ export default class DiffInDiff extends React.Component{
 				<div style={{width : "100%", overflow: "hidden"}}>
 				    <div style={{width : '30%', float : 'left', paddingTop : '5%'}}> 
 				    	<div style={{width : '80%', margin : '0 auto'}}>
-
-				    		<h3 style={{textAlign : 'center'}}>Control</h3>
+				    		<h3 style={{textAlign : 'center'}}>Predictor Variables</h3>
 					    	<Select
-					    		onChange={this.setControl}
-					    		options={policyStore.getMeasures()}
+					    		onChange={this.setPredVar}
+					    		options={policyStore.getDemographics()}
+					    		value={this.state.predVars}
+					    		multi
 					    	/>
-
-				    		<h3 style={{textAlign : 'center'}}>Treatment Year</h3>
+					    	<h3 style={{textAlign : 'center'}}>Dependent Variable</h3>
 					    	<Select
-					    		disabled={this.state.dataset === undefined}
+					    		onChange={this.setDepVar}
+					    		options={policyStore.getMeasures()}
+					    		value={this.state.depVar}
+					    		disabled={this.state.predVars.length === 0}
+					    	/>
+					    	<h3 style={{textAlign : 'center'}}>Treatment Group</h3>
+					    	<Select
+					    		onChange={this.setTreatment}
+					    		options={this.states}
+					    		value={this.state.treatment ? this.state.treatment.value : undefined}
+					    		disabled={this.state.depVar === undefined}
+					    	/>
+					    	<h3 style={{textAlign : 'center'}}>Year of Treatment</h3>
+					    	<Select
+					    		onChange={this.setYearOfTreatment}
+					    		options={_.range(1990, 2016).map((y) => {return{value:y,label:y}})}
+					    		value={this.state.yearOfTreatment}
+					    		disabled={this.state.controlIdentities.length === 0}	
 					    	/>
 					    	<Button 
 					    		bsStyle='primary' 
+					    		onClick={this.runSynth} 
 					    		style={{marginTop : 20}}
-					    		disabled={this.state.treatmentYear === undefined}
+					    		disabled={this.state.yearOfTreatment === undefined}
 					    	>
-					    		Run Difference in Differences
+					    		Run Synthetic Control
 					    	</Button>
 				    	</div>
 				    </div>
 				    <div style={{marginLeft : '30%'}}> 
-				    	
+				    	{
+				    		this.state.runningSynth ? 
+    							<Spinner spinnerName='double-bounce'/> :
+    							this.state.results ? 
+				    				<SynthResults results={this.state.results} states={this.state.controlIdentities}/> : 
+				    				null
+				    	}
 				    </div>
 				</div>
 			</div>

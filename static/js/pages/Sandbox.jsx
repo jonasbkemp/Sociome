@@ -122,6 +122,7 @@ export default class Sandbox extends React.Component{
 					    		options={policyStore.getDemographics()}
 					    		value={this.state.predVars}
 					    		multi
+					    		tabSelectsValue={false}
 					    	/>
 					    	<h3 style={{textAlign : 'center'}}>Dependent Variable</h3>
 					    	<Select
@@ -129,6 +130,7 @@ export default class Sandbox extends React.Component{
 					    		options={policyStore.getMeasures()}
 					    		value={this.state.depVar}
 					    		disabled={this.state.predVars.length === 0}
+					    		tabSelectsValue={false}
 					    	/>
 					    	<h3 style={{textAlign : 'center'}}>Treatment</h3>
 					    	<Select
@@ -136,6 +138,7 @@ export default class Sandbox extends React.Component{
 					    		options={this.states}
 					    		value={this.state.treatment ? this.state.treatment.value : undefined}
 					    		disabled={this.state.depVar === undefined}
+					    		tabSelectsValue={false}
 					    	/>
 					    	<h3 style={{textAlign : 'center'}}>Control Identities</h3>
 					    	<Select
@@ -143,6 +146,7 @@ export default class Sandbox extends React.Component{
 					    		options={this.states}
 					    		disabled={this.state.treatment === undefined}
 					    		value={this.state.controlIdentities}
+					    		tabSelectsValue={false}
 					    		filterOptions={(options) => {
 					    			return options.filter((option) => {
 					    				if(this.state.treatment && option.value === this.state.treatment.value){
@@ -162,9 +166,11 @@ export default class Sandbox extends React.Component{
 					    	<h3 style={{textAlign : 'center'}}>Year of Treatment</h3>
 					    	<Select
 					    		onChange={this.setYearOfTreatment}
+					    		tabSelectsValue={false}
 					    		options={_.range(1990, 2016).map((y) => {return{value:y,label:y}})}
 					    		value={this.state.yearOfTreatment}
 					    		disabled={this.state.controlIdentities.length === 0}	
+					    		menuBuffer={500}
 					    	/>
 					    	<Button 
 					    		bsStyle='primary' 
@@ -174,6 +180,8 @@ export default class Sandbox extends React.Component{
 					    	>
 					    		Run Synthetic Control
 					    	</Button>
+					    	{/*Add some spacing at the bottom to account for the dropdown of the last menu*/}
+					    	<div style={{height : 120}}></div>
 				    	</div>
 				    </div>
 				    <div style={{width : '100%', height : '100%', marginLeft : '30%'}}> 
