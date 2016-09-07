@@ -42,15 +42,20 @@ runSynth <- function(predVars, depVar, treatment, controlIdentities, yearOfTreat
 	conn <- dbConnect(PostgreSQL(), host=host, dbname=db_name, user=user,password=pwd, port=port);
 
 	#Do an INNER JOIN on the health outcome and demographics data to get them aligned on state and year
-	query <- paste('SELECT demographics.year, demographics.state, ', depVar, '.statecode',
+	query <- paste('SELECT demographics.year, demographics.state_name, ', depVar, '.statecode',
 			 paste(sapply(predVars, function(p){return(paste(',demographics.', p, collapse=''));}), collapse=''), 
 			 ',', depVar, '.rawvalue as ', depVar, ' FROM demographics INNER JOIN ', depVar, ' ON demographics.year=', depVar, '.start_year AND ',
-			 'demographics.state = ', depVar, '.county WHERE demographics.state <> \'District of Columbia\' ORDER BY state')
+			 'demographics.state_name = ', depVar, '.county WHERE demographics.fips_county_code = 0 AND ', 
+			 'demographics.state_name <> \'District of Columbia\' ORDER BY state')
 
 	#print(query)
 	dataframe <- dbGetQuery(conn, query)
 
+	years = sort(unique(dataframe[1])$year)
+	priorYears = years[years < yearOfTreatment]
+
 	print('------Args-------')
+	print(predVars)
 	print(treatment)
 	print(controlIdentities)
 	print('------------------')
@@ -64,9 +69,9 @@ runSynth <- function(predVars, depVar, treatment, controlIdentities, yearOfTreat
 		time.variable=c("year"),
 		treatment.identifier=stateCodes[[treatment]],
 		controls.identifier=controlIdentities,
-		unit.names.variable=c("state"),
-		time.predictors.prior = c(2006:2007),
-		time.optimize.ssr = c(2006:2007)
+		unit.names.variable=c("state_name"),
+		time.predictors.prior = priorYears, 
+		time.optimize.ssr = priorYears      
 	)
 
 	res = synth(dataprep.out)
@@ -75,10 +80,10 @@ runSynth <- function(predVars, depVar, treatment, controlIdentities, yearOfTreat
 
 # Sample for parameters for testing purposes
 testSynth <- function(){
-	predVars <- c("pop_num", "age_lt_18")
+	predVars <- c("population_white", "population_am_ind_alaska_nat")
 	depVar <- "adult_obesity"
 	treatment <- "Alaska"
-	controlIdentities <- c("Alabama", "Alaska")
+	controlIdentities <- c("Alabama", "Wisconsin")
 	yearOfTreatment <- 2003
 	return(runSynth(predVars, depVar, treatment, controlIdentities, yearOfTreatment))
 }
