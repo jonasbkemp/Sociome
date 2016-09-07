@@ -11,8 +11,8 @@ var _ = require('underscore')
 
 
 const BACKEND_URL = process.env.NODE_ENV === 'production' ? 
-					'http://sociome-ml9951.rhcloud.com/' : 
-					'http://localhost:8082/';
+					'http://sociome-ml9951.rhcloud.com' : 
+					'http://localhost:8082';
 
 				
 export default class Sandbox extends React.Component{
@@ -22,7 +22,7 @@ export default class Sandbox extends React.Component{
 			predVars : [],
 			depVar : undefined,
 			treatment : undefined,
-			controlIdentities : [],
+			controlIdentifiers : [],
 			years : [],
 			yearOfTreatment : undefined,
 		}
@@ -38,12 +38,11 @@ export default class Sandbox extends React.Component{
 	}
 
 	runSynth = (event) => {
-		var component = this
-		var predVars = this.state.predVars.map((v) => 'predVars=\"' + v.value + "\"").join('&')
-		var controlIdentities = this.state.controlIdentities.map((i) => 'controlIdentities=\"' + i.label + '\"').join('&')
-		var url = util.format('%sSynth?%s&depVar=\"%s\"&treatment=\"%s\"&%s&yearOfTreatment=%d',
-							  BACKEND_URL, predVars, this.state.depVar, this.state.treatment.label, 
-							  controlIdentities, this.state.yearOfTreatment)
+		var predVars = this.state.predVars.map((v) => `predVars=\"${v.value}\"`).join('&')
+		var controlIdentifiers = this.state.controlIdentifiers.map((i) => `controlIdentifiers=\"${i.label}\"`).join('&')
+		var url = `${BACKEND_URL}/Synth?${predVars}&depVar=\"${this.state.depVar}\"&treatment=\"${this.state.treatment.label}\"
+&${controlIdentifiers}&yearOfTreatment=${this.state.yearOfTreatment}`
+		console.log(url)
 		this.setState(_.extend({}, this.state, {runningSynth : true}))
 		$.get(url, (res) => {
 			console.log(res)
@@ -57,11 +56,12 @@ export default class Sandbox extends React.Component{
 				predVars : [],
 				depVar : undefined,
 				treatment : undefined,
-				controlIdentities : [],
+				controlIdentifiers : [],
 				yearOfTreatment : undefined,
+				results : undefined,
 			}))
 		}else{
-			this.setState(_.extend({}, this.state, {predVars : event}))
+			this.setState(_.extend({}, this.state, {predVars : event, results : undefined}))
 		}
 	}
 
@@ -70,11 +70,13 @@ export default class Sandbox extends React.Component{
 			this.setState(_.extend({}, this.state, {
 				depVar : undefined,
 				treatment : undefined,
-				controlIdentities : [],
+				controlIdentifiers : [],
 				yearOfTreatment : undefined,
+				results : undefined,
 			}))
 		}else{
-			this.setState(_.extend({}, this.state, {depVar: event.value}))
+			this.setState(_.extend({}, this.state, {depVar: event.value, results : undefined}))
+			this.getYears(event.value)
 		}
 	}
 
@@ -82,31 +84,45 @@ export default class Sandbox extends React.Component{
 		if(event === null){
 			this.setState(_.extend({}, this.state, {
 				treatment : undefined,
-				controlIdentities : [],
+				controlIdentifiers : [],
 				yearOfTreatment : undefined,
+				results : undefined,
 			}))
 		}else{
-			this.setState(_.extend({}, this.state, {treatment : event}))
+			this.setState(_.extend({}, this.state, {treatment : event, results : undefined}))
 		}
 	}
 
-	updateControlIdentities = (event) => {
+	updateControlIdentifiers = (event) => {
 		if(event === null){
 			this.setState(_.extend({}, this.state, {
-				controlIdentities : [],
+				controlIdentifiers : [],
 				yearOfTreatment : undefined,
+				results : undefined
 			}))
 		}else{
-			this.setState(_.extend({}, this.state, {controlIdentities : event}))
+			this.setState(_.extend({}, this.state, {controlIdentifiers : event, results : undefined}))
 		}
 	}
 
 	setYearOfTreatment = (event) => {
 		if(event === null){
-			this.setState(_.extend({}, this.state, {yearOfTreatment : undefined}))
+			this.setState(_.extend({}, this.state, {yearOfTreatment : undefined, results : undefined}))
 		}else{
-			this.setState(_.extend({}, this.state, {yearOfTreatment : event.value}))
+			this.setState(_.extend({}, this.state, {yearOfTreatment : event.value, results : undefined}))
 		}
+	}
+
+	getYears = (depVar) => {
+		var predVars = this.state.predVars.map((pv) => `predVars=${pv.value}`).join('&')
+		$.get(`${BACKEND_URL}/SynthGetYears?depVar=${depVar}&${predVars}`).then((years) => {
+			var options = []
+			// Start at 1 because we need at least one year prior for pre-treatment years
+			for(var i = 1; i < years.length; i++){
+				options.push({label : years[i], value : years[i]})
+			}
+			this.setState(_.extend({}, this.state, {years : options}))
+		})
 	}
 
 	render(){
@@ -140,20 +156,20 @@ export default class Sandbox extends React.Component{
 					    		disabled={this.state.depVar === undefined}
 					    		tabSelectsValue={false}
 					    	/>
-					    	<h3 style={{textAlign : 'center'}}>Control Identities</h3>
+					    	<h3 style={{textAlign : 'center'}}>Control Identifiers</h3>
 					    	<Select
-					    		onChange={this.updateControlIdentities}
+					    		onChange={this.updateControlIdentifiers}
 					    		options={this.states}
 					    		disabled={this.state.treatment === undefined}
-					    		value={this.state.controlIdentities}
+					    		value={this.state.controlIdentifiers}
 					    		tabSelectsValue={false}
 					    		filterOptions={(options) => {
 					    			return options.filter((option) => {
 					    				if(this.state.treatment && option.value === this.state.treatment.value){
 					    					return false
 					    				}else{
-					    					for(var i = 0; this.state.controlIdentities && i < this.state.controlIdentities.length; i++){
-					    						if(this.state.controlIdentities[i].value === option.value){
+					    					for(var i = 0; this.state.controlIdentifiers && i < this.state.controlIdentifiers.length; i++){
+					    						if(this.state.controlIdentifiers[i].value === option.value){
 					    							return false;
 					    						}
 					    					}
@@ -167,9 +183,9 @@ export default class Sandbox extends React.Component{
 					    	<Select
 					    		onChange={this.setYearOfTreatment}
 					    		tabSelectsValue={false}
-					    		options={_.range(1990, 2016).map((y) => {return{value:y,label:y}})}
+					    		options={this.state.years}
 					    		value={this.state.yearOfTreatment}
-					    		disabled={this.state.controlIdentities.length === 0}	
+					    		disabled={this.state.controlIdentifiers.length === 0}	
 					    		menuBuffer={500}
 					    	/>
 					    	<Button 
@@ -188,7 +204,7 @@ export default class Sandbox extends React.Component{
 				    	{
 				    		this.state.runningSynth ? 
     							<Spinner spinnerName='double-bounce'/> :
-    							<SynthResults results={this.state.results} states={this.state.controlIdentities}/>
+    							<SynthResults results={this.state.results} states={this.state.controlIdentifiers}/>
 				    	}
 				    </div>
 				</div>

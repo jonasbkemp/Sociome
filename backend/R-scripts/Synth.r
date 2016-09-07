@@ -36,17 +36,20 @@ conn <- dbConnect(PostgreSQL(), host=host, dbname=db_name, user=user,password=pw
 # predVars - demographics data (1 or more)
 # depVar - health outcomes data (1)
 # treatment - state that receives treatment
-# controlIdentities - states that never implemented policy
+# controlIdentifiers - states that never implemented policy
 # yearOfTreatment - year ot treatment
-runSynth <- function(predVars, depVar, treatment, controlIdentities, yearOfTreatment){
+runSynth <- function(predVars, depVar, treatment, controlIdentifiers, yearOfTreatment){
 	conn <- dbConnect(PostgreSQL(), host=host, dbname=db_name, user=user,password=pwd, port=port);
+
+	nullCond <- paste(sapply(predVars, function(p){return(paste('demographics.', p, ' IS NOT NULL', collapse=''));}), collapse=' AND ')
 
 	#Do an INNER JOIN on the health outcome and demographics data to get them aligned on state and year
 	query <- paste('SELECT demographics.year, demographics.state_name, ', depVar, '.statecode',
 			 paste(sapply(predVars, function(p){return(paste(',demographics.', p, collapse=''));}), collapse=''), 
 			 ',', depVar, '.rawvalue as ', depVar, ' FROM demographics INNER JOIN ', depVar, ' ON demographics.year=', depVar, '.start_year AND ',
 			 'demographics.state_name = ', depVar, '.county WHERE demographics.fips_county_code = 0 AND ', 
-			 'demographics.state_name <> \'District of Columbia\' ORDER BY state')
+			 nullCond, ' AND ', depVar, '.rawvalue IS NOT NULL',
+			 ' AND demographics.state_name <> \'District of Columbia\' ORDER BY state')
 
 	#print(query)
 	dataframe <- dbGetQuery(conn, query)
@@ -57,9 +60,9 @@ runSynth <- function(predVars, depVar, treatment, controlIdentities, yearOfTreat
 	print('------Args-------')
 	print(predVars)
 	print(treatment)
-	print(controlIdentities)
+	print(controlIdentifiers)
 	print('------------------')
-
+	
 	dataprep.out <- dataprep(
 		foo=dataframe,
 		predictors=c(predVars),
@@ -68,7 +71,7 @@ runSynth <- function(predVars, depVar, treatment, controlIdentities, yearOfTreat
 		unit.variable=c("statecode"),
 		time.variable=c("year"),
 		treatment.identifier=stateCodes[[treatment]],
-		controls.identifier=controlIdentities,
+		controls.identifier=controlIdentifiers,
 		unit.names.variable=c("state_name"),
 		time.predictors.prior = priorYears, 
 		time.optimize.ssr = priorYears      
@@ -80,12 +83,12 @@ runSynth <- function(predVars, depVar, treatment, controlIdentities, yearOfTreat
 
 # Sample for parameters for testing purposes
 testSynth <- function(){
-	predVars <- c("population_white", "population_am_ind_alaska_nat")
-	depVar <- "adult_obesity"
-	treatment <- "Alaska"
-	controlIdentities <- c("Alabama", "Wisconsin")
-	yearOfTreatment <- 2003
-	return(runSynth(predVars, depVar, treatment, controlIdentities, yearOfTreatment))
+	predVars <- c("population_white", "population_wh_hisp_latino")
+	depVar <- "air_pollution_particulate_matter"
+	treatment <- "Minnesota"
+	controlIdentifiers <- c("Arizona", "California", "Delaware", "Georgia")
+	yearOfTreatment <- 2007
+	return(runSynth(predVars, depVar, treatment, controlIdentifiers, yearOfTreatment))
 }
 
 

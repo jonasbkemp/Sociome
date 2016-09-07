@@ -38,6 +38,20 @@ var health_outcomes = {
  ,'diabetic_monitoring' : true
 }
 
+app.get('/SynthGetYears', function(req, res){
+  var depVar = req.query.depVar
+  var predVars = req.query.predVars;
+  var notNullCond = predVars.map(function(pv){return `demographics.${pv} IS NOT NULL`}).join(' AND ')
+  var q = `SELECT DISTINCT demographics.year FROM demographics INNER JOIN ${depVar}
+ ON demographics.year=${depVar}.start_year AND demographics.state_name=${depVar}.county
+ WHERE demographics.fips_county_code=0 AND ${notNullCond} AND ${depVar}.rawvalue IS NOT NULL ORDER BY year;`
+  db.query(q).then(function(data){
+    res.json(data.rows.map(function(d){return d.year}));
+  }).catch(function(err){
+    console.log(err)
+    throw(err)
+  })
+})
 
 //Get a distinct ordered array of years available
 app.get('/GetYears', function(req, res){
@@ -99,12 +113,12 @@ app.get('/Synth', function(req, res){
   var depVar = req.query.depVar
   var predVars = typeof(req.query.predVars) === 'string' ? [req.query.predVars] : req.query.predVars
   var treatment = req.query.treatment
-  var controlIdentities = typeof(req.query.controlIdentities) === 'string' ? 
-                          [req.query.controlIdentities] : req.query.controlIdentities
+  var controlIdentifiers = typeof(req.query.controlIdentifiers) === 'string' ? 
+                          [req.query.controlIdentifiers] : req.query.controlIdentifiers
   var yearOfTreatment = req.query.yearOfTreatment
 
   var command = util.format('runSynth(c(%s), %s, %s, c(%s), %d)', predVars.join(','), 
-    depVar, treatment, controlIdentities.join(','), yearOfTreatment)
+    depVar, treatment, controlIdentifiers.join(','), yearOfTreatment)
 
   console.log('Synth')
   rio.e({
@@ -128,9 +142,11 @@ app.get('/', function(req, res){
 // Openshift puts the app to sleep after 24 hours of innactivity.
 // Continually ping the server to keep it awake...
 app.get('/Wakeup', function(req, res){
-  res.json({})
+  res.json({success : true})
 })
-setTimeout(function(){request(ip + ':' + port + '/Wakeup', function(){})}, 3600000)
+setTimeout(function(){request(ip + ':' + port + '/Wakeup', function(err, res){
+  console.log('Wakeup result = ' + res)
+})}, 3600000)
 
 app.listen(port, ip, function (err) {
 	if (err) {
