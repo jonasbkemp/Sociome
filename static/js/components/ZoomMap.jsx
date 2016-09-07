@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
-import {states} from '../data/StateCodes'
+import {states} from 'sociome/data/StateCodes'
 import Select from 'react-select';
-import {topoJsonStore} from '../stores/TopoJsonStore';
-import {getStateInfo, getCounty} from '../data/StateCodes';
+import {topoJsonStore} from 'sociome/stores/TopoJsonStore';
+import {getStateInfo, getCounty} from 'sociome/data/StateCodes';
 import Dimensions from 'react-dimensions';
 var _ = require('underscore')
 var d3 = require('d3')

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 var _ = require('underscore');
-import Map from '../components/Map';
-import PolicyMenu from '../components/PolicyMenu';
+import Map from 'sociome/components/Map';
+import PolicyMenu from 'sociome/components/PolicyMenu';
 import Slider from 'react-rangeslider';
 
 export default class Explore extends Component{

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import Select from 'react-select';
-import ZoomMap from './ZoomMap';
+import ZoomMap from 'sociome/components/ZoomMap';
 var _ = require('underscore')
 
 const BACKEND_URL = process.env.NODE_ENV === 'production' ? 

@@ -1,10 +1,10 @@
 import React from 'react';
 import Select from 'react-select';
 import {Button} from 'react-bootstrap';
-import {policyStore} from '../stores/DataStore';
-import {states} from '../data/StateCodes';
+import {policyStore} from 'sociome/stores/DataStore';
+import {states} from 'sociome/data/StateCodes';
 import util from 'util'
-import SynthResults from '../components/SynthResults';
+import SynthResults from 'sociome/components/SynthResults';
 import Spinner from 'react-spinkit';
 
 var _ = require('underscore')

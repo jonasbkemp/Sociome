@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-import {policyStore} from '../stores/PolicyStore';
+import {policyStore} from 'sociome/stores/PolicyStore';
 import Select from 'react-select';
 require('react-select/dist/react-select.css');
 var _ = require('underscore')
-import * as PolicyActions from '../actions/PolicyActions';
+import * as PolicyActions from 'sociome/actions/PolicyActions';
 import ReactBootstrapSlider from 'react-bootstrap-slider';
 
 export default class PolicyMenu extends Component{

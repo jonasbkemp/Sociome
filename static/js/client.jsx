@@ -2,14 +2,14 @@ import React from "react";
 import ReactDOM from "react-dom";
 import {Router, Route, IndexRoute, hashHistory, IndexRedirect} from 'react-router';
 
-import Layout from './Layout';
-import Explore from './pages/Explore';
-import Privacy from './pages/Privacy';
-import Contact from './pages/Contact';
-import Purpose from './pages/Purpose';
-import CompareData from './pages/CompareData';
-import Sandbox from './pages/Sandbox';
-import DiffInDiff from './pages/DiffInDiff';
+import Layout from 'sociome/Layout';
+import Explore from 'sociome/pages/Explore';
+import Privacy from 'sociome/pages/Privacy';
+import Contact from 'sociome/pages/Contact';
+import Purpose from 'sociome/pages/Purpose';
+import CompareData from 'sociome/pages/CompareData';
+import Sandbox from 'sociome/pages/Sandbox';
+import DiffInDiff from 'sociome/pages/DiffInDiff';
 
 const app = document.getElementById('app');
 

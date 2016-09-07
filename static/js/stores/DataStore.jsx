@@ -1,6 +1,6 @@
 import {EventEmitter} from 'events';
-import dispatcher from '../Dispatcher';
-import {fields} from './PolicyFields';
+import dispatcher from 'sociome/Dispatcher';
+import {fields} from 'sociome/stores/PolicyFields';
 var _ = require('underscore')
 
 const BACKEND_URL = process.env.NODE_ENV === 'production' ? 
@@ -144,7 +144,6 @@ class PolicyStore extends EventEmitter{
 
 	setPolicyField(field){
 		this.currentField = field;
-		console.log(BACKEND_URL + 'GetPolicyData?policy=' + this.currentPolicy.code + '&field=' + field.code)
 		$.get(BACKEND_URL + 'GetPolicyData?policy=' + this.currentPolicy.code + '&field=' + field.code).then((data) => {
 			this.data = data
 			this.years = _.uniq(data.map((d) => d.year), true)

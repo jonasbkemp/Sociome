@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import Nav from './components/Nav';
+import Nav from 'sociome/components/Nav';
 
 export default class Layout extends React.Component {
   render() {

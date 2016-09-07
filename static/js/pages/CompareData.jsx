@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import Select from 'react-select';
-import {leftStore, rightStore} from '../stores/DataStore';
-import CompareMap from '../components/CompareMap';
+import {leftStore, rightStore} from 'sociome/stores/DataStore';
+import CompareMap from 'sociome/components/CompareMap';
 
 export default class CompareData extends Component{
 	render(){
