@@ -97,7 +97,6 @@ export default class CompareMap extends Component{
 	}
 
 	render(){
-		console.log(this.state.field)
 		return(
 			<div style={{width : '100%', height : '100%'}}>
 				<ZoomMap {...this.props} dataset={this.state.dataset} 

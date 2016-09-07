@@ -16,14 +16,9 @@ var topojson = require('topojson')
 class ZoomMap extends Component{
 	constructor(props){
 		super(props)
-
-		console.log(this.props)
-
 		this.selectedState = d3.select(null)
-		console.log('width = ' + this.props.containerWidth)
 		this.width = this.props.containerWidth; //650;
 		this.height = this.props.containerWidth * 0.61538461538462;//400;
-		console.log(this)
 		var projection = d3.geoAlbersUsa().scale(750).translate([this.width/2, this.height/2])
 
 		this.state = {

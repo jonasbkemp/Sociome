@@ -53,7 +53,6 @@ class PolicyStore extends EventEmitter{
 	}
 
 	getPolicyFields(){
-		console.log(this)
 		return this.currentPolicy ? this.fields[this.currentPolicy.code] : []
 	}
 
