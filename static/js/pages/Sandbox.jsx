@@ -129,7 +129,7 @@ export default class Sandbox extends React.Component{
 		return(
 			<div style={{width : '100%', height : '100%'}}>
 				<h1 style={{textAlign : 'center'}}>Synthetic Control</h1>
-				<div style={{width : "100%", height : '100%', overflow: "hidden"}}>
+				<div style={{width : "100%", height : '100%', overflow: "scroll"}}>
 				    <div style={{width : '30%', float : 'left', paddingTop : '5%'}}> 
 				    	<div style={{width : '80%', margin : '0 auto'}}>
 				    		<h3 style={{textAlign : 'center'}}>Predictor Variable</h3>
