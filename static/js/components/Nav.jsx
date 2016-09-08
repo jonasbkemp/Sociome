@@ -2,14 +2,19 @@ import React from "react";
 import {Link} from 'react-router';
 import * as BS from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+var _ = require('underscore')
 
 export default class Nav extends React.Component {
 
   constructor(props){
     super(props)
     this.state = {
-      explore : 'map'
+      activeKey : 1.1,
     }
+  }
+
+  onSelect = (event) => {
+    this.setState(_.extend({}, this.state, {activeKey : event}))
   }
 
   render() {
@@ -18,38 +23,27 @@ export default class Nav extends React.Component {
         <BS.Navbar.Brand>
           Mapping the American Sociome
         </BS.Navbar.Brand>
-        <BS.Nav class="pull-right">
+
+        <BS.Nav class="pull-right" activeKey={this.state.activeKey} onSelect={this.onSelect}>
           <BS.NavDropdown id="dropdown" eventKey={1} title="Explore">
             <LinkContainer eventKey={1.1} to="/explore">
-              <BS.MenuItem
-                  id="map" 
-                  key="map" 
-                  active={this.state.explore === 'map'}>
-                  Map
+              <BS.MenuItem>
+                Map
               </BS.MenuItem>
             </LinkContainer>
             <LinkContainer eventKey={1.2} to="/compare-data">
-              <BS.MenuItem
-                  id="compare-data" 
-                  key="compare-data" 
-                  active={this.state.explore === 'compare-data'}>
-                  Compare
+              <BS.MenuItem>
+                Compare
               </BS.MenuItem>
             </LinkContainer>
             <LinkContainer eventKey={1.3} to="/sandbox">
-              <BS.MenuItem
-                  id="sandbox" 
-                  key="sandox" 
-                  active={this.state.explore === 'sandbox'}>
-                  Sandbox
+              <BS.MenuItem>
+                Sandbox
               </BS.MenuItem>
             </LinkContainer>
             <LinkContainer eventKey={1.4} to="/diff-in-diff">
-              <BS.MenuItem
-                  id="diff-in-diff" 
-                  key="diff-in-diff" 
-                  active={this.state.explore === 'diff-in-diff'}>
-                  Differences-In-Differences
+              <BS.MenuItem>
+                Differences-In-Differences
               </BS.MenuItem>
             </LinkContainer>
           </BS.NavDropdown>
