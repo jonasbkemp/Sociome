@@ -9,6 +9,7 @@ require(RPostgreSQL)
 require(dotenv)
 require(hash)
 require(RJSONIO)
+require(nlme)
 
 # Mapping of state names to their statecodes from the health outcomes dataset
 stateCodes = hash('Alabama'=1 ,'Alaska'=2 ,'Arizona'=4 ,'Arkansas'=5 ,'California'=6 ,'Colorado'=8 ,'Connecticut'=9 ,'Delaware'= 10 ,
@@ -75,6 +76,30 @@ testDiffInDiff <- function(){
 	treatmentGroup <- c("Arizona", "California", "Delaware", "Georgia")
 	yearOfTreatment <- 2007
 	return(runDiffInDiff(predVars, depVar, treatmentGroup, yearOfTreatment))
+}
+
+runMultilevelModeling <- function(depVar, predVar){
+	conn <- dbConnect(PostgreSQL(), host=host, dbname=db_name, user=user,password=pwd, port=port);
+	query <- paste('SELECT a_fiscal_11.year, a_fiscal_11.state, a_fiscal_11.', predVar, 
+				   ', ', depVar, '.rawvalue as ', depVar, 
+				   ' FROM a_fiscal_11 INNER JOIN ', depVar, ' ON a_fiscal_11.year=', depVar, '.start_year', 
+				   ' AND a_fiscal_11.state=', depVar, '.county WHERE ', predVar, ' IS NOT NULL')
+	dataframe <- dbGetQuery(conn, query)
+
+	formula <- as.formula(paste(depVar, ' ~ ', predVar, ' * year'))
+
+	res <- lme(formula, data = dataframe, random = ~ 1 | state)
+
+	stdErr <- sqrt(res$varFix[c(paste(predVar, ':year', sep='')),c(paste(predVar,':year', sep=''))])
+	coef <- res$coefficients$fixed[c(paste(predVar, ':year', sep=''))]
+
+	return(paste('{\"stdErr\":', stdErr, ',\"coef\":', coef, '}'))
+}
+
+testMultilevelModeling <- function(){
+	depVar <- "adult_obesity"
+	predVar <- "asldebt"
+	runMultilevelModeling(depVar, predVar)
 }
 
 # predVars - demographics data (1 or more)

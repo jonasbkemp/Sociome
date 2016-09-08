@@ -4,6 +4,8 @@ install.packages('Synth')
 install.packages('RPostgreSQL')
 install.packages('devtools')
 install.packages('hash')
+install.packages('plm')
+install.packages('RJSONIO')
 
 require(devtools)
 devtools::install_github('gaborcsardi/dotenv')

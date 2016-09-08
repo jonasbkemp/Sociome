@@ -10,6 +10,7 @@ import Purpose from 'sociome/pages/Purpose';
 import CompareData from 'sociome/pages/CompareData';
 import Sandbox from 'sociome/pages/Sandbox';
 import DiffInDiff from 'sociome/pages/DiffInDiff';
+import MultiLevelModeling from 'sociome/pages/MultiLevelModeling';
 
 const app = document.getElementById('app');
 
@@ -24,6 +25,7 @@ ReactDOM.render(
 			<Route path="purpose" component={Purpose}/>
 			<Route path="sandbox" component={Sandbox}/>
 			<Route path="diff-in-diff" component={DiffInDiff}/>
+			<Route path="multi-level" component={MultiLevelModeling}/>
 		</Route>
 	</Router>,
 	app

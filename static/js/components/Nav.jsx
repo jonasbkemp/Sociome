@@ -46,6 +46,11 @@ export default class Nav extends React.Component {
                 Differences-In-Differences
               </BS.MenuItem>
             </LinkContainer>
+            <LinkContainer eventKey={1.5} to="/multi-level">
+              <BS.MenuItem>
+                Multi Level Modelling
+              </BS.MenuItem>
+            </LinkContainer>
           </BS.NavDropdown>
           <LinkContainer to="/purpose">
             <BS.NavItem eventKey={2}>

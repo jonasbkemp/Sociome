@@ -109,6 +109,23 @@ app.get('/GetHealthOutcomes', function(req, res){
   )
 })
 
+app.get('/Multilevel', function(req, res){
+  var depVar = req.query.depVar;
+  var predVar = req.query.predVar;
+  var command = `runMultilevelModeling(${depVar}, ${predVar})`;
+  rio.e({
+    command : command,
+    path : path.join(__dirname, 'rserve.sock'),
+    callback : function(err, result){
+      if(err){
+        throw err;
+      }else{
+        res.json(result);
+      }
+    }
+  })
+})
+
 app.get('/DiffInDiff', function(req, res){
   var depVar = req.query.depVar
   var predVars = typeof(req.query.predVars) === 'string' ? [req.query.predVars] : req.query.predVars

@@ -13,6 +13,9 @@ const BACKEND_URL = process.env.NODE_ENV === 'production' ?
 					'http://sociome-ml9951.rhcloud.com' : 
 					'http://localhost:8082';
 
+/*
+both predictor variable and dependent variables are from the health outcomes dataset
+*/
 				
 export default class Sandbox extends React.Component{
 	constructor(props){
@@ -43,6 +46,7 @@ export default class Sandbox extends React.Component{
 		console.log(url)
 		this.setState(_.extend({}, this.state, {runningR : true}))
 		$.get(url, (res) => {
+			res = JSON.parse(res)
 			console.log(res)
 			this.setState(_.extend({}, this.state, {runningR : false, results : res}))
 		})
@@ -109,9 +113,13 @@ export default class Sandbox extends React.Component{
 	}
 
 	render(){
+		var results = []
+		for(var field in this.state.results){
+			results.push(<div key={field}>{field}: {this.state.results[field]}</div>)
+		}
 		return(
 			<div style={{width : '100%', height : '100%'}}>
-				<h1 style={{textAlign : 'center'}}>Synthetic Control</h1>
+				<h1 style={{textAlign : 'center'}}>Difference in Differences</h1>
 				<div style={{width : "100%", height : '100%', overflow: "hidden"}}>
 				    <div style={{width : '30%', float : 'left', paddingTop : '5%'}}> 
 				    	<div style={{width : '80%', margin : '0 auto'}}>
@@ -165,7 +173,9 @@ export default class Sandbox extends React.Component{
 				    	{
 				    		this.state.runningR ? 
     							<Spinner spinnerName='double-bounce'/> :
-    							<div></div>
+    							<div>
+    								{results}
+    							</div>
 				    	}
 				    </div>
 				</div>
