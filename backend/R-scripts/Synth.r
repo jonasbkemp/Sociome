@@ -8,6 +8,7 @@ require(Synth)
 require(RPostgreSQL)
 require(dotenv)
 require(hash)
+require(RJSONIO)
 
 # Mapping of state names to their statecodes from the health outcomes dataset
 stateCodes = hash('Alabama'=1 ,'Alaska'=2 ,'Arizona'=4 ,'Arkansas'=5 ,'California'=6 ,'Colorado'=8 ,'Connecticut'=9 ,'Delaware'= 10 ,
@@ -30,8 +31,51 @@ db_name <- 'sociome'
 host <- Sys.getenv('OPENSHIFT_POSTGRESQL_DB_HOST')
 port <- Sys.getenv('OPENSHIFT_POSTGRESQL_DB_PORT')
 
-# Connect to the database
-conn <- dbConnect(PostgreSQL(), host=host, dbname=db_name, user=user,password=pwd, port=port)
+# Intercept - not really important
+# treated - difference between states that had a treatment and did (on average there is 1.21 units of )
+# time - reducing over time if they
+# did - (important one)
+# 	- Pr(>|t|) summarizes noise
+# 	- one astericks is the convention for a "good result"
+# 	- 
+
+runDiffInDiff <- function(predVars, depVar, treatmentGroup, yearOfTreatment){
+	conn <- dbConnect(PostgreSQL(), host=host, dbname=db_name, user=user,password=pwd, port=port);
+
+	nullCond <- paste(sapply(predVars, function(p){return(paste('demographics.', p, ' IS NOT NULL', collapse=''));}), collapse=' AND ')
+
+	#Do an INNER JOIN on the health outcome and demographics data to get them aligned on state and year
+	query <- paste('SELECT demographics.year, demographics.state_name, ', depVar, '.statecode',
+			 paste(sapply(predVars, function(p){return(paste(',demographics.', p, collapse=''));}), collapse=''), 
+			 ',', depVar, '.rawvalue as ', depVar, ' FROM demographics INNER JOIN ', depVar, ' ON demographics.year=', depVar, '.start_year AND ',
+			 'demographics.state_name = ', depVar, '.county WHERE demographics.fips_county_code = 0 AND ', 
+			 nullCond, ' AND ', depVar, '.rawvalue IS NOT NULL',
+			 ' AND demographics.state_name <> \'District of Columbia\' ORDER BY state')
+
+	dataframe <- dbGetQuery(conn, query)
+
+	dataframe$time = ifelse(dataframe$year >= yearOfTreatment, 1, 0)
+
+	dataframe$treated = ifelse(Vectorize(function(country){
+		return(country %in% treatmentGroup)
+	})(dataframe$state_name), 1, 0);
+
+	dataframe$did <- dataframe$time * dataframe$treated
+
+	formula <- as.formula(paste(depVar, ' ~ treated + time + did', collapse=''))
+
+	didreg <- lm(formula, data=dataframe)
+
+	return(toJSON(didreg$coefficients));
+}
+
+testDiffInDiff <- function(){
+	predVars <- c("population_white", "population_wh_hisp_latino")
+	depVar <- "air_pollution_particulate_matter"
+	treatmentGroup <- c("Arizona", "California", "Delaware", "Georgia")
+	yearOfTreatment <- 2007
+	return(runDiffInDiff(predVars, depVar, treatmentGroup, yearOfTreatment))
+}
 
 # predVars - demographics data (1 or more)
 # depVar - health outcomes data (1)

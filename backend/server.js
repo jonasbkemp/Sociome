@@ -109,6 +109,29 @@ app.get('/GetHealthOutcomes', function(req, res){
   )
 })
 
+app.get('/DiffInDiff', function(req, res){
+  var depVar = req.query.depVar
+  var predVars = typeof(req.query.predVars) === 'string' ? [req.query.predVars] : req.query.predVars
+  predVars = predVars.join(',')
+  var treatmentGroup =  typeof(req.query.treatmentGroup) === 'string' ? 
+                        [req.query.treatmentGroup] : 
+                        req.query.treatmentGroup;
+  treatmentGroup = treatmentGroup.join(',')
+  var yearOfTreatment = req.query.yearOfTreatment;
+  var command = `runDiffInDiff(c(${predVars}), ${depVar}, c(${treatmentGroup}), ${yearOfTreatment})`
+  rio.e({
+    command : command,
+    path : path.join(__dirname, 'rserve.sock'),
+    callback : function(err, result){
+      if(err){
+        throw(err)
+      }else{
+        res.json(result)
+      }
+    }
+  })
+})
+
 app.get('/Synth', function(req, res){
   var depVar = req.query.depVar
   var predVars = typeof(req.query.predVars) === 'string' ? [req.query.predVars] : req.query.predVars
@@ -120,7 +143,6 @@ app.get('/Synth', function(req, res){
   var command = util.format('runSynth(c(%s), %s, %s, c(%s), %d)', predVars.join(','), 
     depVar, treatment, controlIdentifiers.join(','), yearOfTreatment)
 
-  console.log('Synth')
   rio.e({
     command : command,
     path : path.join(__dirname, 'rserve.sock'),
