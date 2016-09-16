@@ -146,8 +146,18 @@ runSynth <- function(predVars, depVar, treatment, controlIdentifiers, yearOfTrea
 		time.optimize.ssr = priorYears      
 	)
 
+
 	res = synth(dataprep.out)
-	return(as.vector(res$solution.w))
+
+	y0plot1 = dataprep.out$Y0plot %*% res$solution.w;
+
+	jsRes <- list(
+		treatedX = dataprep.out$tag$time.plot,
+		treatedY = as.vector(dataprep.out$Y1plot),
+		syntheticX = dataprep.out$tag$time.plot,
+		syntheticY = as.vector(y0plot1)
+	)
+	return(toJSON(jsRes))
 }
 
 # Sample for parameters for testing purposes

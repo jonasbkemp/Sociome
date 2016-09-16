@@ -1,6 +1,6 @@
 import React from 'react';
 import Select from 'react-select';
-import {Button} from 'react-bootstrap';
+import {Button, Alert} from 'react-bootstrap';
 import {policyStore} from 'sociome/stores/DataStore';
 import {states} from 'sociome/data/StateCodes';
 import util from 'util'
@@ -25,6 +25,7 @@ export default class Sandbox extends React.Component{
 			controlIdentifiers : [],
 			years : [],
 			yearOfTreatment : undefined,
+			errorMsg : undefined
 		}
 		var exclude = {'AS' : true, 'DC' : true, 'FM' : true, 'GU' : true, 'MH' : true,
 					   'MP' : true, 'PW' : true, 'PR' : true, 'VI' : true}
@@ -38,6 +39,10 @@ export default class Sandbox extends React.Component{
 	}
 
 	runSynth = (event) => {
+		if(this.state.controlIdentifiers.length <= 1){
+			this.setState(_.extend({}, this.state, {errorMsg : 'Please specify at least two control identifiers.'}))
+			return;
+		}
 		var predVars = this.state.predVars.map((v) => `predVars=\"${v.value}\"`).join('&')
 		var controlIdentifiers = this.state.controlIdentifiers.map((i) => `controlIdentifiers=\"${i.label}\"`).join('&')
 		var url = `${BACKEND_URL}/Synth?${predVars}&depVar=\"${this.state.depVar}\"&treatment=\"${this.state.treatment.label}\"
@@ -45,6 +50,7 @@ export default class Sandbox extends React.Component{
 		console.log(url)
 		this.setState(_.extend({}, this.state, {runningSynth : true}))
 		$.get(url, (res) => {
+			res = JSON.parse(res)
 			console.log(res)
 			this.setState(_.extend({}, this.state, {runningSynth : false, results : res}))
 		})
@@ -125,10 +131,27 @@ export default class Sandbox extends React.Component{
 		})
 	}
 
+/*
+pop === pop density
+high - high pop, high risk, low data
+medium - high risk, low pop, low data
+low - high pop, low risk, low data
+
+high pop threshold:
+  - make sure we get 20% of the population in the high pop
+*/
+
 	render(){
 		return(
 			<div style={{width : '100%', height : '100%'}}>
 				<h1 style={{textAlign : 'center'}}>Synthetic Control</h1>
+				{
+					this.state.errorMsg ? 
+					<Alert bsStyle="danger" onDismiss={() => this.setState(_.extend({}, this.state, {errorMsg : null}))}>
+						<strong>{this.state.errorMsg}</strong>
+					</Alert>
+					: null
+				}
 				<div style={{width : "100%", height : '100%', overflow: "scroll"}}>
 				    <div style={{width : '30%', float : 'left', paddingTop : '5%'}}> 
 				    	<div style={{width : '80%', margin : '0 auto'}}>

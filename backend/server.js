@@ -40,7 +40,8 @@ var health_outcomes = {
 
 app.get('/SynthGetYears', function(req, res){
   var depVar = req.query.depVar
-  var predVars = req.query.predVars;
+  var predVars = typeof(req.query.predVars) === 'string' ? [req.query.predVars] : req.query.predVars
+  console.log(predVars)
   var notNullCond = predVars.map(function(pv){return `demographics.${pv} IS NOT NULL`}).join(' AND ')
   var q = `SELECT DISTINCT demographics.year FROM demographics INNER JOIN ${depVar}
  ON demographics.year=${depVar}.start_year AND demographics.state_name=${depVar}.county
@@ -159,7 +160,7 @@ app.get('/Synth', function(req, res){
 
   var command = util.format('runSynth(c(%s), %s, %s, c(%s), %d)', predVars.join(','), 
     depVar, treatment, controlIdentifiers.join(','), yearOfTreatment)
-
+  console.log(command)
   rio.e({
     command : command,
     path : path.join(__dirname, 'rserve.sock'),

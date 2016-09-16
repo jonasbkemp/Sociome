@@ -70,7 +70,7 @@ class PolicyStore extends EventEmitter{
 			{value : 'unemployment_rate', label : 'Unemployment Rate'},
 			{value : 'hs_diploma_or_more_25_plus', label : 'Percent 25+ Years with HS Diploma or More'},
 			{value : 'four_plus_years_college_25_plus', label : 'Percent 25+ Years with 4+ Years College'},
-			{label : 'less_than_hs_diploma_25_plus', label : 'Percent 25+ Years with Less Than a High School Diploma'}
+			{value : 'less_than_hs_diploma_25_plus', label : 'Percent 25+ Years with Less Than a High School Diploma'}
 		]
 		this.currentMeasure = undefined
 		this.dataset = undefined
