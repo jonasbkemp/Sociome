@@ -4,8 +4,8 @@ import {fields} from 'sociome/stores/PolicyFields';
 var _ = require('underscore')
 
 const BACKEND_URL = process.env.NODE_ENV === 'production' ? 
-					'http://sociome-ml9951.rhcloud.com/' : 
-					'http://localhost:8082/';
+					'http://sociome-ml9951.rhcloud.com' : 
+					'http://localhost:8082';
 
 class PolicyStore extends EventEmitter{
 	constructor(){
@@ -77,7 +77,9 @@ class PolicyStore extends EventEmitter{
 
 	setPolicyField(field){
 		this.currentField = field;
-		$.get(BACKEND_URL + 'GetPolicyData?policy=' + this.currentPolicy.code + '&field=' + field.code).then((data) => {
+		var url = `${BACKEND_URL}/GetPolicyData?policy=${this.currentPolicy.code}&field=${field.code}`
+		console.log(url)
+		$.get(url).then((data) => {
 			this.data = data
 			this.years = _.uniq(data.map((d) => d.year), true)
 			this.yearIndex = 0;

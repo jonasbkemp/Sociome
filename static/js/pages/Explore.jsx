@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 var _ = require('underscore');
 import Map from 'sociome/components/Map';
 import PolicyMenu from 'sociome/components/PolicyMenu';
-import Slider from 'react-rangeslider';
 
 export default class Explore extends Component{
 	render(){
@@ -16,25 +15,5 @@ export default class Explore extends Component{
 			    </div>
 			</div>
 		)
-	}
-}
-
-const styles={
-	map : {
-		position : 'absolute',
-		top : 0,
-		left : 0,
-		width : '100%',
-		height : '100%',
-	},
-	policyMenu : {
-		position : 'absolute',
-		top : 100,
-		left : 30,
-	},
-	slider : {
-		position : 'absolute',
-		top : 100,
-		left : 50
 	}
 }
