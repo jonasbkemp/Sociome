@@ -51,6 +51,11 @@ export default class Nav extends React.Component {
                 Multi Level Modelling
               </BS.MenuItem>
             </LinkContainer>
+            <LinkContainer eventKey={1.6} to="/regression">
+              <BS.MenuItem>
+                Linear Regression
+              </BS.MenuItem>
+            </LinkContainer>
           </BS.NavDropdown>
           <LinkContainer to="/purpose">
             <BS.NavItem eventKey={2}>

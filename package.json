@@ -8,9 +8,9 @@
     "dev": "./node_modules/.bin/webpack-dev-server --content-base static --inline --hot --port 8081",
     "test": "./node_modules/karma/bin/karma start test/karma.conf.js --browsers Firefox --single-run --no-auto-watch"
   },
-  "repository" : { 
-    "type" : "git", 
-    "url" : "https://github.com/ArnholdInstitute/Sociome.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArnholdInstitute/Sociome.git"
   },
   "author": "",
   "license": "ISC",
@@ -38,6 +38,7 @@
     "request": "^2.74.0",
     "rimraf": "^2.5.4",
     "rio": "^2.4.1",
+    "simple-statistics": "^2.1.0",
     "sinon": "^1.17.5",
     "topojson": "^1.6.26",
     "transform-loader": "^0.2.3",

@@ -9,6 +9,7 @@ var child_process = require('child_process');
 var util = require('util')
 var rimraf = require('rimraf')
 var net = require('net')
+var stats = require('simple-statistics')
 
 var db = new pg.Client(process.env.OPENSHIFT_POSTGRESQL_DB_URL ? 
                        process.env.OPENSHIFT_POSTGRESQL_DB_URL : {database : 'sociome_db'});
@@ -125,6 +126,23 @@ app.get('/Multilevel', function(req, res){
       }
     }
   })
+})
+
+app.get('/LinRegression', function(req, res){
+  var depVar = req.query.depVar;
+  var predVar = req.query.predVar;
+  var q = `SELECT a_fiscal_11.year, a_fiscal_11.state, a_fiscal_11.${predVar}, ${depVar}.rawvalue as ${depVar}
+   FROM a_fiscal_11 INNER JOIN ${depVar} ON a_fiscal_11.year=${depVar}.start_year AND a_fiscal_11.state=${depVar}.county
+   WHERE ${predVar} IS NOT NULL;`
+
+  db.query(q, function(err, result){
+    var data = result.rows.map(function(point){
+      return [point[predVar], point[depVar]];
+    })
+    regression = stats.linearRegression(data)
+    res.json({regression : regression, data : result.rows})
+  })
+
 })
 
 app.get('/DiffInDiff', function(req, res){
