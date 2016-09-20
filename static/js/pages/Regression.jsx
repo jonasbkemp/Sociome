@@ -102,7 +102,12 @@ export default class Regression extends React.Component{
 				    <div style={{position : 'absolute', width : '70%', height : '50%', right : 0, paddingTop : '5%'}}> 
 				    	<ResponsiveContainer  width='90%' height='100%'>
 							<ScatterChart>
-								<XAxis label={this.state.predVar.label} dataKey='x' name={this.state.predVar.value}/>
+								<XAxis 
+									label={this.state.predVar.label} 
+									dataKey='x' 
+									name={this.state.predVar.value}
+									domain={['dataMin', 'dataMax']}
+								/>
 								<YAxis label={this.state.depVar.label} dataKey='y' name={this.state.depVar.value}/>
 								<CartesianGrid/>
 								<Tooltip/>
