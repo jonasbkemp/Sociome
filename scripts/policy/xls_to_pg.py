@@ -26,14 +26,37 @@ files = glob.glob('data/*.xls') if args.file is None else [args.file]
 jsonFields = []
 
 def addToJSONObj(data, name):
-	labels = data.row(0)
-	values = data.row(1)
-	objs = map(lambda arg: '{label:%s,value:%s}' % (arg[0], arg[1]), zip(labels, values))
+	labels = map(lambda x: x.value.encode('utf-8').replace('\'', '\\\''), data.row(0)[2:])
+	values = map(lambda x: x.value.lower().encode('utf-8'), data.row(1)[2:])
+	objs = map(lambda arg: '{label:\'%s\',value:\'%s\'}' % (arg[0], arg[1]), zip(labels, values))
 	jsonFields.append(name + ':[' + ','.join(objs) + ']')
 
 # First unused cell type
 # Source: http://www.lexicon.net/sjmachin/xlrd.html#xlrd.Cell-class
 xlrd.XL_CELL_INT = 7
+
+# A bunch of inconsistent entries are used for default/special values.
+# Try and convert them as best as possible
+specialVals = {
+	'n/a' : (xlrd.XL_CELL_EMPTY, 'NULL'),
+	'.' : (xlrd.XL_CELL_NUMBER, '0'),
+	'' : (xlrd.XL_CELL_EMPTY, 'NULL')
+}
+
+def parseNum(cell):
+	if cell.value == '0' or cell.value == '1':
+		cell.value = int(cell.value)
+		cell.ctype = xlrd.XL_CELL_BOOLEAN
+		return cell.ctype
+	try:
+		cell.value = int(cell.value)
+		cell.ctype = xlrd.XL_CELL_INT
+		return cell.ctype
+	except ValueError as ve:
+		cell.value = float(cell.value)
+		cell.ctype = xlrd.XL_CELL_NUMBER
+		return cell.ctype
+
 
 # Try and distinguish int/float/bool types, otherwise
 # just return the type that xlrd gives the cell
@@ -43,13 +66,26 @@ def toType(cell):
 			if(cell.value == 0 or cell.value == 1):
 				return xlrd.XL_CELL_BOOLEAN;
 			return xlrd.XL_CELL_INT
+	if cell.ctype == xlrd.XL_CELL_TEXT:
+		stripped = cell.value.replace(' ', '')
+		if stripped in specialVals:
+			return specialVals[stripped][0]
+		try:
+			return parseNum(cell)
+		except ValueError as ve:
+			return xlrd.XL_CELL_TEXT
 	return cell.ctype
+
 
 
 numberHeirarchy = [sys.maxint for x in range(xlrd.XL_CELL_INT+1)]
 numberHeirarchy[xlrd.XL_CELL_BOOLEAN] = 0
 numberHeirarchy[xlrd.XL_CELL_INT] = 1
 numberHeirarchy[xlrd.XL_CELL_NUMBER] = 2
+
+# go from number heirarchy back to the xlrd ctype space...
+unproject = [xlrd.XL_CELL_BOOLEAN, xlrd.XL_CELL_INT, xlrd.XL_CELL_NUMBER]
+
 
 def joinTypes(t1, t2):
 	if (t1 == t2):
@@ -59,11 +95,11 @@ def joinTypes(t1, t2):
 	elif t2 == xlrd.XL_CELL_EMPTY or t2 == xlrd.XL_CELL_ERROR or t2 == xlrd.XL_CELL_BLANK:
 		return t1
 	elif t1 == xlrd.XL_CELL_TEXT or t2 == xlrd.XL_CELL_TEXT:
-		return t1
+		return xlrd.XL_CELL_TEXT
 	res = max(numberHeirarchy[t1], numberHeirarchy[t2])
 	if res == sys.maxint:
 		raise Exception("Error in joinTypes")
-	return res;
+	return unproject[res];
 
 # Sheet names are not uniformly named...
 def getSheet(wb):
@@ -75,15 +111,13 @@ def getSheet(wb):
 		except xlrd.XLRDError as e:
 			return wb.sheet_by_name('data')
 
-typeNames = ['text', 'text', 'real', 'real', 'bool', 'ERROR', 'text', 'int']
+typeNames = ['real', 'text', 'real', 'real', 'bool', 'ERROR', 'real', 'int']
 
 scriptStream = open('script.txt', 'w')
 
 def cellToStr(cell):
-	if cell.value == '':
-		return 'NULL'
-	if cell.value == '.' or cell.value == ' ':
-		return '0'
+	if (type(cell.value) == unicode or type(cell.value) == str) and cell.value.replace(' ', '') in specialVals:
+		return specialVals[cell.value.replace(' ', '')][1]
 	if cell.ctype == xlrd.XL_CELL_TEXT:
 		return('%s' % cell.value)
 	if cell.ctype == xlrd.XL_CELL_NUMBER and cell.value.is_integer():
