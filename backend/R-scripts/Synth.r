@@ -146,7 +146,6 @@ runSynth <- function(predVars, depVar, treatment, controlIdentifiers, yearOfTrea
 		time.optimize.ssr = priorYears      
 	)
 
-
 	res = synth(dataprep.out)
 
 	y0plot1 = dataprep.out$Y0plot %*% res$solution.w;
@@ -155,7 +154,8 @@ runSynth <- function(predVars, depVar, treatment, controlIdentifiers, yearOfTrea
 		treatedX = dataprep.out$tag$time.plot,
 		treatedY = as.vector(dataprep.out$Y1plot),
 		syntheticX = dataprep.out$tag$time.plot,
-		syntheticY = as.vector(y0plot1)
+		syntheticY = as.vector(y0plot1),
+		weights = as.vector(res$solution.w)
 	)
 	return(toJSON(jsRes))
 }
@@ -172,7 +172,16 @@ testSynth <- function(){
 
 
 
+testSynth2 <- function(){
 
+	predVars <- c("population_white", "population_wh_hisp_latino", "population_female")
+	depVar <- "air_pollution_particulate_matter"
+	treatment <- "Alabama"
+	controlIdentifiers <- c("Alaska", "California", "Connecticut")
+	yearOfTreatment <- 2009
+
+	runSynth(predVars, depVar, treatment, controlIdentifiers, yearOfTreatment);
+}
 
 
 

@@ -133,7 +133,7 @@ app.get('/LinRegression', function(req, res){
   var predVar = req.query.predVar;
   var q = `SELECT a_fiscal_11.year, a_fiscal_11.state, a_fiscal_11.${predVar}, ${depVar}.rawvalue as ${depVar}
    FROM a_fiscal_11 INNER JOIN ${depVar} ON a_fiscal_11.year=${depVar}.start_year AND a_fiscal_11.state=${depVar}.county
-   WHERE ${predVar} IS NOT NULL;`
+   WHERE ${predVar} IS NOT NULL AND ${depVar}.rawvalue IS NOT NULL;`
 
   db.query(q, function(err, result){
     var data = result.rows.map(function(point){
