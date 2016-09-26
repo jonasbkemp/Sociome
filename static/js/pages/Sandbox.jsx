@@ -48,10 +48,14 @@ export default class Sandbox extends React.Component{
 &${controlIdentifiers}&yearOfTreatment=${this.state.yearOfTreatment}`
 		console.log(url)
 		this.setState(_.extend({}, this.state, {runningSynth : true}))
-		$.get(url, (res) => {
-			res = JSON.parse(res)
-			console.log(res)
+
+		$.get(url).done((res) => {
 			this.setState(_.extend({}, this.state, {runningSynth : false, results : res}))
+		}).fail((err) => {
+			this.setState(_.extend({}, this.state, {
+				errorMsg : 'Synth failed with error: ' + err.responseText,
+				runningSynth : false,
+			}))
 		})
 	}
 
@@ -120,7 +124,9 @@ export default class Sandbox extends React.Component{
 
 	getYears = (depVar) => {
 		var predVars = this.state.predVars.map((pv) => `predVars=${pv.value}`).join('&')
-		$.get(`${BACKEND_URL}/SynthGetYears?depVar=${depVar}&${predVars}`).then((years) => {
+		var url = `${BACKEND_URL}/SynthGetYears?depVar=${depVar}&${predVars}`
+		console.log(url)
+		$.get(url).then((years) => {
 			var options = []
 			// Start at 1 because we need at least one year prior for pre-treatment years
 			for(var i = 1; i < years.length; i++){

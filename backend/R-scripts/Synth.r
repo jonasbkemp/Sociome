@@ -67,8 +67,24 @@ runDiffInDiff <- function(predVars, depVar, treatmentGroup, yearOfTreatment){
 
 	didreg <- lm(formula, data=dataframe)
 
-	return(toJSON(didreg$coefficients));
+	intercept = didreg$coefficients['(Intercept)']
+	time = didreg$coefficients['time']
+	treated = didreg$coefficients['treated']
+
+	res = list(
+		A = unname(intercept),
+		B = unname(intercept + time),
+		C = unname(intercept + treated),
+		D = unname(intercept + time + treated + treated * time)
+	)
+
+	return(toJSON(res));
 }
+
+# A = Intercept
+# B = Intercept + time
+# C = Intercept + treated
+# D = Intercept + time + treated + treated * time
 
 testDiffInDiff <- function(){
 	predVars <- c("population_white", "population_wh_hisp_latino")
@@ -132,25 +148,37 @@ runSynth <- function(predVars, depVar, treatment, controlIdentifiers, yearOfTrea
 	print(controlIdentifiers)
 	print('------------------')
 	
-	dataprep.out <- dataprep(
-		foo=dataframe,
-		predictors=c(predVars),
-		predictors.op=c("mean"),
-		dependent=c(depVar),
-		unit.variable=c("statecode"),
-		time.variable=c("year"),
-		treatment.identifier=stateCodes[[treatment]],
-		controls.identifier=controlIdentifiers,
-		unit.names.variable=c("state_name"),
-		time.predictors.prior = priorYears, 
-		time.optimize.ssr = priorYears      
-	)
+	dataprep.out = tryCatch({
+		dataprep(
+			foo=dataframe,
+			predictors=c(predVars),
+			predictors.op=c("mean"),
+			dependent=c(depVar),
+			unit.variable=c("statecode"),
+			time.variable=c("year"),
+			treatment.identifier=stateCodes[[treatment]],
+			controls.identifier=controlIdentifiers,
+			unit.names.variable=c("state_name"),
+			time.predictors.prior = priorYears, 
+			time.optimize.ssr = priorYears      
+		)
+	}, error = function(e){
+		browser()
+		return(toJSON(list(success=FALSE, msg=paste(e))))
+	})
 
-	res = synth(dataprep.out)
-
+	res = tryCatch({
+		synth(dataprep.out)
+	}, error = function(e){
+		browser()
+		return (toJSON(list(success=FALSE, msg=paste(e))))	
+	})
+	
 	y0plot1 = dataprep.out$Y0plot %*% res$solution.w;
 
 	jsRes <- list(
+		success = TRUE,
+
 		treatedX = dataprep.out$tag$time.plot,
 		treatedY = as.vector(dataprep.out$Y1plot),
 		syntheticX = dataprep.out$tag$time.plot,

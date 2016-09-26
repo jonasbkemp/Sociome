@@ -23,6 +23,7 @@ app.use(express.static(__dirname + '/../static/'));
 var port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 8082;
 var ip = process.env.OPENSHIFT_NODEJS_IP || "localhost";
 
+
 var health_outcomes = {
   'children_in_poverty' : true
  ,'adult_obesity' : true
@@ -184,10 +185,17 @@ app.get('/Synth', function(req, res){
     path : path.join(__dirname, 'rserve.sock'),
     callback : function(err, result){
       if(err){
-        console.log(err);
-        res.json(err);
+        console.log(err)
+        res.status(500).json(err);
       }else{
-        res.json(result);
+        result = JSON.parse(result);
+        if(!result.success){
+          console.log(result)
+          res.status(500).json({responseText : result.msg})
+        }
+        else{
+          res.status(200).json(result);
+        }
       }
     }
   })

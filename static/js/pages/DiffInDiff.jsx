@@ -4,6 +4,7 @@ import {Button} from 'react-bootstrap';
 import {policyStore} from 'sociome/stores/DataStore';
 import {states} from 'sociome/data/StateCodes';
 import Spinner from 'react-spinkit';
+import DiffInDiffResults from 'sociome/components/DiffInDiffResults';
 
 var _ = require('underscore')
 
@@ -119,8 +120,9 @@ export default class Sandbox extends React.Component{
 		return(
 			<div style={{width : '100%', height : '100%'}}>
 				<h1 style={{textAlign : 'center'}}>Difference in Differences</h1>
-				<div style={{width : "100%", height : '100%', overflow: "hidden"}}>
-				    <div style={{width : '30%', float : 'left', paddingTop : '5%'}}> 
+
+				<div style={{width : "100%", height : '100%', overflow: "scroll", position : 'absolute'}}>
+				    <div style={{width : '30%', float : 'left', paddingTop : '5%', position : 'absolute'}}> 
 				    	<div style={{width : '80%', margin : '0 auto'}}>
 				    		<h3 style={{textAlign : 'center'}}>Predictor Variable</h3>
 					    	<Select
@@ -168,13 +170,11 @@ export default class Sandbox extends React.Component{
 					    	<div style={{height : 120}}></div>
 				    	</div>
 				    </div>
-				    <div style={{width : '100%', height : '100%', marginLeft : '30%'}}> 
+				    <div style={{position : 'absolute', width : '70%', height : '100%', right : 0}}> 
 				    	{
 				    		this.state.runningR ? 
     							<Spinner spinnerName='double-bounce'/> :
-    							<div>
-    								{results}
-    							</div>
+    							<DiffInDiffResults results={this.state.results}/>
 				    	}
 				    </div>
 				</div>
