@@ -139,6 +139,12 @@ runSynth <- function(predVars, depVar, treatment, controlIdentifiers, yearOfTrea
 	#print(query)
 	dataframe <- dbGetQuery(conn, query)
 
+	if(nrow(dataframe) == 0){
+		return(toJSON(list(message="No common data")))
+	}
+
+	browser()
+
 	years = sort(unique(dataframe[1])$year)
 	priorYears = years[years < yearOfTreatment]
 
@@ -149,7 +155,7 @@ runSynth <- function(predVars, depVar, treatment, controlIdentifiers, yearOfTrea
 	print('------------------')
 	
 	dataprep.out = tryCatch({
-		dataprep(
+			dataprep(
 			foo=dataframe,
 			predictors=c(predVars),
 			predictors.op=c("mean"),
@@ -161,18 +167,25 @@ runSynth <- function(predVars, depVar, treatment, controlIdentifiers, yearOfTrea
 			unit.names.variable=c("state_name"),
 			time.predictors.prior = priorYears, 
 			time.optimize.ssr = priorYears      
-		)
-	}, error = function(e){
-		browser()
-		return(toJSON(list(success=FALSE, msg=paste(e))))
-	})
+		)},
+		error = function(err){
+			return(err);
+		}
+	)
+
+	if(is(dataprep.out, 'error')){
+		return(toJSON(list(message = dataprep.out$message, success = FALSE)));
+	}
 
 	res = tryCatch({
 		synth(dataprep.out)
 	}, error = function(e){
-		browser()
-		return (toJSON(list(success=FALSE, msg=paste(e))))	
+		return (e);
 	})
+
+	if(is(res, 'error')){
+		return(toJSON(list(message = res$message, success = FALSE)));
+	}
 	
 	y0plot1 = dataprep.out$Y0plot %*% res$solution.w;
 
@@ -197,8 +210,6 @@ testSynth <- function(){
 	yearOfTreatment <- 2007
 	return(runSynth(predVars, depVar, treatment, controlIdentifiers, yearOfTreatment))
 }
-
-
 
 testSynth2 <- function(){
 
