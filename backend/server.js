@@ -41,10 +41,13 @@ rimraf.sync('./rserve.sock')
 var rserveSocket = net.createServer(function(c) {
     console.log('Rserve socket connected!');
 });
+
+var R = process.env.R_PATH ? process.env.R_PATH + '/R' : 'R'
+
 rserveSocket.listen('./rserve.sock', function() { //'listening' listener
     console.log('R server bound');
 
-    const child = child_process.spawn(process.env.R_PATH + '/R', 
+    const child = child_process.spawn(R, 
       ['CMD', 'Rserve', '--no-save', '--RS-conf', 'rserve.config', '--RS-socket', path.join(__dirname, 'rserve.sock')])
 
     child.stdout.on('data', (data) => {
