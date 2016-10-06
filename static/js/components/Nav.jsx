@@ -5,75 +5,55 @@ import { LinkContainer } from 'react-router-bootstrap';
 var _ = require('underscore')
 
 export default class Nav extends React.Component {
-
-  constructor(props){
-    super(props)
-    this.state = {
-      activeKey : 1.1,
+    constructor(props){
+        super(props)
     }
-  }
 
-  onSelect = (event) => {
-    this.setState(_.extend({}, this.state, {activeKey : event}))
-  }
+    render() {
+        return(
+            <div style={_.extend(this.props.style, {position : 'absolute', left : 0, right : 0})}>
+                <span style={{display : 'table', height : '100%'}}>
 
-  render() {
-    return (
-      <BS.Navbar>
-        <BS.Navbar.Brand>
-          Mapping the American Sociome
-        </BS.Navbar.Brand>
+                    <div style={{paddingLeft : 30, display : 'table-cell', verticalAlign : 'middle'}}>
+                        <img style={{maxHeight : '35%'}} src="assets/logo_u7.png"/>
+                    </div>
 
-        <BS.Nav class="pull-right" activeKey={this.state.activeKey} onSelect={this.onSelect}>
-          <BS.NavDropdown id="dropdown" eventKey={1} title="Explore">
-            <LinkContainer eventKey={1.1} to="/explore">
-              <BS.MenuItem>
-                Map
-              </BS.MenuItem>
-            </LinkContainer>
-            <LinkContainer eventKey={1.2} to="/compare-data">
-              <BS.MenuItem>
-                Compare
-              </BS.MenuItem>
-            </LinkContainer>
-            <LinkContainer eventKey={1.3} to="/sandbox">
-              <BS.MenuItem>
-                Sandbox
-              </BS.MenuItem>
-            </LinkContainer>
-            <LinkContainer eventKey={1.4} to="/diff-in-diff">
-              <BS.MenuItem>
-                Differences-In-Differences
-              </BS.MenuItem>
-            </LinkContainer>
-            <LinkContainer eventKey={1.5} to="/multi-level">
-              <BS.MenuItem>
-                Multi Level Modelling
-              </BS.MenuItem>
-            </LinkContainer>
-            <LinkContainer eventKey={1.6} to="/regression">
-              <BS.MenuItem>
-                Linear Regression
-              </BS.MenuItem>
-            </LinkContainer>
-          </BS.NavDropdown>
-          <LinkContainer to="/purpose">
-            <BS.NavItem eventKey={2}>
-              Purpose
-            </BS.NavItem>
-          </LinkContainer>
-          <LinkContainer to="/contact">
-            <BS.NavItem eventKey={3}>
-              Contact
-            </BS.NavItem>
-          </LinkContainer>
-          <LinkContainer to="/privacy">
-            <BS.NavItem eventKey={4}>
-              Privacy
-            </BS.NavItem>
-          </LinkContainer>
-        </BS.Nav>
-      </BS.Navbar>
-    );
-  }
+                    <div style={{paddingLeft : 15, display : 'table-cell', height : '100%', verticalAlign : 'middle'}}>
+                        <p style={{
+                            fontFamily : 'Avenir-Medium, Avenir Medium, Avenir Book, Avenir',
+                            fontSize : '18px',
+                            fontStyle : 'normal',
+                            fontWeight : 500,
+                        }}>
+                            Mapping the American Sociome
+                        </p>
+                    </div>
+                </span>  
+
+                <span style={{display: 'table', position : 'absolute', right : '10', top : 0, height : '100%'}}>
+                    <div style={{display : 'table-cell', verticalAlign : 'middle'}}>
+                        <p style={{
+                            fontFamily: 'Avenir-Heavy, Avenir Heavy, Avenir Book, Avenir',
+                            fontWeight: 800,
+                            fontStyle: 'normal',
+                            fontSize: '10px',
+                        }}>
+                            About
+                        </p>
+                    </div>
+                    <div style={{paddingLeft : 10, display : 'table-cell', verticalAlign : 'middle'}}>
+                        <p style={{
+                            fontFamily: 'Avenir-Heavy, Avenir Heavy, Avenir Book, Avenir',
+                            fontWeight: 800,
+                            fontStyle: 'normal',
+                            fontSize: '10px',
+                        }}>
+                            Contact
+                        </p>
+                    </div>
+                </span>
+            </div>
+        )
+    }
 }
+
