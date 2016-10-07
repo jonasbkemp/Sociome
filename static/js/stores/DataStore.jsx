@@ -1,7 +1,7 @@
 import {EventEmitter} from 'events';
 import dispatcher from 'sociome/Dispatcher';
 import {fields} from 'sociome/stores/PolicyFields';
-var _ = require('underscore')
+import * as _ from 'lodash';
 
 const BACKEND_URL = process.env.NODE_ENV === 'production' ? 
 					'http://sociome-ml9951.rhcloud.com/' : 

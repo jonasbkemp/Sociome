@@ -1,5 +1,5 @@
 import {EventEmitter} from 'events';
-
+var d3 = require('d3');
 
 class TopoJsonStore extends EventEmitter{
 	constructor(){

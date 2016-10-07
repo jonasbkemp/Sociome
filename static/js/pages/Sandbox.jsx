@@ -5,8 +5,7 @@ import {policyStore} from 'sociome/stores/DataStore';
 import {states} from 'sociome/data/StateCodes';
 import SynthResults from 'sociome/components/SynthResults';
 import Spinner from 'react-spinkit';
-
-var _ = require('underscore')
+import * as _ from 'lodash';
 
 
 const BACKEND_URL = process.env.NODE_ENV === 'production' ? 

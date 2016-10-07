@@ -1,6 +1,6 @@
 import React from 'react';
 import Select from 'react-select';
-import * as _ from 'underscore';
+import * as _ from 'lodash';
 import * as BS from 'react-bootstrap';
 
 export default class ExploreBar extends React.Component{
@@ -25,7 +25,7 @@ export default class ExploreBar extends React.Component{
 
 	render(){
 		return(
-			<nav class="navbar navbar-default">
+			<nav class="navbar navbar-default" style={{marginBottom : 0}}>
 				<div class="container-fluid">
 					<ul class="nav navbar-nav">
 						<li class="dropdown">
@@ -48,14 +48,14 @@ export default class ExploreBar extends React.Component{
 							<ul class="dropdown-menu">
 							{
 								this.state.datasets.map((ds) => 
-									<li><a href="#">{ds}</a></li>
+									<li key={ds}><a href="#">{ds}</a></li>
 								)
 							}
 					        </ul>
 						</li>
 						{
 							this.state.categories.map((opt) => 
-								<li class="dropdown">
+								<li class="dropdown" key={opt}>
 									<a
 										href="#"
 										class="dropdown-toggle"
@@ -69,13 +69,23 @@ export default class ExploreBar extends React.Component{
 											fontSize : '12px',
 										}}
 									>
-										<span class="caret"></span>
 										{opt}
 									</a>
 									<ul class="dropdown-menu">
 							            {
 							            	_.range(3).map((v) => 
-							            		<li><a href="#">{`Dropdown ${v}`}</a></li>
+							            		<li key={v}><a href="#">
+							            			<p
+							            				style={{
+							            					fontFamily : 'Avenir-Light, Avenir Light, Avenir Book, Avenir',
+							            					fontWeight : 200,
+							            					fontSize : '12px',
+							            					textAlign : 'left',
+							            				}}
+							            			>
+							            				{`Dropdown ${v}`}
+							            			</p>
+							            		</a></li>
 							            	)
 							            }
 							        </ul>
@@ -85,38 +95,7 @@ export default class ExploreBar extends React.Component{
 					</ul>
 				</div>
 			</nav>
-
-
-
-
 		)
-		/*
-		return(
-			<div style={_.extend(this.props.style, {display : 'table'})}>
-				<div 
-					style={{
-						display : 'table-cell', 
-						height : '100%', 
-						backgroundColor : 'rgba(242, 242, 242, 1)'
-					}}
-				>
-					<BS.NavDropdown
-						title={
-							<p
-								style={{
-									fontFamily : 'Avenir-Light,Avenir Light,Avenir Book,Avenir',
-									fontWeight : 200,
-									fontSize : '16px',
-								}}
-							>
-								Policy Data
-							</p>
-						}
-					>
-					</BS.NavDropdown>
-				</div>
-			</div>
-		)*/
 	}
 }
 

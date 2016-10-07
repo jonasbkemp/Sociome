@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import Select from 'react-select';
 import ZoomMap from 'sociome/components/ZoomMap';
-var _ = require('underscore')
+import * as _ from 'lodash';
 
 const BACKEND_URL = process.env.NODE_ENV === 'production' ? 
 					'http://sociome-ml9951.rhcloud.com/' : 

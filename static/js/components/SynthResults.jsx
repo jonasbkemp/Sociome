@@ -1,8 +1,7 @@
 import React from 'react';
 import {BarChart, Bar, Line, ResponsiveContainer, CartesianGrid,
 		Tooltip, XAxis, YAxis, Legend, LineChart} from 'recharts';
-
-var _ = require('underscore');
+import * as _ from 'lodash';
 
 export default class SynthResults extends React.Component{
     constructor(){

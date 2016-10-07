@@ -2,7 +2,7 @@ var d3 = require('d3')
 import Datamap from 'datamaps/dist/datamaps.usa.min'
 import React, {Component} from 'react';
 import {policyStore} from 'sociome/stores/PolicyStore';
-var _ = require('underscore')
+import * as _ from 'lodash';
 import {getStateInfo} from 'sociome/data/StateCodes'
 
 export default class Map extends Component{

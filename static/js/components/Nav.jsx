@@ -2,7 +2,7 @@ import React from "react";
 import {Link} from 'react-router';
 import * as BS from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-var _ = require('underscore')
+import * as _ from 'lodash';
 
 export default class Nav extends React.Component {
     constructor(props){
@@ -15,7 +15,7 @@ export default class Nav extends React.Component {
                 <span style={{display : 'table', height : '100%'}}>
 
                     <div style={{paddingLeft : 30, display : 'table-cell', verticalAlign : 'middle'}}>
-                        <img style={{maxHeight : '35%'}} src="assets/logo_u7.png"/>
+                        <img style={{width : '30px', height : '42px'}} src="assets/logo_u7.png"/>
                     </div>
 
                     <div style={{paddingLeft : 15, display : 'table-cell', height : '100%', verticalAlign : 'middle'}}>
@@ -24,6 +24,7 @@ export default class Nav extends React.Component {
                             fontSize : '18px',
                             fontStyle : 'normal',
                             fontWeight : 500,
+                            margin : '0 auto',
                         }}>
                             Mapping the American Sociome
                         </p>
@@ -37,8 +38,9 @@ export default class Nav extends React.Component {
                             fontWeight: 800,
                             fontStyle: 'normal',
                             fontSize: '10px',
+                            margin : '0 auto'
                         }}>
-                            About
+                            about
                         </p>
                     </div>
                     <div style={{paddingLeft : 10, display : 'table-cell', verticalAlign : 'middle'}}>
@@ -47,8 +49,9 @@ export default class Nav extends React.Component {
                             fontWeight: 800,
                             fontStyle: 'normal',
                             fontSize: '10px',
+                            margin : '0 auto'
                         }}>
-                            Contact
+                            contact
                         </p>
                     </div>
                 </span>

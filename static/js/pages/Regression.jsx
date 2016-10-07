@@ -4,7 +4,7 @@ import {Button} from 'react-bootstrap';
 import {policyStore} from 'sociome/stores/DataStore';
 import {states} from 'sociome/data/StateCodes';
 import {ScatterChart, Line, Legend, CartesianGrid, Scatter, XAxis, YAxis, ZAxis, ResponsiveContainer, Tooltip} from 'recharts';
-var _ = require('underscore')
+import * as _ from 'lodash';
 
 const BACKEND_URL = process.env.NODE_ENV === 'production' ? 
 					'http://sociome-ml9951.rhcloud.com' : 

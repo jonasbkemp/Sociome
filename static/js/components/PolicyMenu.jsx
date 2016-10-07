@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {policyStore} from 'sociome/stores/PolicyStore';
 import Select from 'react-select';
 require('react-select/dist/react-select.css');
-var _ = require('underscore')
+import * as _ from 'lodash';
 import * as PolicyActions from 'sociome/actions/PolicyActions';
 import ReactBootstrapSlider from 'react-bootstrap-slider';
 

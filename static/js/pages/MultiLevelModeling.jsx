@@ -4,8 +4,7 @@ import {Button} from 'react-bootstrap';
 import {policyStore} from 'sociome/stores/DataStore';
 import {states} from 'sociome/data/StateCodes';
 import Spinner from 'react-spinkit';
-
-var _ = require('underscore')
+import * as _ from 'lodash';
 
 
 /*
