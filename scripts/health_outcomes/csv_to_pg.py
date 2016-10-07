@@ -64,5 +64,8 @@ scriptStream.write('COPY health_outcomes (%s) FROM stdin WITH NULL AS \'nan\';\n
 data.apply(formatVal, axis=1)
 
 scriptStream.write('\\.\n')
+scriptStream.write('UPDATE health_outcomes SET measurename=initcap(lower(measurename));')
+scriptStream.write('CREATE INDEX measurename ON health_outcomes (measurename);\n')
 
-scriptStream.write('CREATE INDEX measurename ON health_outcomes ((lower(measurename)));\n')
+
+
