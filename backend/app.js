@@ -73,7 +73,8 @@ app.get('/GetYears', function(req, res){
 app.get('/GetPolicyData', function(req, res){
   var table = req.query.policy
   var field = req.query.field
-  var query = `SELECT state, year, ${field} FROM ${table} WHERE ${field} IS NOT NULL ORDER BY year;`
+  var yearClause = req.query.year ? `AND year=${req.query.year}` : `ORDER BY year`
+  var query = `SELECT state, year, ${field} as value FROM ${table} WHERE ${field} IS NOT NULL ${yearClause};`
   console.log(query)
   db.query(query).then(
     function(data){
