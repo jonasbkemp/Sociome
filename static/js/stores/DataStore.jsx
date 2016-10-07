@@ -64,7 +64,7 @@ class PolicyStore extends EventEmitter{
 			{value : 'median_household_income', label : 'Median Household Income'},
 			{value : 'median_family_income', label : 'Median Family Income'},
 			{value : 'persons_in_poverty', label : 'Persons in Poverty'},
-			{value : 'elligible_for_medicare', label : 'Percent Population Elligible for Medicare'},
+			{value : 'eligible_for_medicare', label : 'Percent Population Elligible for Medicare'},
 			{value : 'receiving_foodstamps', label : 'Percent Population Receiving Food Stamps/SNAP Recipients'},
 			{value : 'females_divorced', label : 'Percent Females Divorced'},
 			{value : 'unemployment_rate', label : 'Unemployment Rate'},
