@@ -2,25 +2,48 @@ import React from 'react';
 import Select from 'react-select';
 import * as _ from 'lodash';
 import * as BS from 'react-bootstrap';
+import DataStore from 'sociome/stores/DataStore';
+import * as DataActions from 'sociome/actions/DataActions';
 
 export default class ExploreBar extends React.Component{
 	constructor(props){
 		super(props);
 		this.state = {
-			datasets : ['Policy', 'Health Outcomes', 'Demographics'],
-			categories : [
-				'Health',
-				'Education',
-				'Tobacco & Drugs',
-				'Guns',
-				'Justice & Equality',
-			 	'Consumer',
-				'Labor',
-				'Environment',
-				'Infrastructure',
-				'Economy'
-			]
+			datasets : DataStore.getDatasets(),
+			whichDataset : undefined,
+			categories : [],
 		}
+	}
+
+	changeDataset = () => {
+		this.setState(_.extend({}, this.state, {
+			whichDataset : DataStore.getCurrentDataset(),
+			categories : DataStore.getCategories(),
+		}))
+	}
+
+	changeSubCategory = () => {
+		this.setState(_.extend({}, this.state, {
+			whichSubCategory : DataStore.getCurrentSubCategory(),
+		}))
+	}
+
+	componentWillMount(){
+		DataStore.on('change-dataset', this.changeDataset);
+		DataStore.on('change-sub-category', this.changeSubCategory);
+	}
+
+	coponentWillUnmount(){
+		DataStore.removeListener('change-dataset', this.changeDataset);
+		DataStore.removeListener('change-sub-category', this.changeSubCategory);
+	}
+
+	selectDS = (event) => {
+		DataActions.setDataset(event.target.id);
+	}
+
+	setSubCategory = (event) => {
+		DataActions.setSubCategory(event.target.id);
 	}
 
 	render(){
@@ -48,49 +71,80 @@ export default class ExploreBar extends React.Component{
 							<ul class="dropdown-menu">
 							{
 								this.state.datasets.map((ds) => 
-									<li key={ds}><a href="#">{ds}</a></li>
+									this.state.whichDataset === ds ? 
+										<li key={ds} class='active'><a id={ds} href="#">{ds}</a></li> : 
+										<li key={ds} onClick={this.selectDS}><a id={ds} href="#">{ds}</a></li>
 								)
 							}
 					        </ul>
 						</li>
 						{
-							this.state.categories.map((opt) => 
-								<li class="dropdown" key={opt}>
-									<a
-										href="#"
-										class="dropdown-toggle"
-										data-toggle='dropdown'
-										role='button'
-										aria-has-popup={true}
-										aria-expanded={false}
-										style={{
-											fontFamily : 'Avenir-Light,Avenir Light,Avenir Book,Avenir',
-											fontWeight : 200,
-											fontSize : '12px',
-										}}
+							this.state.whichDataset === 'Policy' || this.state.whichDataset === 'Demographics' ? 
+								this.state.categories.map((category) => 
+									<li 
+										class="dropdown" 
+										key={category.value} 
 									>
-										{opt}
-									</a>
-									<ul class="dropdown-menu">
-							            {
-							            	_.range(3).map((v) => 
-							            		<li key={v}><a href="#">
-							            			<p
-							            				style={{
-							            					fontFamily : 'Avenir-Light, Avenir Light, Avenir Book, Avenir',
-							            					fontWeight : 200,
-							            					fontSize : '12px',
-							            					textAlign : 'left',
-							            				}}
-							            			>
-							            				{`Dropdown ${v}`}
-							            			</p>
-							            		</a></li>
-							            	)
-							            }
-							        </ul>
-								</li>
-							)
+										<a
+											href="#"
+											class="dropdown-toggle"
+											data-toggle='dropdown'
+											role='button'
+											aria-has-popup={true}
+											aria-expanded={false}
+											style={{
+												fontFamily : 'Avenir-Light,Avenir Light,Avenir Book,Avenir',
+												fontWeight : 200,
+												fontSize : '12px',
+											}}
+										>
+											{category.label}
+										</a>
+										<ul class="dropdown-menu">
+								            {
+								            	DataStore.getSubCategories(category.value).map((v) => 
+								            		<li 
+								            			id={v.value} 
+								            			key={v.value} 
+								            			onClick={this.setSubCategory}
+								            			class={this.state.whichSubCategory === v.value ? 'active' : undefined}
+								            		>
+									            		<a id={v.value} href="#">
+									            			<p
+									            				id={v.value}
+									            				style={{
+									            					fontFamily : 'Avenir-Light, Avenir Light, Avenir Book, Avenir',
+									            					fontWeight : 200,
+									            					fontSize : '12px',
+									            					textAlign : 'left',
+									            				}}
+									            			>
+									            				{v.label}
+									            			</p>
+									            		</a>
+								            		</li>
+								            	)
+								            }
+								        </ul>
+									</li>
+								) : 
+								this.state.categories.map((category) => 
+									<li key={category.value}>
+										<a 
+											href="#"
+											role='button'
+											aria-has-popup={true}
+											aria-expanded={false}
+											style={{
+												fontFamily : 'Avenir-Light,Avenir Light,Avenir Book,Avenir',
+												fontWeight : 200,
+												fontSize : '12px',
+											}}
+										>
+											{category.label}
+										</a>
+									</li>
+								)
 						}
 					</ul>
 				</div>
