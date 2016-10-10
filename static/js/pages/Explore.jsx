@@ -14,7 +14,7 @@ export default class Explore extends Component{
 			data : undefined
 		}
 
-		var url = `${BACKEND_URL}/GetHealthOutcomes?measure_name=adult_obesity&year=2008`;
+		var url = `${BACKEND_URL}/GetHealthOutcomes?measure_name=Adult Obesity&year=2008`;
 		//var url = `${BACKEND_URL}/GetPolicyData?policy=a_fiscal_11&field=apolspt&year=1957`;
 
 		$.get(url)
@@ -43,7 +43,7 @@ export default class Explore extends Component{
 					    			dataset={this.state.data && this.state.data.length > 100 ? 'health-outcomes' : 'policy'}
 					    		/>
 				    		</div>
-				    		<div style={{width : '50%', margin : '0 auto', marginTop : 20}}>
+				    		<div style={{width : '40%', margin : '0 auto', marginTop : 20}}>
 				    			<input
 				    				type="range"
 				    			/>

@@ -6,9 +6,10 @@ var stats = require('simple-statistics')
 require('dotenv').config({silent : true});
 var rio = require('rio');
 var path = require('path')
+var _ = require('lodash')
 
 var db = new pg.Client(process.env.OPENSHIFT_POSTGRESQL_DB_URL ? 
-                       process.env.OPENSHIFT_POSTGRESQL_DB_URL : {database : 'sociome_db'});
+                       process.env.OPENSHIFT_POSTGRESQL_DB_URL : {database : 'sociome'});
 db.connect();
 
 var app = express()
@@ -90,13 +91,8 @@ app.get('/GetPolicyData', function(req, res){
 
 app.get('/GetHealthOutcomes', function(req, res){
   var measure_name = req.query.measure_name;
-  var year = req.query.year
-  var query = undefined;
-  if(year){
-    query = 'SELECT * FROM ' + measure_name + ' WHERE start_year = ' + year + ';'
-  }else{
-    query = 'SELECT * FROM ' + measure_name + ' ORDER BY start_year;'  
-  }
+  var yearClause = req.query.year ? `WHERE start_year=${req.query.year}` : `ORDER BY start_year`;
+  var query = `SELECT year, county as state, rawvalue as value, countycode, statecode FROM health_outcomes WHERE measurename='${measure_name}';`;
   db.query(query).then(
     function(data){
       res.json(data.rows)
@@ -107,6 +103,15 @@ app.get('/GetHealthOutcomes', function(req, res){
       res.json({})
     }
   )
+})
+
+app.get('/GetHealthOutcomeTypes', function(req, res){
+  db.query('SELECT DISTINCT measurename FROM health_outcomes WHERE measurename IS NOT NULL;').then((data) => {
+    res.json(data.rows.map((t) => t.measurename));
+  }).catch((err) => {
+    console.log(err);
+    res.status(500).send(err);
+  })
 })
 
 app.get('/Multilevel', function(req, res){

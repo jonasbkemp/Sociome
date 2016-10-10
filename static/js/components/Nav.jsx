@@ -31,7 +31,7 @@ export default class Nav extends React.Component {
                     </div>
                 </span>  
 
-                <span style={{display: 'table', position : 'absolute', right : '10', top : 0, height : '100%'}}>
+                <span style={{display: 'table', position : 'absolute', right : 10, top : 0, height : '100%'}}>
                     <div style={{display : 'table-cell', verticalAlign : 'middle'}}>
                         <p style={{
                             fontFamily: 'Avenir-Heavy, Avenir Heavy, Avenir Book, Avenir',

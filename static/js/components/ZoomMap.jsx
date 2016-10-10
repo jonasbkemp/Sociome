@@ -86,8 +86,8 @@ class ZoomMap extends Component{
 	            			res.data[d.statecode] = d;
 	            		else
 	            			res.data[d.statecode][d.countycode] = d;
-	            		res.min = Math.min(res.min, d.rawvalue);
-	            		res.max = Math.max(res.max, d.rawvalue);
+	            		res.min = Math.min(res.min, d.value);
+	            		res.max = Math.max(res.max, d.value);
 	            		return res;
 	            	}, {data : {}, min : Number.MAX_VALUE, max : Number.MIN_VALUE});
 
@@ -96,7 +96,7 @@ class ZoomMap extends Component{
 				    .interpolate(d3.interpolateRgb)
 				    .range(["#EFEFFF","#02386F"])
 
-				this.counties = this.g.selectAll('path')
+				this.counties = this.g.append('g').attr('id', 'county-lines').selectAll('path')
 					.data(topojson.feature(GEO_JSON, GEO_JSON.objects.counties).features)
 					.enter()
 					.append('path')
@@ -105,13 +105,13 @@ class ZoomMap extends Component{
 						var county = d.id % 1000
 						var state = Math.floor(d.id / 1000)
 						if(data[state] && data[state][county])
-							return heatmap(data[state][county].rawvalue)
+							return heatmap(data[state][county].value)
 					})
 					.attr('value', (d) => {
 						var county = d.id % 1000
 						var state = Math.floor(d.id / 1000)
 						if(data[state] && data[state][county])
-							return data[state][county].rawvalue;
+							return data[state][county].value;
 					})
 					.on('mousemove', (d, i, children) => {
 	                    var mouse = d3.mouse(document.body);
@@ -125,8 +125,8 @@ class ZoomMap extends Component{
 	                })
 	                .on('mouseout', () => this.tooltip.classed('hidden', true))
 
-				// Draw the state lines.  
-	            this.states = this.g.append('g').selectAll('path')
+	            // Draw the state lines.  
+	            this.states = this.g.append('g').attr('id', 'state-lines').selectAll('path')
 	              	.data(topojson.feature(GEO_JSON, GEO_JSON.objects.states).features)
 	              	.enter().append('path')
 			      	.attr("d", path)		
@@ -230,7 +230,7 @@ class ZoomMap extends Component{
 
 	// Only update the map if the data changed...
 	shouldComponentUpdate(nextProps){
-		return this.props.data !== nextProps.data
+		return this.props.data !== nextProps.data;
 	}
 
 	render(){
