@@ -7,6 +7,7 @@ require('dotenv').config({silent : true});
 var rio = require('rio');
 var path = require('path')
 var _ = require('lodash')
+var request = require('request')
 
 var db = new pg.Client(process.env.OPENSHIFT_POSTGRESQL_DB_URL ? 
                        process.env.OPENSHIFT_POSTGRESQL_DB_URL : {database : 'sociome'});
