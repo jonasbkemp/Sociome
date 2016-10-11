@@ -92,8 +92,8 @@ app.get('/GetPolicyData', function(req, res){
 
 app.get('/GetHealthOutcomes', function(req, res){
   var measure_name = req.query.measure_name;
-  var yearClause = req.query.year ? `WHERE start_year=${req.query.year}` : `ORDER BY start_year`;
-  var query = `SELECT year, county as state, rawvalue as value, countycode, statecode FROM health_outcomes WHERE measurename='${measure_name}';`;
+  var yearClause = req.query.year ? `AND year=${req.query.year}` : `ORDER BY year`;
+  var query = `SELECT year, county as state, rawvalue as value, countycode, statecode FROM health_outcomes WHERE measurename='${measure_name}' ${yearClause};`;
   db.query(query).then(
     function(data){
       res.json(data.rows)
