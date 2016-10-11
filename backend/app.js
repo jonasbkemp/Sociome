@@ -8,8 +8,11 @@ var rio = require('rio');
 var path = require('path')
 var request = require('request')
 
+var port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 8082;
+var ip = process.env.OPENSHIFT_NODEJS_IP || "localhost";
+
 var db = new pg.Client(process.env.OPENSHIFT_POSTGRESQL_DB_URL ? 
-                       process.env.OPENSHIFT_POSTGRESQL_DB_URL : {database : 'sociome_db'});
+                       process.env.OPENSHIFT_POSTGRESQL_DB_URL : {database : 'sociome'});
 db.connect();
 
 var app = express()
