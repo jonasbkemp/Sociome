@@ -2,1100 +2,808 @@ exports.policyCategories = {
   "Land & Environment": {
     "Regulations": [
       {
-        "category": "Land & Environment",
-        "table": "v_race_11",
-        "label": "natural resources expenditures",
-        "col": "anrspt",
-        "subcategory": "Regulations"
+        "table": "a_fiscal_11",
+        "value": "anrspt",
+        "label": "natural resources expenditures"
       },
       {
-        "category": "Land & Environment",
-        "table": "v_race_11",
-        "label": "Wetland Restoration Program",
-        "col": "fswp",
-        "subcategory": "Regulations"
+        "table": "f_land_11",
+        "value": "fswp",
+        "label": "Wetland Restoration Program"
       },
       {
-        "category": "Land & Environment",
-        "table": "v_race_11",
-        "label": "Endangered Species Act",
-        "col": "fesasap",
-        "subcategory": "Regulations"
+        "table": "f_land_11",
+        "value": "fesasap",
+        "label": "Endangered Species Act"
       },
       {
-        "category": "Land & Environment",
-        "table": "v_race_11",
-        "label": "Greenhouse Gases",
-        "col": "fcap",
-        "subcategory": "Regulations"
+        "table": "f_land_11",
+        "value": "fcap",
+        "label": "Greenhouse Gases"
       },
       {
-        "category": "Land & Environment",
-        "table": "v_race_11",
-        "label": "Electricity retail sale",
-        "col": "jdrse",
-        "subcategory": "Regulations"
+        "table": "j_util_11",
+        "value": "jdrse",
+        "label": "Electricity retail sale"
       },
       {
-        "category": "Land & Environment",
-        "table": "v_race_11",
-        "label": "Natural Gases retail sale",
-        "col": "jdrsng",
-        "subcategory": "Regulations"
+        "table": "j_util_11",
+        "value": "jdrsng",
+        "label": "Natural Gases retail sale"
       }
     ],
     "Zoning": [
       {
-        "category": "Land & Environment",
-        "table": "v_race_11",
-        "label": "Local Plans",
-        "col": "fsmlp",
-        "subcategory": "Zoning"
+        "table": "f_land_11",
+        "value": "fsmlp",
+        "label": "Local Plans"
       },
       {
-        "category": "Land & Environment",
-        "table": "v_race_11",
-        "label": "Internal Consistency",
-        "col": "fic",
-        "subcategory": "Zoning"
+        "table": "f_land_11",
+        "value": "fic",
+        "label": "Internal Consistency"
       },
       {
-        "category": "Land & Environment",
-        "table": "v_race_11",
-        "label": "Vertical Consistency",
-        "col": "fyc",
-        "subcategory": "Zoning"
+        "table": "f_land_11",
+        "value": "fyc",
+        "label": "Vertical Consistency"
       },
       {
-        "category": "Land & Environment",
-        "table": "v_race_11",
-        "label": "Horizontal Consistency",
-        "col": "fhc",
-        "subcategory": "Zoning"
+        "table": "f_land_11",
+        "value": "fhc",
+        "label": "Horizontal Consistency"
       }
     ]
   },
   "Infrastructure": {
     "Vehicles": [
       {
-        "category": "Infrastructure",
-        "table": "v_race_11",
-        "label": "motorcycle helmet",
-        "col": "dhelmall",
-        "subcategory": "Vehicles"
+        "table": "d_mala_11",
+        "value": "dhelmall",
+        "label": "motorcycle helmet"
       },
       {
-        "category": "Infrastructure",
-        "table": "v_race_11",
-        "label": "Bicycle helmet",
-        "col": "dbike",
-        "subcategory": "Vehicles"
+        "table": "d_mala_11",
+        "value": "dbike",
+        "label": "Bicycle helmet"
       },
       {
-        "category": "Infrastructure",
-        "table": "v_race_11",
-        "label": "Open Container Law",
-        "col": "docont",
-        "subcategory": "Vehicles"
+        "table": "d_mala_11",
+        "value": "docont",
+        "label": "Open Container Law"
       },
       {
-        "category": "Infrastructure",
-        "table": "v_race_11",
-        "label": "Sobriety Checkpoint",
-        "col": "dsobchk",
-        "subcategory": "Vehicles"
+        "table": "d_mala_11",
+        "value": "dsobchk",
+        "label": "Sobriety Checkpoint"
       },
       {
-        "category": "Infrastructure",
-        "table": "v_race_11",
-        "label": "Auto Liability Insurance",
-        "col": "dliab",
-        "subcategory": "Vehicles"
+        "table": "d_mala_11",
+        "value": "dliab",
+        "label": "Auto Liability Insurance"
       },
       {
-        "category": "Infrastructure",
-        "table": "v_race_11",
-        "label": "Motor Fuel Tax",
-        "col": "agast",
-        "subcategory": "Vehicles"
+        "table": "a_fiscal_11",
+        "value": "agast",
+        "label": "Motor Fuel Tax"
       },
       {
-        "category": "Infrastructure",
-        "table": "v_race_11",
-        "label": "PIP Insurance ",
-        "col": "dautopip",
-        "subcategory": "Vehicles"
+        "table": "d_mala_11",
+        "value": "dautopip",
+        "label": "PIP Insurance "
       }
     ],
     "Law Enforcement": [
       {
-        "category": "Infrastructure",
-        "table": "v_race_11",
-        "label": "Corrections Expenditures",
-        "col": "aedspt",
-        "subcategory": "Law Enforcement"
+        "table": "a_fiscal_11",
+        "value": "aedspt",
+        "label": "Corrections Expenditures"
       },
       {
-        "category": "Infrastructure",
-        "table": "v_race_11",
-        "label": "Police Ratio",
-        "col": "rpolice",
-        "subcategory": "Law Enforcement"
+        "table": "r_enfor_11",
+        "value": "rpolice",
+        "label": "Police Ratio"
       },
       {
-        "category": "Infrastructure",
-        "table": "v_race_11",
-        "label": "Imprisonment Rate",
-        "col": "rincarc",
-        "subcategory": "Law Enforcement"
+        "table": "r_enfor_11",
+        "value": "rincarc",
+        "label": "Imprisonment Rate"
       }
     ],
     "Hard Infrastructure": [
       {
-        "category": "Infrastructure",
-        "table": "v_race_11",
-        "label": "Public Buildings Expenditures",
-        "col": "agpbspt",
-        "subcategory": "Hard Infrastructure"
+        "table": "a_fiscal_11",
+        "value": "agpbspt",
+        "label": "Public Buildings Expenditures"
       },
       {
-        "category": "Infrastructure",
-        "table": "v_race_11",
-        "label": "Highways Expenditures",
-        "col": "ahwyspt",
-        "subcategory": "Hard Infrastructure"
+        "table": "a_fiscal_11",
+        "value": "ahwyspt",
+        "label": "Highways Expenditures"
       },
       {
-        "category": "Infrastructure",
-        "table": "v_race_11",
-        "label": "Community Development Expenditures",
-        "col": "ahcdspt",
-        "subcategory": "Hard Infrastructure"
+        "table": "a_fiscal_11",
+        "value": "ahcdspt",
+        "label": "Community Development Expenditures"
       },
       {
-        "category": "Infrastructure",
-        "table": "v_race_11",
-        "label": "library expenditures",
-        "col": "alibspt",
-        "subcategory": "Hard Infrastructure"
+        "table": "a_fiscal_11",
+        "value": "alibspt",
+        "label": "library expenditures"
       },
       {
-        "category": "Infrastructure",
-        "table": "v_race_11",
-        "label": "Sanitation Expenditures",
-        "col": "asanspt",
-        "subcategory": "Hard Infrastructure"
+        "table": "a_fiscal_11",
+        "value": "asanspt",
+        "label": "Sanitation Expenditures"
       }
     ]
   },
   "Economy & Politics": {
     "Political Contributions": [
       {
-        "category": "Economy & Politics",
-        "table": "v_race_11",
-        "label": "Public financing index",
-        "col": "tpubfin",
-        "subcategory": "Political Contributions"
+        "table": "t_elec_11",
+        "value": "tpubfin",
+        "label": "Public financing index"
       },
       {
-        "category": "Economy & Politics",
-        "table": "v_race_11",
-        "label": "Individual Contributions to House Candidates",
-        "col": "tindconcraw",
-        "subcategory": "Political Contributions"
+        "table": "t_elec_11",
+        "value": "tindconcraw",
+        "label": "Individual Contributions to House Candidates"
       },
       {
-        "category": "Economy & Politics",
-        "table": "v_race_11",
-        "label": "Corporate contributions to house candidates",
-        "col": "tcorconcraw",
-        "subcategory": "Political Contributions"
+        "table": "t_elec_11",
+        "value": "tcorconcraw",
+        "label": "Corporate contributions to house candidates"
       },
       {
-        "category": "Economy & Politics",
-        "table": "v_race_11",
-        "label": "corporate contributions to political parties",
-        "col": "tcorconpraw",
-        "subcategory": "Political Contributions"
+        "table": "t_elec_11",
+        "value": "tcorconpraw",
+        "label": "corporate contributions to political parties"
       },
       {
-        "category": "Economy & Politics",
-        "table": "v_race_11",
-        "label": "individual contributions to political parties",
-        "col": "tindconpraw",
-        "subcategory": "Political Contributions"
+        "table": "t_elec_11",
+        "value": "tindconpraw",
+        "label": "individual contributions to political parties"
       },
       {
-        "category": "Economy & Politics",
-        "table": "v_race_11",
-        "label": "State house districts",
-        "col": "thd",
-        "subcategory": "Political Contributions"
+        "table": "t_elec_11",
+        "value": "thd",
+        "label": "State house districts"
       }
     ],
     "Economic Metrics": [
       {
-        "category": "Economy & Politics",
-        "table": "v_race_11",
-        "label": "Debt",
-        "col": "asldebt",
-        "subcategory": "Economic Metrics"
+        "table": "a_fiscal_11",
+        "value": "asldebt",
+        "label": "Debt"
       },
       {
-        "category": "Economy & Politics",
-        "table": "v_race_11",
-        "label": "Interest on General Debt",
-        "col": "aintspt",
-        "subcategory": "Economic Metrics"
+        "table": "a_fiscal_11",
+        "value": "aintspt",
+        "label": "Interest on General Debt"
       },
       {
-        "category": "Economy & Politics",
-        "table": "v_race_11",
-        "label": "Consumption & Investment",
-        "col": "aslgci",
-        "subcategory": "Economic Metrics"
+        "table": "a_fiscal_11",
+        "value": "aslgci",
+        "label": "Consumption & Investment"
       },
       {
-        "category": "Economy & Politics",
-        "table": "v_race_11",
-        "label": "Subsidies",
-        "col": "aslsub",
-        "subcategory": "Economic Metrics"
+        "table": "a_fiscal_11",
+        "value": "aslsub",
+        "label": "Subsidies"
       }
     ],
     "PACs": [
       {
-        "category": "Economy & Politics",
-        "table": "v_race_11",
-        "label": "Max PAC contributions (political parties)",
-        "col": "tpacconpraw",
-        "subcategory": "PACs"
+        "table": "t_elec_11",
+        "value": "tpacconpraw",
+        "label": "Max PAC contributions (political parties)"
       },
       {
-        "category": "Economy & Politics",
-        "table": "v_race_11",
-        "label": "Max PAC contributions (candidates)",
-        "col": "tpacconcraw",
-        "subcategory": "PACs"
+        "table": "t_elec_11",
+        "value": "tpacconcraw",
+        "label": "Max PAC contributions (candidates)"
       },
       {
-        "category": "Economy & Politics",
-        "table": "v_race_11",
-        "label": "Individual contributions to PACs",
-        "col": "tindpacraw",
-        "subcategory": "PACs"
+        "table": "t_elec_11",
+        "value": "tindpacraw",
+        "label": "Individual contributions to PACs"
       },
       {
-        "category": "Economy & Politics",
-        "table": "v_race_11",
-        "label": "Corporate contributions to PACs",
-        "col": "tcorpacraw",
-        "subcategory": "PACs"
+        "table": "t_elec_11",
+        "value": "tcorpacraw",
+        "label": "Corporate contributions to PACs"
       },
       {
-        "category": "Economy & Politics",
-        "table": "v_race_11",
-        "label": "Grassroots PAC Regulation (candidates)",
-        "col": "tgprc",
-        "subcategory": "PACs"
+        "table": "t_elec_11",
+        "value": "tgprc",
+        "label": "Grassroots PAC Regulation (candidates)"
       },
       {
-        "category": "Economy & Politics",
-        "table": "v_race_11",
-        "label": "Grassroots PAC Regulation (parties)",
-        "col": "tgprp",
-        "subcategory": "PACs"
+        "table": "t_elec_11",
+        "value": "tgprp",
+        "label": "Grassroots PAC Regulation (parties)"
       },
       {
-        "category": "Economy & Politics",
-        "table": "v_race_11",
-        "label": "Corporate PAC Regulation (candidates)",
-        "col": "tcprc",
-        "subcategory": "PACs"
+        "table": "t_elec_11",
+        "value": "tcprc",
+        "label": "Corporate PAC Regulation (candidates)"
       },
       {
-        "category": "Economy & Politics",
-        "table": "v_race_11",
-        "label": "Corporate PAC Regulation (parties)",
-        "col": "tcprp",
-        "subcategory": "PACs"
+        "table": "t_elec_11",
+        "value": "tcprp",
+        "label": "Corporate PAC Regulation (parties)"
       }
     ]
   },
   "Intoxicants & Gambling": {
     "Drugs": [
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Marijuana Allowed",
-        "col": "cmmamt",
-        "subcategory": "Drugs"
+        "table": "c_drugs_11",
+        "value": "cmmamt",
+        "label": "Marijuana Allowed"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Medical Marijuana Index",
-        "col": "cmmindex",
-        "subcategory": "Drugs"
+        "table": "c_drugs_11",
+        "value": "cmmindex",
+        "label": "Medical Marijuana Index"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Max Prison Term",
-        "col": "cmmaxpen",
-        "subcategory": "Drugs"
+        "table": "c_drugs_11",
+        "value": "cmmaxpen",
+        "label": "Max Prison Term"
       }
     ],
     "Gambling": [
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Social Gambling",
-        "col": "dsocgam",
-        "subcategory": "Gambling"
+        "table": "d_mala_11",
+        "value": "dsocgam",
+        "label": "Social Gambling"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Aggravated Gambling",
-        "col": "dgamfel",
-        "subcategory": "Gambling"
+        "table": "d_mala_11",
+        "value": "dgamfel",
+        "label": "Aggravated Gambling"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Internet Gambling",
-        "col": "dintgam",
-        "subcategory": "Gambling"
+        "table": "d_mala_11",
+        "value": "dintgam",
+        "label": "Internet Gambling"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Racetrack Gambling",
-        "col": "dtrack",
-        "subcategory": "Gambling"
+        "table": "d_mala_11",
+        "value": "dtrack",
+        "label": "Racetrack Gambling"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Casino Gambling",
-        "col": "dcasino",
-        "subcategory": "Gambling"
+        "table": "d_mala_11",
+        "value": "dcasino",
+        "label": "Casino Gambling"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Charitable Gaming",
-        "col": "dchargam",
-        "subcategory": "Gambling"
+        "table": "d_mala_11",
+        "value": "dchargam",
+        "label": "Charitable Gaming"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Slot Games",
-        "col": "dslots",
-        "subcategory": "Gambling"
+        "table": "d_mala_11",
+        "value": "dslots",
+        "label": "Slot Games"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Sports Betting",
-        "col": "dsports",
-        "subcategory": "Gambling"
+        "table": "d_mala_11",
+        "value": "dsports",
+        "label": "Sports Betting"
       }
     ],
     "Alcohol": [
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Alcohol Tax",
-        "col": "aalct",
-        "subcategory": "Alcohol"
+        "table": "a_fiscal_11",
+        "value": "aalct",
+        "label": "Alcohol Tax"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Retail Sale of Beer",
-        "col": "cbret",
-        "subcategory": "Alcohol"
+        "table": "c_drugs_11",
+        "value": "cbret",
+        "label": "Retail Sale of Beer"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Wholesale Sale of Beer",
-        "col": "cbwhol",
-        "subcategory": "Alcohol"
+        "table": "c_drugs_11",
+        "value": "cbwhol",
+        "label": "Wholesale Sale of Beer"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Retail Sale of Wine",
-        "col": "cwret",
-        "subcategory": "Alcohol"
+        "table": "c_drugs_11",
+        "value": "cwret",
+        "label": "Retail Sale of Wine"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Wholesale Sale of Wine",
-        "col": "cwwhol",
-        "subcategory": "Alcohol"
+        "table": "c_drugs_11",
+        "value": "cwwhol",
+        "label": "Wholesale Sale of Wine"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Kegs",
-        "col": "ckeg",
-        "subcategory": "Alcohol"
+        "table": "c_drugs_11",
+        "value": "ckeg",
+        "label": "Kegs"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Beer Tax",
-        "col": "cbeertraw",
-        "subcategory": "Alcohol"
+        "table": "c_drugs_11",
+        "value": "cbeertraw",
+        "label": "Beer Tax"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Wine Tax",
-        "col": "cwinetraw",
-        "subcategory": "Alcohol"
+        "table": "c_drugs_11",
+        "value": "cwinetraw",
+        "label": "Wine Tax"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Liquor Store Revenue",
-        "col": "cliquor",
-        "subcategory": "Alcohol"
+        "table": "c_drugs_11",
+        "value": "cliquor",
+        "label": "Liquor Store Revenue"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Happy Hour Law",
-        "col": "cmpieg",
-        "subcategory": "Alcohol"
+        "table": "c_drugs_11",
+        "value": "cmpieg",
+        "label": "Happy Hour Law"
       }
     ],
     "Tobacco": [
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Tobacco Tax",
-        "col": "atobt",
-        "subcategory": "Tobacco"
+        "table": "a_fiscal_11",
+        "value": "atobt",
+        "label": "Tobacco Tax"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Cigarette Tax",
-        "col": "icigtaxraw",
-        "subcategory": "Tobacco"
+        "table": "i_smoking_11",
+        "value": "icigtaxraw",
+        "label": "Cigarette Tax"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Ban (Govt Buildings)",
-        "col": "ibangov",
-        "subcategory": "Tobacco"
+        "table": "i_smoking_11",
+        "value": "ibangov",
+        "label": "Ban (Govt Buildings)"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Ban (Restaurants)",
-        "col": "ibanrest",
-        "subcategory": "Tobacco"
+        "table": "i_smoking_11",
+        "value": "ibanrest",
+        "label": "Ban (Restaurants)"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Ban (Bars)",
-        "col": "ibanbar",
-        "subcategory": "Tobacco"
+        "table": "i_smoking_11",
+        "value": "ibanbar",
+        "label": "Ban (Bars)"
       },
       {
-        "category": "Intoxicants & Gambling",
-        "table": "v_race_11",
-        "label": "Ban (Private Workspaces)",
-        "col": "ibanwork",
-        "subcategory": "Tobacco"
+        "table": "i_smoking_11",
+        "value": "ibanwork",
+        "label": "Ban (Private Workspaces)"
       }
     ]
   },
   "Labor": {
     "Worker Protection": [
       {
-        "category": "Labor",
-        "table": "v_race_11",
-        "label": "workers comp",
-        "col": "gcompman",
-        "subcategory": "Worker Protection"
+        "table": "g_labor_11",
+        "value": "gcompman",
+        "label": "workers comp"
       },
       {
-        "category": "Labor",
-        "table": "v_race_11",
-        "label": "percent union",
-        "col": "gunion",
-        "subcategory": "Worker Protection"
+        "table": "g_labor_11",
+        "value": "gunion",
+        "label": "percent union"
       },
       {
-        "category": "Labor",
-        "table": "v_race_11",
-        "label": "prevailing wage law",
-        "col": "gprev",
-        "subcategory": "Worker Protection"
+        "table": "g_labor_11",
+        "value": "gprev",
+        "label": "prevailing wage law"
       },
       {
-        "category": "Labor",
-        "table": "v_race_11",
-        "label": "right to work law",
-        "col": "prtw",
-        "subcategory": "Worker Protection"
+        "table": "p_abor_11",
+        "value": "prtw",
+        "label": "right to work law"
       },
       {
-        "category": "Labor",
-        "table": "v_race_11",
-        "label": "short term disability",
-        "col": "gdlsab",
-        "subcategory": "Worker Protection"
+        "table": "g_labor_11",
+        "value": "gdlsab",
+        "label": "short term disability"
       },
       {
-        "category": "Labor",
-        "table": "v_race_11",
-        "label": "Paid Family leave",
-        "col": "gleave",
-        "subcategory": "Worker Protection"
+        "table": "g_labor_11",
+        "value": "gleave",
+        "label": "Paid Family leave"
       }
     ],
     "Employment": [
       {
-        "category": "Labor",
-        "table": "v_race_11",
-        "label": "Unemployment Compensation",
-        "col": "aunemspt",
-        "subcategory": "Employment"
+        "table": "a_fiscal_11",
+        "value": "aunemspt",
+        "label": "Unemployment Compensation"
       },
       {
-        "category": "Labor",
-        "table": "v_race_11",
-        "label": "Minimum Wage",
-        "col": "gminraw",
-        "subcategory": "Employment"
+        "table": "g_labor_11",
+        "value": "gminraw",
+        "label": "Minimum Wage"
       }
     ],
     "Business": [
       {
-        "category": "Labor",
-        "table": "v_race_11",
-        "label": "Corporate Income Tax",
-        "col": "acinct",
-        "subcategory": "Business"
+        "table": "a_fiscal_11",
+        "value": "acinct",
+        "label": "Corporate Income Tax"
       },
       {
-        "category": "Labor",
-        "table": "v_race_11",
-        "label": "Raw Milk",
-        "col": "drawmilk",
-        "subcategory": "Business"
+        "table": "d_mala_11",
+        "value": "drawmilk",
+        "label": "Raw Milk"
       },
       {
-        "category": "Labor",
-        "table": "v_race_11",
-        "label": "Trans Fat",
-        "col": "dtrans",
-        "subcategory": "Business"
+        "table": "d_mala_11",
+        "value": "dtrans",
+        "label": "Trans Fat"
       },
       {
-        "category": "Labor",
-        "table": "v_race_11",
-        "label": "Fireworks Index",
-        "col": "dfirewks",
-        "subcategory": "Business"
+        "table": "d_mala_11",
+        "value": "dfirewks",
+        "label": "Fireworks Index"
       }
     ]
   },
   "Individuals": {
     "Violence": [
       {
-        "category": "Individuals",
-        "table": "v_race_11",
-        "label": "Death Penalty",
-        "col": "qdeath",
-        "subcategory": "Violence"
+        "table": "q_death_11",
+        "value": "qdeath",
+        "label": "Death Penalty"
       },
       {
-        "category": "Individuals",
-        "table": "v_race_11",
-        "label": "Imprisonment Rate",
-        "col": "rincarc",
-        "subcategory": "Violence"
+        "table": "r_enfor_11",
+        "value": "rincarc",
+        "label": "Imprisonment Rate"
       },
       {
-        "category": "Individuals",
-        "table": "v_race_11",
-        "label": "Violent Crime Rate",
-        "col": "rviol",
-        "subcategory": "Violence"
+        "table": "r_enfor_11",
+        "value": "rviol",
+        "label": "Violent Crime Rate"
       },
       {
-        "category": "Individuals",
-        "table": "v_race_11",
-        "label": "Property Crime Rate",
-        "col": "rprop",
-        "subcategory": "Violence"
+        "table": "r_enfor_11",
+        "value": "rprop",
+        "label": "Property Crime Rate"
       },
       {
-        "category": "Individuals",
-        "table": "v_race_11",
-        "label": "Selected Arrests per Arrest",
-        "col": "rarrests",
-        "subcategory": "Violence"
+        "table": "r_enfor_11",
+        "value": "rarrests",
+        "label": "Selected Arrests per Arrest"
       },
       {
-        "category": "Individuals",
-        "table": "v_race_11",
-        "label": "Selected Arrests per Population",
-        "col": "rycarrst",
-        "subcategory": "Violence"
+        "table": "r_enfor_11",
+        "value": "rycarrst",
+        "label": "Selected Arrests per Population"
       }
     ],
     "Property": [
       {
-        "category": "Individuals",
-        "table": "v_race_11",
-        "label": "Property Tax",
-        "col": "apropt",
-        "subcategory": "Property"
+        "table": "a_fiscal_11",
+        "value": "apropt",
+        "label": "Property Tax"
       },
       {
-        "category": "Individuals",
-        "table": "v_race_11",
-        "label": "Regulatory Taking (of land)",
-        "col": "frtp",
-        "subcategory": "Property"
+        "table": "f_land_11",
+        "value": "frtp",
+        "label": "Regulatory Taking (of land)"
       },
       {
-        "category": "Individuals",
-        "table": "v_race_11",
-        "label": "Property forfeiture",
-        "col": "lstandard",
-        "subcategory": "Property"
+        "table": "l_forf_11",
+        "value": "lstandard",
+        "label": "Property forfeiture"
       },
       {
-        "category": "Individuals",
-        "table": "v_race_11",
-        "label": "Asset forfeiture index",
-        "col": "lforf",
-        "subcategory": "Property"
+        "table": "l_forf_11",
+        "value": "lforf",
+        "label": "Asset forfeiture index"
       },
       {
-        "category": "Individuals",
-        "table": "v_race_11",
-        "label": "eminent domain index",
-        "col": "mindex",
-        "subcategory": "Property"
+        "table": "m_ed_11",
+        "value": "mindex",
+        "label": "eminent domain index"
       }
     ],
     "Marriage": [
       {
-        "category": "Individuals",
-        "table": "v_race_11",
-        "label": "marriage constitutional restrictions",
-        "col": "smconres",
-        "subcategory": "Marriage"
+        "table": "s_marr_11",
+        "value": "smconres",
+        "label": "marriage constitutional restrictions"
       },
       {
-        "category": "Individuals",
-        "table": "v_race_11",
-        "label": "State marriage laws",
-        "col": "sstmrrge",
-        "subcategory": "Marriage"
+        "table": "s_marr_11",
+        "value": "sstmrrge",
+        "label": "State marriage laws"
       },
       {
-        "category": "Individuals",
-        "table": "v_race_11",
-        "label": "Blood test Requirement",
-        "col": "sbldtest",
-        "subcategory": "Marriage"
+        "table": "s_marr_11",
+        "value": "sbldtest",
+        "label": "Blood test Requirement"
       },
       {
-        "category": "Individuals",
-        "table": "v_race_11",
-        "label": "total waiting period",
-        "col": "swait",
-        "subcategory": "Marriage"
+        "table": "s_marr_11",
+        "value": "swait",
+        "label": "total waiting period"
       }
     ],
     "Consumers": [
       {
-        "category": "Individuals",
-        "table": "v_race_11",
-        "label": "Sales Tax",
-        "col": "asalet",
-        "subcategory": "Consumers"
+        "table": "a_fiscal_11",
+        "value": "asalet",
+        "label": "Sales Tax"
       }
     ],
     "Income": [
       {
-        "category": "Individuals",
-        "table": "v_race_11",
-        "label": "Individual Income Tax",
-        "col": "aiinct",
-        "subcategory": "Income"
+        "table": "a_fiscal_11",
+        "value": "aiinct",
+        "label": "Individual Income Tax"
       },
       {
-        "category": "Individuals",
-        "table": "v_race_11",
-        "label": "Minimum Wage",
-        "col": "gminraw",
-        "subcategory": "Income"
+        "table": "g_labor_11",
+        "value": "gminraw",
+        "label": "Minimum Wage"
       },
       {
-        "category": "Individuals",
-        "table": "v_race_11",
-        "label": "Personal Income",
-        "col": "apersinc",
-        "subcategory": "Income"
+        "table": "a_fiscal_11",
+        "value": "apersinc",
+        "label": "Personal Income"
       }
     ]
   },
   "Health": {
     "Abortion": [
       {
-        "category": "Health",
-        "table": "v_race_11",
-        "label": "Licensed Physician",
-        "col": "plicphys",
-        "subcategory": "Abortion"
+        "table": "p_abor_11",
+        "value": "plicphys",
+        "label": "Licensed Physician"
       },
       {
-        "category": "Health",
-        "table": "v_race_11",
-        "label": "Abortion in Hospital",
-        "col": "phosp",
-        "subcategory": "Abortion"
+        "table": "p_abor_11",
+        "value": "phosp",
+        "label": "Abortion in Hospital"
       },
       {
-        "category": "Health",
-        "table": "v_race_11",
-        "label": "Number of Physicians",
-        "col": "psecphys",
-        "subcategory": "Abortion"
+        "table": "p_abor_11",
+        "value": "psecphys",
+        "label": "Number of Physicians"
       },
       {
-        "category": "Health",
-        "table": "v_race_11",
-        "label": "Gestational Limit",
-        "col": "pgestlim",
-        "subcategory": "Abortion"
+        "table": "p_abor_11",
+        "value": "pgestlim",
+        "label": "Gestational Limit"
       },
       {
-        "category": "Health",
-        "table": "v_race_11",
-        "label": "Partial Birth Abortion",
-        "col": "parbth",
-        "subcategory": "Abortion"
+        "table": "p_abor_11",
+        "value": "parbth",
+        "label": "Partial Birth Abortion"
       },
       {
-        "category": "Health",
-        "table": "v_race_11",
-        "label": "Additional State Funds",
-        "col": "pubfund",
-        "subcategory": "Abortion"
+        "table": "p_abor_11",
+        "value": "pubfund",
+        "label": "Additional State Funds"
       },
       {
-        "category": "Health",
-        "table": "v_race_11",
-        "label": "State restricted abortion",
-        "col": "privins",
-        "subcategory": "Abortion"
+        "table": "p_abor_11",
+        "value": "privins",
+        "label": "State restricted abortion"
       },
       {
-        "category": "Health",
-        "table": "v_race_11",
-        "label": "Waiting period ",
-        "col": "pwait",
-        "subcategory": "Abortion"
+        "table": "p_abor_11",
+        "value": "pwait",
+        "label": "Waiting period "
       },
       {
-        "category": "Health",
-        "table": "v_race_11",
-        "label": "parental involvement",
-        "col": "pnotif",
-        "subcategory": "Abortion"
+        "table": "p_abor_11",
+        "value": "pnotif",
+        "label": "parental involvement"
       }
     ],
     "Hospitals": [
       {
-        "category": "Health",
-        "table": "v_race_11",
-        "label": "Health & Hospital Expenditures",
-        "col": "healspt",
-        "subcategory": "Hospitals"
+        "table": "a_fiscal_11",
+        "value": "healspt",
+        "label": "Health & Hospital Expenditures"
       },
       {
-        "category": "Health",
-        "table": "v_race_11",
-        "label": "Certificate of Need",
-        "col": "ncon",
-        "subcategory": "Hospitals"
+        "table": "n_reg_11",
+        "value": "ncon",
+        "label": "Certificate of Need"
       }
     ],
     "Affordable Care act": [
       {
-        "category": "Health",
-        "table": "v_race_11",
-        "label": "Guaranteed Issue",
-        "col": "hindgii",
-        "subcategory": "Affordable Care act"
+        "table": "h_health_11",
+        "value": "hindgii",
+        "label": "Guaranteed Issue"
       },
       {
-        "category": "Health",
-        "table": "v_race_11",
-        "label": "Mandated Benefits",
-        "col": "hmb____",
-        "subcategory": "Affordable Care act"
+        "table": "h_health_11",
+        "value": "hmb____",
+        "label": "Mandated Benefits"
       },
       {
-        "category": "Health",
-        "table": "v_race_11",
-        "label": "Mandated Benefits Index",
-        "col": "hmbindex",
-        "subcategory": "Affordable Care act"
+        "table": "h_health_11",
+        "value": "hmbindex",
+        "label": "Mandated Benefits Index"
       },
       {
-        "category": "Health",
-        "table": "v_race_11",
-        "label": "Mandated Providers Index",
-        "col": "hmpindex",
-        "subcategory": "Affordable Care act"
+        "table": "h_health_11",
+        "value": "hmpindex",
+        "label": "Mandated Providers Index"
       },
       {
-        "category": "Health",
-        "table": "v_race_11",
-        "label": "Mandated Dependent Coverage Index",
-        "col": "hmdindex",
-        "subcategory": "Affordable Care act"
+        "table": "h_health_11",
+        "value": "hmdindex",
+        "label": "Mandated Dependent Coverage Index"
       }
     ]
   },
   "Schools": {
     "Public & Charter": [
       {
-        "category": "Schools",
-        "table": "v_race_11",
-        "label": "Education Expenditures",
-        "col": "aedspt",
-        "subcategory": "Public & Charter"
+        "table": "a_fiscal_11",
+        "value": "aedspt",
+        "label": "Education Expenditures"
       },
       {
-        "category": "Schools",
-        "table": "v_race_11",
-        "label": "charter schools",
-        "col": "echart",
-        "subcategory": "Public & Charter"
+        "table": "e_educ_11",
+        "value": "echart",
+        "label": "charter schools"
       },
       {
-        "category": "Schools",
-        "table": "v_race_11",
-        "label": "Scholarship contributions",
-        "col": "etcd",
-        "subcategory": "Public & Charter"
+        "table": "e_educ_11",
+        "value": "etcd",
+        "label": "Scholarship contributions"
       },
       {
-        "category": "Schools",
-        "table": "v_race_11",
-        "label": "Duration of Schooling",
-        "col": "ecsyrs",
-        "subcategory": "Public & Charter"
+        "table": "e_educ_11",
+        "value": "ecsyrs",
+        "label": "Duration of Schooling"
       },
       {
-        "category": "Schools",
-        "table": "v_race_11",
-        "label": "standardized tests",
-        "col": "ehsst",
-        "subcategory": "Public & Charter"
+        "table": "e_educ_11",
+        "value": "ehsst",
+        "label": "standardized tests"
       },
       {
-        "category": "Schools",
-        "table": "v_race_11",
-        "label": "homeschooling",
-        "col": "ehsnoti",
-        "subcategory": "Public & Charter"
+        "table": "e_educ_11",
+        "value": "ehsnoti",
+        "label": "homeschooling"
       },
       {
-        "category": "Schools",
-        "table": "v_race_11",
-        "label": "Teaching Evolution",
-        "col": "eevol",
-        "subcategory": "Public & Charter"
+        "table": "e_educ_11",
+        "value": "eevol",
+        "label": "Teaching Evolution"
       }
     ],
     "Private": [
       {
-        "category": "Schools",
-        "table": "v_race_11",
-        "label": "Private Schools Registration",
-        "col": "emrps",
-        "subcategory": "Private"
+        "table": "e_educ_11",
+        "value": "emrps",
+        "label": "Private Schools Registration"
       },
       {
-        "category": "Schools",
-        "table": "v_race_11",
-        "label": "Private Schools Accreditation",
-        "col": "emaps",
-        "subcategory": "Private"
+        "table": "e_educ_11",
+        "value": "emaps",
+        "label": "Private Schools Accreditation"
       },
       {
-        "category": "Schools",
-        "table": "v_race_11",
-        "label": "Private School Teachers",
-        "col": "emlpst",
-        "subcategory": "Private"
+        "table": "e_educ_11",
+        "value": "emlpst",
+        "label": "Private School Teachers"
       },
       {
-        "category": "Schools",
-        "table": "v_race_11",
-        "label": "Private School Curriculum",
-        "col": "epscurr",
-        "subcategory": "Private"
+        "table": "e_educ_11",
+        "value": "epscurr",
+        "label": "Private School Curriculum"
       },
       {
-        "category": "Schools",
-        "table": "v_race_11",
-        "label": "Private School Regulation",
-        "col": "effg",
-        "subcategory": "Private"
+        "table": "e_educ_11",
+        "value": "effg",
+        "label": "Private School Regulation"
       }
     ]
   },
   "Guns": {
     "Gun Shows": [
       {
-        "category": "Guns",
-        "table": "v_race_11",
-        "label": "Regulation",
-        "col": "bshows",
-        "subcategory": "Gun Shows"
+        "table": "b_guns_11",
+        "value": "bshows",
+        "label": "Regulation"
       },
       {
-        "category": "Guns",
-        "table": "v_race_11",
-        "label": "Background Checks",
-        "col": "bpriv",
-        "subcategory": "Gun Shows"
+        "table": "b_guns_11",
+        "value": "bpriv",
+        "label": "Background Checks"
       }
     ],
     "Permits/Registration": [
       {
-        "category": "Guns",
-        "table": "v_race_11",
-        "label": "Initial cost",
-        "col": "bipcraw",
-        "subcategory": "Permits/Registration"
+        "table": "b_guns_11",
+        "value": "bipcraw",
+        "label": "Initial cost"
       },
       {
-        "category": "Guns",
-        "table": "v_race_11",
-        "label": "Term Length",
-        "col": "bipt",
-        "subcategory": "Permits/Registration"
+        "table": "b_guns_11",
+        "value": "bipt",
+        "label": "Term Length"
       },
       {
-        "category": "Guns",
-        "table": "v_race_11",
-        "label": "Registration of Firearms",
-        "col": "bregis",
-        "subcategory": "Permits/Registration"
+        "table": "b_guns_11",
+        "value": "bregis",
+        "label": "Registration of Firearms"
       }
     ],
     "Bans": [
       {
-        "category": "Guns",
-        "table": "v_race_11",
-        "label": "Local Ban",
-        "col": "bgunban",
-        "subcategory": "Bans"
+        "table": "b_guns_11",
+        "value": "bgunban",
+        "label": "Local Ban"
       },
       {
-        "category": "Guns",
-        "table": "v_race_11",
-        "label": "Assault Weapons",
-        "col": "basslt",
-        "subcategory": "Bans"
+        "table": "b_guns_11",
+        "value": "basslt",
+        "label": "Assault Weapons"
       },
       {
-        "category": "Guns",
-        "table": "v_race_11",
-        "label": "\"Saturday Night Specials\"",
-        "col": "bsat",
-        "subcategory": "Bans"
+        "table": "b_guns_11",
+        "value": "bsat",
+        "label": "\"Saturday Night Specials\""
       },
       {
-        "category": "Guns",
-        "table": "v_race_11",
-        "label": "Large Capacity Ammunition",
-        "col": "bmags",
-        "subcategory": "Bans"
+        "table": "b_guns_11",
+        "value": "bmags",
+        "label": "Large Capacity Ammunition"
       },
       {
-        "category": "Guns",
-        "table": "v_race_11",
-        "label": "50 Caliber Rifles",
-        "col": "brifle",
-        "subcategory": "Bans"
+        "table": "b_guns_11",
+        "value": "brifle",
+        "label": "50 Caliber Rifles"
       }
     ],
     "Concealed Carry": [
       {
-        "category": "Guns",
-        "table": "v_race_11",
-        "label": "Concealed Carry Index",
-        "col": "bcci",
-        "subcategory": "Concealed Carry"
+        "table": "b_guns_11",
+        "value": "bcci",
+        "label": "Concealed Carry Index"
       },
       {
-        "category": "Guns",
-        "table": "v_race_11",
-        "label": "Resident Permits",
-        "col": "bccpir",
-        "subcategory": "Concealed Carry"
+        "table": "b_guns_11",
+        "value": "bccpir",
+        "label": "Resident Permits"
       },
       {
-        "category": "Guns",
-        "table": "v_race_11",
-        "label": "Nonresident Permits",
-        "col": "bccpin",
-        "subcategory": "Concealed Carry"
+        "table": "b_guns_11",
+        "value": "bccpin",
+        "label": "Nonresident Permits"
       },
       {
-        "category": "Guns",
-        "table": "v_race_11",
-        "label": "Shall Issue Permits",
-        "col": "bsi",
-        "subcategory": "Concealed Carry"
+        "table": "b_guns_11",
+        "value": "bsi",
+        "label": "Shall Issue Permits"
       }
     ],
     "Open Carry": [
       {
-        "category": "Guns",
-        "table": "v_race_11",
-        "label": "Open Carry Index",
-        "col": "boci",
-        "subcategory": "Open Carry"
+        "table": "b_guns_11",
+        "value": "boci",
+        "label": "Open Carry Index"
       },
       {
-        "category": "Guns",
-        "table": "v_race_11",
-        "label": "Loaded Handgun",
-        "col": "bopen",
-        "subcategory": "Open Carry"
+        "table": "b_guns_11",
+        "value": "bopen",
+        "label": "Loaded Handgun"
       },
       {
-        "category": "Guns",
-        "table": "v_race_11",
-        "label": "Motor Vehicle Carry",
-        "col": "bjourn",
-        "subcategory": "Open Carry"
+        "table": "b_guns_11",
+        "value": "bjourn",
+        "label": "Motor Vehicle Carry"
       }
     ]
   }

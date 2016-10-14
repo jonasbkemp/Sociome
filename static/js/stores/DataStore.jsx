@@ -2,36 +2,72 @@ import {EventEmitter} from 'events';
 import dispatcher from 'sociome/Dispatcher';
 import * as _ from 'lodash';
 import {policyCategories} from 'sociome/data/PolicyCategories';
-import {demographicCategories} from 'sociome/data/demographicCategories';
+import {demographicCategories} from 'sociome/data/DemographicCategories';
+import {healthOutcomesCategories} from 'sociome/data/HealthOutcomesCategories';
 
 const BACKEND_URL = process.env.NODE_ENV === 'production' ? 
-					'http://sociome-ml9951.rhcloud.com/' : 
-					'http://localhost:8082/';
+					'http://sociome-ml9951.rhcloud.com' : 
+					'http://localhost:8082';
 
 class DataStore extends EventEmitter{
 	constructor(){
 		super();
 		this.datasets = ['Policy', 'Demographics', 'Health Outcomes'];
 		this.policies = policyCategories;
-		this.healthOutcomes = [
-			{value:'children_in_poverty', label:'Children In Poverty'},
-			{value:'adult_obesity', label:'Adult Obesity'},
-			{value:'physical_inactivity', label:'Physical Inactivity'},
-			{value:'air_pollution_particulate_matter', label:'Air Pollution Particulate Matter'},
-			{value:'unemployment_rate', label:'Unemployment Rate'},
-			{value:'sexually_transmitted_infections', label:'Sexually Transmitted Infections'},
-			{value:'preventable_hospital_stays', label:'Preventable Hospital Stays'},
-			{value:'violent_crime_rate', label:'Violent Crime Rate'},
-			{value:'alcohol_impaired_driving_deaths', label:'Alcohol Impaired Driving Deaths'},
-			{value:'uninsured', label:'Uninsured'},
-			{value:'mammography_screening', label:'Mammography Screening'},
-			{value:'premature_death', label:'Premature Death'},
-			{value:'diabetic_monitoring', label:'Diabetic Monitoring'},
-		]
+		this.healthOutcomes = healthOutcomesCategories;
 		this.demographics = demographicCategories;
 		this.categories = [];
 		this.subCategories = [];
 		this.subSubCategories = [];
+		this.fields = [];
+		this.yearIndex = 0;
+		this.years = [];
+	}
+
+	getAll = () => {
+		return {
+			datasets : this.datasets,
+			categories : this.getCategories(),
+			subCateogires : this.getSubCategories(),
+			subSubCategories : this.getSubSubCategories(),
+
+		}
+	}
+
+	// Get a unique sorted array of years for which we have data available. 
+	// This should be called after data is received from an AJAX call.
+	// This relies on every datapoint having a `year` field and is 
+	// sorted by that year field
+	// http://stackoverflow.com/questions/26958118/finding-unique-numbers-from-sorted-array-in-less-than-on
+	setYears = () => {
+		this.years = [];
+		this.getUniqueYears(0, this.data.length-1, false);
+		this.yearIndex = 0;
+	}
+
+	getUniqueYears = (left, right, skipFirst) => {
+		// contiguous chunk of same values (a...a)
+		if(this.data[left].year === this.data[right].year){
+			if(!skipFirst)
+				this.years.push(this.data[left].year);
+		}else{
+			var mid = Math.floor((left+right)/2);
+			this.getUniqueYears(left, mid, skipFirst);
+			this.getUniqueYears(mid+1, right, this.data[mid].year === this.data[mid+1].year);
+		}
+	}
+
+	getYears = () => {
+		return this.years;
+	}
+
+	getYearIndex = () => {
+		return this.yearIndex;
+	}
+
+	updateYear = (year) => {
+		this.yearIndex = year;
+		this.emit('change-year');
 	}
 
 	// Dataset Operations
@@ -43,13 +79,13 @@ class DataStore extends EventEmitter{
 		this.currentDataset = dataset;
 		switch(dataset){
 			case 'Policy':
-				this.categories = Object.keys(this.policies).map((p) => ({value : p, label : p}));
+				this.categories = this.policies;
 				break;
 			case 'Health Outcomes':
 				this.categories = this.healthOutcomes;
 				break;
 			case 'Demographics':
-				this.categories = Object.keys(this.demographics).map((d) => ({value : d, label : d}));
+				this.categories = this.demographics;
 				break;
 		}
 		this.emit('change-dataset');
@@ -65,7 +101,24 @@ class DataStore extends EventEmitter{
 
 	// Category Operations
 	getCategories = () => {
+		if(false && this.currentDataset === 'Health Outcomes'){
+			return this.categories;
+		}else{
+			return Object.keys(this.categories).map((d) => ({value : d, label : d}));
+		}
 		return this.categories;
+	}
+
+	setCategory = (category) => {
+		this.currentCategory = category;
+		if(this.currentDataset === 'Health Outcomes' || this.currentDataset === 'Demographics'){
+			this.fields = this.categories[category];
+			this.emit('change-fields');
+		}
+	}
+
+	getCurrentCategory = () => {
+		return this.currentCategory;
 	}
 
 	// Subcategory Operations
@@ -79,16 +132,80 @@ class DataStore extends EventEmitter{
 		}
 	}
  
- 	setSubCategory = (subCategory) => {
+ 	setSubCategory = (category, subCategory) => {
  		this.currentSubCategory = subCategory;
- 		this.emit('change-sub-category');
- 		if(this.currentDataset === 'Demographics'){
- 			this.emit('selection-done');
+ 		if(this.currentDataset === 'Policy'){
+ 			this.currentCategory = category;
+ 			this.currentSubCategory = subCategory;
+ 			this.fields = this.policies[category][subCategory];
+	 		this.emit('change-fields');
  		}
  	}
 
  	getCurrentSubCategory = () => {
  		return this.currentSubCategory;
+ 	}
+
+ 	// Field operations
+ 	// A field is the lowest level
+ 	getFields = () => {
+ 		return this.fields;
+ 	}
+
+ 	requestData = (url) => {
+ 		$.get(url).done((res) => {
+ 			this.data = res;
+ 			this.setYears();
+ 			this.emit('change-data');
+ 		}).fail((err) => {
+ 			console.log(err);
+ 		})
+ 	}
+
+ 	// Data is sorted by `year`.  Run a binary search
+	// to find the first entry with that year
+	getFirstYear = (year) => {
+		var i = 0,
+			j = this.data.length - 1 ;
+
+		while(i <= j){
+			var mid = Math.round((i+j) / 2);
+			if(this.data[mid].year == year && (mid === 0 || this.data[mid-1].year !== year)){
+				return mid;
+			}
+			if(this.data[mid].year >= year){
+				j = mid-1;
+			}else{
+				i = mid+1;
+			}
+		}
+		throw "Error: Couldn\'t find year";
+	}
+
+ 	getData = () => {
+ 		var year = this.years[this.yearIndex];
+ 		var i = this.getFirstYear(year);
+		var data = [];
+
+		while(i < this.data.length && this.data[i].year === year){
+			data.push(this.data[i]);
+			i++;
+		}
+ 		return data;
+ 	}
+
+ 	setLastCategory = (category) => {
+		switch(this.currentDataset){
+			case 'Policy':
+				this.requestData(`${BACKEND_URL}/GetPolicyData?policy=${category.table}&field=${category.value}`)
+				break;
+			case 'Health Outcomes':
+				this.requestData(`${BACKEND_URL}/GetHealthOutcomes?measure_name=${category.value}`)
+				break;
+			case 'Demographics':
+				this.requestData(`${BACKEND_URL}/GetDemographics?col=${category.value}`);
+				break;
+		}
  	}
 
 	handleActions = (action) => {
@@ -97,7 +214,16 @@ class DataStore extends EventEmitter{
 				this.setDataset(action.dataset);
 				break;
 			case 'SET_SUB_CATEGORY':
-				this.setSubCategory(action.subCategory);
+				this.setSubCategory(action.category, action.subCategory);
+				break;
+			case 'SET_CATEGORY':
+				this.setCategory(action.category);
+				break;
+			case 'SET_LAST_CATEGORY':
+				this.setLastCategory(action.category);
+				break;
+			case 'CHANGE_YEAR':
+				this.updateYear(action.year);
 				break;
 		}
 	}

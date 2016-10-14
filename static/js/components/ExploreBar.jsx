@@ -42,8 +42,12 @@ export default class ExploreBar extends React.Component{
 		DataActions.setDataset(event.target.id);
 	}
 
-	setSubCategory = (event) => {
-		DataActions.setSubCategory(event.target.id);
+	selectCategory = (event) => {
+		DataActions.setCategory(event.target.id);
+	}
+
+	selectSubCategory = (category) => (event) => {
+		DataActions.setSubCategory(category, event.target.id);
 	}
 
 	render(){
@@ -79,7 +83,8 @@ export default class ExploreBar extends React.Component{
 					        </ul>
 						</li>
 						{
-							this.state.whichDataset === 'Policy' || this.state.whichDataset === 'Demographics' ? 
+							this.state.whichDataset === 'Policy' ? 
+								/*POLICY*/
 								this.state.categories.map((category) => 
 									<li 
 										class="dropdown" 
@@ -106,7 +111,7 @@ export default class ExploreBar extends React.Component{
 								            		<li 
 								            			id={v.value} 
 								            			key={v.value} 
-								            			onClick={this.setSubCategory}
+								            			onClick={this.selectSubCategory(category.value)}
 								            			class={this.state.whichSubCategory === v.value ? 'active' : undefined}
 								            		>
 									            		<a id={v.value} href="#">
@@ -127,10 +132,11 @@ export default class ExploreBar extends React.Component{
 								            }
 								        </ul>
 									</li>
-								) : 
+								) : /*HEALTH OUTCOMES AND DEMOGRAPHICS*/
 								this.state.categories.map((category) => 
-									<li key={category.value}>
+									<li id={category.label} key={category.value} onClick={this.selectCategory}>
 										<a 
+											id={category.label}
 											href="#"
 											role='button'
 											aria-has-popup={true}

@@ -24,14 +24,16 @@ exports.demographicCategories = {
 		{value : 'median_household_income', label : 'Median Household Income'},
 		{value : 'median_family_income', label : 'Median Family Income'},	
 	],
+	'Education' : [
+		{value : 'hs_diploma_or_more_25_plus', label : 'Percent 25+ Years with HS Diploma or More'},
+		{value : 'four_plus_years_college_25_plus', label : 'Percent 25+ Years with 4+ Years College'},
+		{value : 'less_than_hs_diploma_25_plus', label : 'Percent 25+ Years with Less Than a High School Diploma'}
+	],
 	'Other' : [
 		{value : 'persons_in_poverty', label : 'Persons in Poverty'},
 		{value : 'eligible_for_medicare', label : 'Percent Population Elligible for Medicare'},
 		{value : 'receiving_foodstamps', label : 'Percent Population Receiving Food Stamps/SNAP Recipients'},
 		{value : 'females_divorced', label : 'Percent Females Divorced'},
-		{value : 'unemployment_rate', label : 'Unemployment Rate'},
-		{value : 'hs_diploma_or_more_25_plus', label : 'Percent 25+ Years with HS Diploma or More'},
-		{value : 'four_plus_years_college_25_plus', label : 'Percent 25+ Years with 4+ Years College'},
-		{value : 'less_than_hs_diploma_25_plus', label : 'Percent 25+ Years with Less Than a High School Diploma'}
+		{value : 'unemployment_rate', label : 'Unemployment Rate'}
 	]
 }

@@ -93,6 +93,22 @@ app.get('/GetPolicyData', function(req, res){
   )
 })
 
+app.get('/GetDemographics', function(req, res){
+  var col = req.query.col;
+  var yearClause = req.query.year ? `AND year=${req.query.year}` : `ORDER BY year`;
+  var query = `SELECT year, county_name as state, ${col} as value, fips_state_code as statecode, fips_county_code as countycode FROM demographics WHERE ${col} IS NOT NULL ${yearClause};`;
+  db.query(query).then(
+    function(data){
+      res.json(data.rows)
+    }
+  ).catch(
+    function(err){
+      console.log(err)
+      res.json({})
+    }
+  )
+})
+
 app.get('/GetHealthOutcomes', function(req, res){
   var measure_name = req.query.measure_name;
   var yearClause = req.query.year ? `AND year=${req.query.year}` : `ORDER BY year`;

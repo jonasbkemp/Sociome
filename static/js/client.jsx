@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import {Router, Route, IndexRoute, hashHistory, IndexRedirect} from 'react-router';
+require('react-select/dist/react-select.css');
 
 import Layout from 'sociome/Layout';
 
