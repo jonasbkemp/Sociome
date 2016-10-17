@@ -45,7 +45,7 @@ exports.policyCategories = {
       },
       {
         "table": "f_land_11",
-        "value": "fyc",
+        "value": "fvc",
         "label": "Vertical Consistency"
       },
       {
