@@ -77,11 +77,11 @@ export default class FieldMenu extends React.Component{
 							onClick={() => DataActions.setLastCategory(f)}
 							key={f.value}
 							id={f.value}
-							style={{width : '100%', display : 'table', paddingBottom : 5}}
+							style={{width : '100%', display : 'table', paddingBottom : 5, cursor : 'pointer'}}
 						>
 							<div style={{
 								display : 'table-cell',
-								backgroundColor : this.state.highlighted === f.value ? 'gray' : 'lightgray',
+								backgroundColor : this.state.highlighted === f.value || DataStore.getLastCategory() == f.value ? 'gray' : 'lightgray',
 								borderRadius : '50%',
 								width : '13px',
 								height : '13px',
