@@ -66,7 +66,7 @@ class ZoomMap extends Component{
     	})
     }
 
-    updateColors = (selection) => {
+    updateCounties = () => {
     	var {data, min, max} = _.reduce(this.props.data, (res, d) => {
     		if(!res.data[d.statecode])
     			res.data[d.statecode] = d;
@@ -83,12 +83,35 @@ class ZoomMap extends Component{
 				    .range(["#EFEFFF","#02386F"])
 
 
-		selection.style('fill', function(d){
+		this.counties.style('fill', function(d){
 						var county = d.id % 1000
 						var state = Math.floor(d.id / 1000)
 						if(data[state] && data[state][county])
 							return heatmap(data[state][county].value)
 					})
+    }
+
+    updateStates = () => {
+    	var {stateData, min, max} = _.reduce(this.props.data, (res, d) => {
+    		res.stateData[d.state] = d;
+    		res.min = Math.min(res.min, d.value);
+    		res.max = Math.max(res.max, d.value);
+    		return res;
+    	}, {stateData : {}, min : Number.MAX_VALUE, max : Number.MIN_VALUE});
+
+		var heatmap = d3.scaleLinear()
+	    	.domain([min, max])
+		    .interpolate(d3.interpolateRgb)
+		    .range(["#EFEFFF","#02386F"])
+
+		this.states.style('fill', (d) => {
+			if(d.id > 56)
+				return
+			var currentState = stateData[getStateInfo(d.id).state]
+			if(currentState){
+				return heatmap(currentState.value)
+			}
+		})
     }
 
 	drawMap = () => {
@@ -258,7 +281,11 @@ class ZoomMap extends Component{
 	shouldComponentUpdate(nextProps){
 		if(this.props.dataset === nextProps.dataset && this.props.data){
 			this.props = nextProps;
-			this.updateColors(this.props.dataset === 'health-outcomes' ? this.counties : this.states);
+			if(this.props.dataset === 'health-outcomes'){
+				this.updateCounties()
+			}else{
+				this.updateStates()
+			}
 			return false;
 		}
 		return this.props.data !== nextProps.data;
