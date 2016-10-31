@@ -29,11 +29,13 @@ export default class ExploreBar extends React.Component{
 	}
 
 	componentWillMount(){
+		console.log('adding listeners')
 		DataStore.on('change-dataset', this.changeDataset);
 		DataStore.on('change-sub-category', this.changeSubCategory);
 	}
 
 	coponentWillUnmount(){
+		console.log('Unmounting ExploreBar')
 		DataStore.removeListener('change-dataset', this.changeDataset);
 		DataStore.removeListener('change-sub-category', this.changeSubCategory);
 	}
@@ -50,13 +52,35 @@ export default class ExploreBar extends React.Component{
 		DataActions.setSubCategory(category, event.target.id);
 	}
 
+	shouldComponentUpdate(){
+		return true;
+	}
+
 	render(){
+		/*
+		return(
+			<BS.Navbar>
+        		<BS.Nav class="pull-right" activeKey={this.state.activeKey} onSelect={this.onSelect}>
+        			<BS.NavDropdown id="ds-dropdown" eventKey={1} title="Dataset">
+        			{
+        				this.state.datasets.map((ds, i) => 
+        					<BS.MenuItem eventKey={`1.${i}`} >
+        						{ds}
+        					</BS.MenuItem>
+        				)
+        			}
+        			</BS.NavDropdown>
+        		</BS.Nav>
+        	</BS.Navbar>
+		);*/
+
+		
 		return(
 			<nav class="navbar navbar-default" style={{marginBottom : 0}}>
 				<div class="container-fluid">
 					<ul class="nav navbar-nav">
 						<li class="dropdown">
-							<a
+							<BS.SafeAnchor
 								href="#"
 								class="dropdown-toggle"
 								data-toggle='dropdown'
@@ -71,26 +95,25 @@ export default class ExploreBar extends React.Component{
 							>
 								<span class="caret"></span>
 								Dataset
-							</a>
+							</BS.SafeAnchor>
 							<ul class="dropdown-menu">
 							{
 								this.state.datasets.map((ds) => 
 									this.state.whichDataset === ds ? 
-										<li key={ds} class='active'><a id={ds} href="#">{ds}</a></li> : 
-										<li key={ds} onClick={this.selectDS}><a id={ds} href="#">{ds}</a></li>
+										<li key={ds} class='active'><BS.SafeAnchor id={ds} href="#">{ds}</BS.SafeAnchor></li> : 
+										<li key={ds} onClick={this.selectDS}><BS.SafeAnchor id={ds} href="#">{ds}</BS.SafeAnchor></li>
 								)
 							}
 					        </ul>
 						</li>
 						{
 							this.state.whichDataset === 'Policy' ? 
-								/*POLICY*/
 								this.state.categories.map((category) => 
 									<li 
 										class="dropdown" 
 										key={category.value} 
 									>
-										<a
+										<BS.SafeAnchor
 											href="#"
 											class="dropdown-toggle"
 											data-toggle='dropdown'
@@ -104,7 +127,7 @@ export default class ExploreBar extends React.Component{
 											}}
 										>
 											{category.label}
-										</a>
+										</BS.SafeAnchor>
 										<ul class="dropdown-menu">
 								            {
 								            	DataStore.getSubCategories(category.value).map((v) => 
@@ -114,7 +137,7 @@ export default class ExploreBar extends React.Component{
 								            			onClick={this.selectSubCategory(category.value)}
 								            			class={this.state.whichSubCategory === v.value ? 'active' : undefined}
 								            		>
-									            		<a id={v.value} href="#">
+									            		<BS.SafeAnchor id={v.value} href="#">
 									            			<p
 									            				id={v.value}
 									            				style={{
@@ -126,16 +149,16 @@ export default class ExploreBar extends React.Component{
 									            			>
 									            				{v.label}
 									            			</p>
-									            		</a>
+									            		</BS.SafeAnchor>
 								            		</li>
 								            	)
 								            }
 								        </ul>
 									</li>
-								) : /*HEALTH OUTCOMES AND DEMOGRAPHICS*/
+								) : 
 								this.state.categories.map((category) => 
 									<li id={category.label} key={category.value} onClick={this.selectCategory}>
-										<a 
+										<BS.SafeAnchor 
 											id={category.label}
 											href="#"
 											role='button'
@@ -148,7 +171,7 @@ export default class ExploreBar extends React.Component{
 											}}
 										>
 											{category.label}
-										</a>
+										</BS.SafeAnchor>
 									</li>
 								)
 						}

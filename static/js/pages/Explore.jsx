@@ -27,6 +27,7 @@ export default class Explore extends Component{
 	}
 
 	componentWillUnmount(){
+		console.log('Unmounting Explore')
 		DataStore.removeListener('change-data', this.updateData);
 		DataStore.removeListener('change-year', this.updateData);
 	}
@@ -34,7 +35,6 @@ export default class Explore extends Component{
 	render(){
 		return(
 			<div style={{width : "100%", height : '100%', overflow: "hidden"}}>
-				<ExploreBar style={{height : '60px'}}/>
 				<div style={{width : '100%', display : 'table', height : '100%'}}>
 				    <div style={{display : 'table-row'}}>
 				    	<div style={{display : 'table-cell', width : '25%', height : '100%', position : 'absolute'}}>

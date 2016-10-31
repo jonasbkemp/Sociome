@@ -50,6 +50,7 @@ export default class FieldMenu extends React.Component{
 		while(target.id === ''){
 			target = target.parentNode;
 		}
+		console.log('setting state')
 		this.setState(_.extend({}, this.state, {highlighted : target.id}));
 	}
 

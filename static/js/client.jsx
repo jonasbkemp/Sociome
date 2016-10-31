@@ -4,17 +4,9 @@ import {Router, Route, IndexRoute, hashHistory, IndexRedirect} from 'react-route
 require('react-select/dist/react-select.css');
 
 import Layout from 'sociome/Layout';
-
 import Explore from 'sociome/pages/Explore';
-/*import Privacy from 'sociome/pages/Privacy';
-import Contact from 'sociome/pages/Contact';
-import Purpose from 'sociome/pages/Purpose';
-import CompareData from 'sociome/pages/CompareData';
-import Sandbox from 'sociome/pages/Sandbox';
-import DiffInDiff from 'sociome/pages/DiffInDiff';
-import MultiLevelModeling from 'sociome/pages/MultiLevelModeling';
 import Regression from 'sociome/pages/Regression';
-*/
+
 const app = document.getElementById('app');
 
 ReactDOM.render(
@@ -22,6 +14,7 @@ ReactDOM.render(
 		<Route path="/" component={Layout}>
 			<IndexRedirect to="/explore"/>
 			<Route path="explore" component={Explore}/>
+			<Route path="regression" component={Regression}/>
 		</Route>
 	</Router>,
 	app

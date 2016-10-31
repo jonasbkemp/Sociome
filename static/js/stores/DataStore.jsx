@@ -16,12 +16,12 @@ class DataStore extends EventEmitter{
 		this.policies = policyCategories;
 		this.healthOutcomes = healthOutcomesCategories;
 		this.demographics = demographicCategories;
-		this.categories = [];
-		this.subCategories = [];
-		this.subSubCategories = [];
-		this.fields = [];
-		this.yearIndex = 0;
-		this.years = [];
+		this.categories = [];   // First level of categories
+		this.subCategories = []; // Second level of categories
+		this.subSubCategories = [];  // Third level of categories
+		this.fields = [];		// Last level of categories
+		this.yearIndex = 0;    //index into the `years array`
+		this.years = [];    // years for which `data` is available
 	}
 
 	getAll = () => {
@@ -185,13 +185,13 @@ class DataStore extends EventEmitter{
  	getData = () => {
  		var year = this.years[this.yearIndex];
  		var i = this.getFirstYear(year);
-		var data = [];
+		var yearlyData = [];
 
 		while(i < this.data.length && this.data[i].year === year){
-			data.push(this.data[i]);
+			yearlyData.push(this.data[i]);
 			i++;
 		}
- 		return data;
+ 		return yearlyData;
  	}
 
  	getLastCategory = () => {

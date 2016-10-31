@@ -32,6 +32,34 @@ export default class Nav extends React.Component {
                 </span>  
 
                 <span style={{display: 'table', position : 'absolute', right : 10, top : 0, height : '100%'}}>
+                    <div style={{display : 'table-cell', verticalAlign : 'middle', paddingRight : 10}}>
+                        <p style={{
+                            fontFamily: 'Avenir-Heavy, Avenir Heavy, Avenir Book, Avenir',
+                            fontWeight: 800,
+                            fontStyle: 'normal',
+                            fontSize: '16px',
+                            margin : '0 auto'
+                        }}>
+                            <Link to="explore">
+                                Explore
+                            </Link>
+                        </p>
+                    </div>
+
+                    <div style={{display : 'table-cell', verticalAlign : 'middle', paddingRight : 10}}>
+                        <p style={{
+                            fontFamily: 'Avenir-Heavy, Avenir Heavy, Avenir Book, Avenir',
+                            fontWeight: 800,
+                            fontStyle: 'normal',
+                            fontSize: '16px',
+                            margin : '0 auto'
+                        }}>
+                            <Link to="regression">
+                                Regression
+                            </Link>
+                        </p>
+                    </div>
+
                     <div style={{display : 'table-cell', verticalAlign : 'middle'}}>
                         <p style={{
                             fontFamily: 'Avenir-Heavy, Avenir Heavy, Avenir Book, Avenir',

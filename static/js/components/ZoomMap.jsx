@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
-import {states} from 'sociome/data/StateCodes'
 import Select from 'react-select';
 import {topoJsonStore} from 'sociome/stores/TopoJsonStore';
-import {getStateInfo, getCounty} from 'sociome/data/StateCodes';
+import {getStateInfo} from 'sociome/data/StateCodes';
 import Dimensions from 'react-dimensions';
 import * as _ from 'lodash';
 var d3 = require('d3')
@@ -16,7 +15,6 @@ var topojson = require('topojson')
 class ZoomMap extends Component{
 	constructor(props){
 		super(props)
-		this.selectedState = d3.select(null)
 		this.width = this.props.containerWidth; //650;
 		this.height = this.props.containerWidth * 0.61538461538462;//400;
 		var projection = d3.geoAlbersUsa().scale(950).translate([this.width/2, this.height/2])
@@ -49,14 +47,8 @@ class ZoomMap extends Component{
                         'px; top:' + (mouse[1] - 35) + 'px')
                 .html(getStateInfo(d.id).state);
             if(options.withColor){
-	            this.states.style('fill', (state) => {
-	            	if(d.id === state.id){
-	            		return '#0C4999';
-	            	}else{
-	            		return '#ccc';
-	            	}
-	            })
-	      	}      
+	            this.states.style('fill', (state) => d.id === state.id ? '#0C4999' : '#ccc')
+	      	}
         })
         .on('mouseout', () => {
         	this.tooltip.classed('hidden', true)
@@ -77,18 +69,31 @@ class ZoomMap extends Component{
     		return res;
     	}, {data : {}, min : Number.MAX_VALUE, max : Number.MIN_VALUE});
 
+    	console.log([min, max])
+
     	var heatmap = d3.scaleLinear()
 			    	.domain([min, max])
 				    .interpolate(d3.interpolateRgb)
 				    .range(["#EFEFFF","#02386F"])
 
-
 		this.counties.style('fill', function(d){
-						var county = d.id % 1000
-						var state = Math.floor(d.id / 1000)
-						if(data[state] && data[state][county])
-							return heatmap(data[state][county].value)
-					})
+			var county = d.id % 1000
+			var state = Math.floor(d.id / 1000)
+			if(data[state] && data[state][county]){
+				return heatmap(data[state][county].value)
+			}
+		}).on('mousemove', (d, i, children) => {
+            var mouse = d3.mouse(document.body);
+            var county = d.id % 1000
+			var state = Math.floor(d.id / 1000)
+			var value = (data[state] && data[state][county]) ? data[state][county].value : 'Missing Data'
+            this.tooltip.classed('hidden', false)
+                .attr('style', 'left:' + (mouse[0] + 15) +
+                        'px; top:' + (mouse[1] - 35) + 'px')
+                .html('<b>' + data[state][county].state + '</b><br/>value: ' + 
+                	  value);
+        })
+        .on('mouseout', () => this.tooltip.classed('hidden', true))
     }
 
     updateStates = () => {
@@ -131,6 +136,7 @@ class ZoomMap extends Component{
 			if(this.props.dataset === 'health-outcomes' && this.props.data){
 				var component = this;
 				var {data, min, max} = _.reduce(this.props.data, (res, d) => {
+
 	            		if(!res.data[d.statecode])
 	            			res.data[d.statecode] = d;
 	            		else
@@ -147,30 +153,26 @@ class ZoomMap extends Component{
 
 				this.counties = this.g.append('g').attr('id', 'county-lines').selectAll('path')
 					.data(topojson.feature(GEO_JSON, GEO_JSON.objects.counties).features)
-					.enter()
-					.append('path')
-					.attr('d', path)
+					.enter().append('path').attr('d', path)
 					.style('fill', function(d){
 						var county = d.id % 1000
 						var state = Math.floor(d.id / 1000)
 						if(data[state] && data[state][county])
 							return heatmap(data[state][county].value)
+						else{
+							console.log('no state or county')
+						}
 					})
-					.attr('value', (d) => {
-						var county = d.id % 1000
-						var state = Math.floor(d.id / 1000)
-						if(data[state] && data[state][county])
-							return data[state][county].value;
-					})
-					.on('mousemove', (d, i, children) => {
+					.on('mousemove', d => {
 	                    var mouse = d3.mouse(document.body);
 	                    var county = d.id % 1000
 						var state = Math.floor(d.id / 1000)
+						var value = (data[state] && data[state][county]) ? data[state][county].value : 'Missing Data'
 	                    this.tooltip.classed('hidden', false)
 	                        .attr('style', 'left:' + (mouse[0] + 15) +
 	                                'px; top:' + (mouse[1] - 35) + 'px')
-	                        .html('<b>' + getCounty(state, county) + '</b><br/>value: ' + 
-	                        	  children[i].getAttribute('value'));
+	                        .html('<b>' + data[state][county].state + '</b><br/>value: ' + 
+	                        	  value);
 	                })
 	                .on('mouseout', () => this.tooltip.classed('hidden', true))
 
