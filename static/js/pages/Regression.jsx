@@ -5,10 +5,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import {DragDropContext} from 'react-dnd';
 import update from 'react/lib/update';
 import RegressionResults from 'sociome/components/RegressionResults';
-
-const BACKEND_URL = process.env.NODE_ENV === 'production' ? 
-					'http://sociome-ml9951.rhcloud.com' : 
-					'http://localhost:8082';
+import {BACKEND_URL} from 'sociome/Constants';
 
 class Regression extends React.Component{
 	constructor(props){

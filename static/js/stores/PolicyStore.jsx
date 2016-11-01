@@ -2,10 +2,8 @@ import {EventEmitter} from 'events';
 import dispatcher from 'sociome/Dispatcher';
 import {fields} from 'sociome/stores/PolicyFields';
 import * as _ from 'lodash';
+import {BACKEND_URL} from 'sociome/Constants';
 
-const BACKEND_URL = process.env.NODE_ENV === 'production' ? 
-					'http://sociome-ml9951.rhcloud.com' : 
-					'http://localhost:8082';
 
 class PolicyStore extends EventEmitter{
 	constructor(){

@@ -6,11 +6,7 @@ import {states} from 'sociome/data/StateCodes';
 import SynthResults from 'sociome/components/SynthResults';
 import Spinner from 'react-spinkit';
 import * as _ from 'lodash';
-
-
-const BACKEND_URL = process.env.NODE_ENV === 'production' ? 
-					'http://sociome-ml9951.rhcloud.com' : 
-					'http://localhost:8082';
+import {BACKEND_URL} from 'sociome/Constants';
 
 				
 export default class Sandbox extends React.Component{

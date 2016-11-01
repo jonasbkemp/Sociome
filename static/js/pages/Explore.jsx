@@ -4,10 +4,8 @@ import ZoomMap from 'sociome/components/ZoomMap';
 import * as _ from 'lodash';
 import FieldMenu from 'sociome/components/FieldMenu';
 import DataStore from 'sociome/stores/DataStore';
+import {BACKEND_URL} from 'sociome/Constants';
 
-const BACKEND_URL = process.env.NODE_ENV === 'production' ? 
-					'http://sociome-ml9951.rhcloud.com' : 
-					'http://localhost:8082';
 
 export default class Explore extends Component{
 	constructor(props){

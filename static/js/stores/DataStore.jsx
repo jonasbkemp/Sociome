@@ -4,10 +4,8 @@ import * as _ from 'lodash';
 import {policyCategories} from 'sociome/data/PolicyCategories';
 import {demographicCategories} from 'sociome/data/DemographicCategories';
 import {healthOutcomesCategories} from 'sociome/data/HealthOutcomesCategories';
+import {BACKEND_URL} from 'sociome/Constants';
 
-const BACKEND_URL = process.env.NODE_ENV === 'production' ? 
-					'http://sociome-ml9951.rhcloud.com' : 
-					'http://localhost:8082';
 
 class DataStore extends EventEmitter{
 	constructor(){

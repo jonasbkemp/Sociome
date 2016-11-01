@@ -3,9 +3,7 @@ import Select from 'react-select';
 import ZoomMap from 'sociome/components/ZoomMap';
 import * as _ from 'lodash';
 
-const BACKEND_URL = process.env.NODE_ENV === 'production' ? 
-					'http://sociome-ml9951.rhcloud.com/' : 
-					'http://localhost:8082/'
+import {BACKEND_URL} from 'sociome/Constants';
 
 export default class CompareMap extends Component{
 	updatePolicy = () => {

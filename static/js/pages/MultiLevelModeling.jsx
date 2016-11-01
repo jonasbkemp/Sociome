@@ -5,6 +5,7 @@ import {policyStore} from 'sociome/stores/DataStore';
 import {states} from 'sociome/data/StateCodes';
 import Spinner from 'react-spinkit';
 import * as _ from 'lodash';
+import {BACKEND_URL} from 'sociome/Constants';
 
 
 /*
@@ -25,10 +26,6 @@ treated is the predictor variable
 
 	didreg <- lm(formula, data=dataframe)
 */
-
-const BACKEND_URL = process.env.NODE_ENV === 'production' ? 
-					'http://sociome-ml9951.rhcloud.com' : 
-					'http://localhost:8082';
 		
 export default class MultiLevelModeling extends React.Component{
 	constructor(props){
