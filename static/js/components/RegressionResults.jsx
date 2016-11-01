@@ -64,8 +64,8 @@ export default class RegressionResults extends React.Component{
 					<table style={_.extend(styles.table, styles.cell)}>
 						<thead>
 							<tr>
+								<th style={styles.cell}>Intercept</th>
 								<th style={styles.cell}>{this.props.independent.label}</th>
-								<th style={styles.cell}>{this.props.dependent.label}</th>
 							{
 								this.props.controls.map(c => <th  style={styles.cell} key={c.value}>{c.label}</th>)
 							}
@@ -89,8 +89,8 @@ export default class RegressionResults extends React.Component{
 					<table style={_.extend(styles.table, styles.cell)}>
 						<thead>
 							<tr>
+								<th style={styles.cell}>Intercept</th>
 								<th style={styles.cell}>{this.props.independent.label}</th>
-								<th style={styles.cell}>{this.props.dependent.label}</th>
 							{
 								this.props.controls.map(c => <th  style={styles.cell} key={c.value}>{c.label}</th>)
 							}
