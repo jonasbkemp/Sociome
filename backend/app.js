@@ -159,7 +159,9 @@ app.get('/Multilevel', function(req, res){
 })
 
 app.post('/LinRegression', function(req, res){
+
   var params = req.body;
+  params.controls = params.controls ? params.controls : [];
 
   var mkArg = (arg) => {
     var fields = [];
@@ -170,6 +172,8 @@ app.post('/LinRegression', function(req, res){
     }
     return `list(${fields.join(',')})`;
   }
+
+
 
   var controls = params.controls.map(mkArg)
 

@@ -255,15 +255,31 @@ runRegression <- function(dependent, independent, controls){
 
 	data['independent'] <- dbGetQuery(conn, mkQuery('independent', independent))
 
+	model = 'dependent ~ independent'
+
 	i <- 0
 	for(control in controls){
 		name <- paste('control', toString(i), sep='')
 		data[name] <- dbGetQuery(conn, mkQuery(name, control))
+		model <- paste(model, ' + control', toString(i), sep='')
 		i <- i+1
 	}
 
-	fit <- lm(dependent ~ independent, data=data)
-	return(toJSON(fit))
+	fit <- lm(model, data=data)
+
+	summ = summary(fit)
+
+	result = list(
+		values=fit$model,
+		pvalue=summary(fit)$coefficients[,4],
+		residualStdErr=summary(fit)$sigma,
+		coefficients=fit$coefficients,
+		multipleRSquared=summary(fit)$r.squared,
+		adjustedRSquared=summary(fit)$adj.r.squared,
+		fstatistic=summary(fit)$fstatistic
+	)
+
+	return(toJSON(result))
 }
 
 

@@ -17,7 +17,7 @@ class RegressionVaraibleBox extends React.Component{
 			>
 			{
 				this.props.items.map(i => 
-					<div key={i.value}>
+					<div key={i.value} style={{marginLeft : 5}}>
 						<p>
 							{i.label} ({i.year})
 						</p>

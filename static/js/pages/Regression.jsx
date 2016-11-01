@@ -51,6 +51,7 @@ class Regression extends React.Component{
 	}
 
 	generateModel = () => {
+		var component = this;
 		$.post(`${BACKEND_URL}/LinRegression`, {
 			dependent : this.state.bins[0].items[0],
 			independent : this.state.bins[1].items[0],
@@ -80,6 +81,7 @@ class Regression extends React.Component{
 					    			results={this.state.results}
 					    			dependent={this.state.bins[0].items[0]}
 					    			independent={this.state.bins[1].items[0]}
+					    			controls={this.state.bins[2].items}
 					    		/>
 				    		</div>
 				    	</div>
