@@ -5,7 +5,6 @@ import * as _ from 'lodash';
 import * as DataActions from 'sociome/actions/DataActions';
 import Select from 'react-select';
 import RegressionVariableBox from 'sociome/components/RegressionVariableBox';
-import {List} from 'Immutable';
 import update from 'react/lib/update';
 import {Button} from 'react-bootstrap';
 
