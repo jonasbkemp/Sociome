@@ -8,16 +8,22 @@ var rio = require('rio');
 var path = require('path')
 var _ = require('lodash')
 var request = require('request')
+var bodyParser = require('body-parser');
+var fs = require('fs')
 
 var port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 8082;
 var ip = process.env.OPENSHIFT_NODEJS_IP || "localhost";
+var config = process.env.OPENSHIFT_POSTGRESQL_DB_URL ? 
+                       process.env.OPENSHIFT_POSTGRESQL_DB_URL : {database : 'sociome'};
 
-var db = new pg.Client(process.env.OPENSHIFT_POSTGRESQL_DB_URL ? 
-                       process.env.OPENSHIFT_POSTGRESQL_DB_URL : {database : 'sociome'});
+var db = new pg.Client(config);
 db.connect();
 
 var app = express()
 app.use(cors());
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended : true}));
 
 module.exports.app = app;
 
@@ -152,21 +158,42 @@ app.get('/Multilevel', function(req, res){
   })
 })
 
-app.get('/LinRegression', function(req, res){
-  var depVar = req.query.depVar;
-  var predVar = req.query.predVar;
-  var q = `SELECT a_fiscal_11.year, a_fiscal_11.state, a_fiscal_11.${predVar}, ${depVar}.rawvalue as ${depVar}
-   FROM a_fiscal_11 INNER JOIN ${depVar} ON a_fiscal_11.year=${depVar}.start_year AND a_fiscal_11.state=${depVar}.county
-   WHERE ${predVar} IS NOT NULL AND ${depVar}.rawvalue IS NOT NULL;`
+app.post('/LinRegression', function(req, res){
+  var params = req.body;
 
-  db.query(q, function(err, result){
-    var data = result.rows.map(function(point){
-      return [point[predVar], point[depVar]];
-    })
-    regression = stats.linearRegression(data)
-    res.json({regression : regression, data : result.rows})
+  var mkArg = (arg) => {
+    var fields = [];
+    for(var field in arg){
+      if(field !== 'years'){
+        fields.push(`${field}='${arg[field]}'`)
+      }
+    }
+    return `list(${fields.join(',')})`;
+  }
+
+  var controls = params.controls.map(mkArg)
+
+
+  var cmd = `{source("${__dirname}/R-scripts/Synth.r");\n`
+  cmd += `runRegression(${mkArg(params.dependent)}, ${mkArg(params.independent)}, list(${controls.join(',')}))}`
+
+  console.log(cmd)
+
+  rio.e({
+    command : cmd,
+    path : path.join(__dirname, 'rserve.sock'),
+    callback : (err, result) => {
+      console.log('callback')
+      debugger
+      if(err){
+        console.log(err)
+        res.status(500).json(err)
+      }else{
+        res.send(result)
+        console.log(result)
+      }
+    }
   })
-
 })
 
 app.get('/DiffInDiff', function(req, res){

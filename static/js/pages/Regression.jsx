@@ -4,6 +4,7 @@ import RegressionFieldMenu from 'sociome/components/RegressionFieldMenu';
 import HTML5Backend from 'react-dnd-html5-backend';
 import {DragDropContext} from 'react-dnd';
 import update from 'react/lib/update';
+import RegressionResults from 'sociome/components/RegressionResults';
 
 const BACKEND_URL = process.env.NODE_ENV === 'production' ? 
 					'http://sociome-ml9951.rhcloud.com' : 
@@ -58,7 +59,8 @@ class Regression extends React.Component{
 			independent : this.state.bins[1].items[0],
 			controls : this.state.bins[2].items
 		}).done(result => {
-
+			result = JSON.parse(result);
+			this.setState(_.extend({}, this.state, {results : result}));
 		}).fail(err => {
 			console.log(err)
 		})
@@ -77,7 +79,11 @@ class Regression extends React.Component{
 				    	</div>
 				    	<div style={{display : 'table-cell', width : '75%'}}>
 				    		<div style={{width : '100%'}}>
-					    		
+					    		<RegressionResults 
+					    			results={this.state.results}
+					    			dependent={this.state.bins[0].items[0]}
+					    			independent={this.state.bins[1].items[0]}
+					    		/>
 				    		</div>
 				    	</div>
 				    </div>

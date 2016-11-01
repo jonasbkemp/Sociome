@@ -11,6 +11,8 @@ require(hash)
 require(RJSONIO)
 require(nlme)
 
+print('Done Loading')
+
 # Mapping of state names to their statecodes from the health outcomes dataset
 stateCodes = hash('Alabama'=1 ,'Alaska'=2 ,'Arizona'=4 ,'Arkansas'=5 ,'California'=6 ,'Colorado'=8 ,'Connecticut'=9 ,'Delaware'= 10 ,
 				  'District of Columbia'= 11 ,'Florida'= 12 ,'Georgia'= 13 ,'Hawaii'= 15 ,'Idaho'= 16 ,'Illinois'= 17 ,'Indiana'= 18 ,
@@ -22,15 +24,25 @@ stateCodes = hash('Alabama'=1 ,'Alaska'=2 ,'Arizona'=4 ,'Arkansas'=5 ,'Californi
 				  'Wisconsin'= 55 ,'Wyoming'= 56)
 
 if(Sys.getenv('OPENSHIFT_POSTGRESQL_DB_USERNAME') ==''){
-	dotenv::load_dot_env('../../.env')
+	if(file.exists('../../.env')){
+		dotenv::load_dot_env('../../.env')	
+		# Get database credentials from environment variables
+		user <- Sys.getenv('OPENSHIFT_POSTGRESQL_DB_USERNAME')
+		pwd <- Sys.getenv('OPENSHIFT_POSTGRESQL_DB_PASSWORD')
+		db_name <- 'sociome'
+		host <- Sys.getenv('OPENSHIFT_POSTGRESQL_DB_HOST')
+		port <- Sys.getenv('OPENSHIFT_POSTGRESQL_DB_PORT')	
+	}else{
+		# Use the local database
+		user <- ''
+		pwd <- ''
+		db_name <- 'sociome'
+		host <- ''
+		port <- ''
+	}
 }
 
-# Get database credentials from environment variables
-user <- Sys.getenv('OPENSHIFT_POSTGRESQL_DB_USERNAME')
-pwd <- Sys.getenv('OPENSHIFT_POSTGRESQL_DB_PASSWORD')
-db_name <- 'sociome'
-host <- Sys.getenv('OPENSHIFT_POSTGRESQL_DB_HOST')
-port <- Sys.getenv('OPENSHIFT_POSTGRESQL_DB_PORT')
+
 
 # Intercept - not really important
 # treated - difference between states that had a treatment and did (on average there is 1.21 units of )
@@ -222,9 +234,76 @@ testSynth2 <- function(){
 	runSynth(predVars, depVar, treatment, controlIdentifiers, yearOfTreatment);
 }
 
+mkQuery <- function(name, args){
+	if(args['dataset'] == 'Health Outcomes'){
+		print('health_outcomes')
+		return(paste('SELECT rawvalue as ', name, ' FROM health_outcomes WHERE measurename=\'', args['label'], '\' AND year=', args['year'], 'AND countycode=0 AND statecode >0 AND statecode <= 56 AND statecode != 11 ORDER BY statecode', sep=''));
+	}else if(args['dataset'] == 'Demographics'){
+		print('demographics')
+		return(paste('SELECT ', args['value'], ' as ', name, ' FROM demographics WHERE year=', args['year'], ' AND fips_county_code=0 AND fips_state_code <= 56 AND fips_state_code != 11 ORDER BY fips_state_code', sep=''))
+	}else if(args['dataset'] == 'Policy'){
+		print('policy')
+		return(paste('SELECT ', args['value'], ' as ', name, ' FROM ', args['table'], ' WHERE year=', args['year'], ' ORDER BY state', sep=''))
+	}
+	print('Error')
+}
+
+runRegression <- function(dependent, independent, controls){
+	conn <- dbConnect(PostgreSQL(), host=host, dbname=db_name, user=user,password=pwd, port=port);
+
+	data <- dbGetQuery(conn, mkQuery('dependent', dependent))
+
+	temp <- dbGetQuery(conn, mkQuery('independent', independent))
+
+	data['independent'] <- dbGetQuery(conn, mkQuery('independent', independent))
+
+	i <- 0
+	for(control in controls){
+		name <- paste('control', toString(i), sep='')
+		data[name] <- dbGetQuery(conn, mkQuery(name, control))
+		i <- i+1
+	}
+
+	fit <- lm(dependent ~ independent, data=data)
+	return(toJSON(fit))
+}
 
 
+testRegression <- function(){
+	dependent <- list(
+		type = 'field',
+		table = 'a_fiscal_11',
+		value = 'anrspt',
+		label = 'natural resources expenditures',
+		year = '1957',
+		dataset = 'Policy'
+  	)
+	independent <- list(
+		type = 'field',
+  		value = 'population_female',
+  		label = 'Population Female',
+  		year = '2001',
+  		dataset = 'Demographics'
+	)
+	controls <- list(
+		list(
+			type = 'field',
+		    value = 'Preventable Hospital Stays',
+		    label = 'Preventable Hospital Stays',
+		    year = '2004',
+		    dataset = 'Health Outcomes'
+		),
+		list(
+			type = 'field',
+	       	value = 'Adult Obesity',
+	       	label = 'Adult Obesity',
+	       	year = '2004',
+	       	dataset = 'Health Outcomes'
+		)
+	)
 
+	runRegression(dependent, independent, controls)
+}
 
 
 

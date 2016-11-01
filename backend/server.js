@@ -10,11 +10,14 @@ var app = require('./app').app;
 var port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 8082;
 var ip = process.env.OPENSHIFT_NODEJS_IP || "localhost";
 
+
+
+
 app.listen(port, ip, function (err) {
 	if (err) {
 	  	return console.error(err);
 	}
-	console.log('Listening at http://localhost:8082');
+	console.log(`Listening at http://${ip}:${port}`);
 });
 
 // Shutdown `Rserve`
@@ -36,7 +39,7 @@ process.on('uncaughtException', shutdown);
 
 // Delete the old socket file if it exists.  Otherwise this gives
 // us an EADDRINUSE error
-rimraf.sync('./rserve.sock')
+rimraf.sync(__dirname + '/rserve.sock')
 
 var rserveSocket = net.createServer(function(c) {
     console.log('Rserve socket connected!');
@@ -44,18 +47,18 @@ var rserveSocket = net.createServer(function(c) {
 
 var R = process.env.R_PATH ? process.env.R_PATH + '/R' : 'R'
 
-rserveSocket.listen('./rserve.sock', function() { //'listening' listener
+rserveSocket.listen(__dirname + '/rserve.sock', function() { //'listening' listener
     console.log('R server bound');
 
     const child = child_process.spawn(R, 
-      ['CMD', 'Rserve', '--no-save', '--RS-conf', 'rserve.config', '--RS-socket', path.join(__dirname, 'rserve.sock')])
+      ['CMD', 'Rserve', '--no-save', /*'--RS-conf', path.join(__dirname, '../rserve.config'),*/ '--RS-socket', path.join(__dirname, 'rserve.sock')])
 
     child.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
     });
 
     child.stderr.on('data', (data) => {
-      console.log(`stderr: ${data}`);
+      console.log(`stderr: ${data}`);      
     });
 });
 
