@@ -36,11 +36,11 @@ class Field_ extends React.Component{
 	}
 
 	render(){
-		return(
+		return this.props.connectDragSource(
 
 			<div style={{width : '100%', borderRadius : 5, verticalAlign : 'middle', backgroundColor : 'rgb(121,192,183)', marginBottom : 5}}>
 		    	<div style={{display : 'inline-block', width : '75%', verticalAlign: 'middle', height : '100%'}}>
-		    		{this.state.year ? this.props.connectDragSource(<p>{this.props.label}</p>) : <p>{this.props.label}</p>}
+		    		<p style={{marginLeft : 5}}>{this.props.label}</p>
 		    	</div>
 		    	<div style={{display : 'inline-block', width : '25%'}}>
 		    		<div style={{width : '100%'}}>
@@ -110,7 +110,7 @@ export default class RegressionFieldMenu extends React.Component{
 				}
 				<Button
 					bsStyle="primary"
-					disabled={!this.props.bins.every(b => b.items.length > 0)}
+					disabled={!this.props.bins.slice(0, 2).every(b => b.items.length > 0)}
 					onClick={this.props.generateModel}
 				>
 					Generate Model
