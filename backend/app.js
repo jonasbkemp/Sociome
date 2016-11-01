@@ -14,7 +14,7 @@ var fs = require('fs')
 var port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 8082;
 var ip = process.env.OPENSHIFT_NODEJS_IP || "localhost";
 var config = process.env.OPENSHIFT_POSTGRESQL_DB_URL ? 
-                       process.env.OPENSHIFT_POSTGRESQL_DB_URL : {database : 'sociome'};
+                       process.env.OPENSHIFT_POSTGRESQL_DB_URL : {database : 'sociome', password : process.env.DB_PWD};
 
 var db = new pg.Client(config);
 db.connect();

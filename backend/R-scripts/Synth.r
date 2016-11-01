@@ -6,10 +6,10 @@
 
 require(Synth)
 require(RPostgreSQL)
-require(dotenv)
+#require(dotenv)
 require(hash)
 require(RJSONIO)
-require(nlme)
+#require(nlme)
 
 print('Done Loading')
 
@@ -41,8 +41,6 @@ if(Sys.getenv('OPENSHIFT_POSTGRESQL_DB_USERNAME') ==''){
 		port <- ''
 	}
 }
-
-
 
 # Intercept - not really important
 # treated - difference between states that had a treatment and did (on average there is 1.21 units of )
