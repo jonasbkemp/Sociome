@@ -86,14 +86,17 @@ class ZoomMap extends Component{
             var mouse = d3.mouse(document.body);
             var county = d.id % 1000
 			var state = Math.floor(d.id / 1000)
-			var value = (data[state] && data[state][county]) ? data[state][county].value : 'Missing Data'
-            this.tooltip.classed('hidden', false)
-                .attr('style', 'left:' + (mouse[0] + 15) +
-                        'px; top:' + (mouse[1] - 35) + 'px')
-                .html('<b>' + data[state][county].state + '</b><br/>value: ' + 
-                	  value);
+			if(data[state] && data[state][county]){
+				var value = data[state][county].value
+	            this.tooltip.classed('hidden', false)
+	                .attr('style', 'left:' + (mouse[0] + 15) +
+	                        'px; top:' + (mouse[1] - 35) + 'px')
+	                .html(`<b>${getStateInfo(state).state}</b><br/><b>${data[state][county].state}</b><br/>Value: ${value}`)
+			}
         })
-        .on('mouseout', () => this.tooltip.classed('hidden', true))
+        .on('mouseout', () => {
+        	this.tooltip.classed('hidden', true)
+        })
     }
 
     updateStates = () => {
@@ -116,7 +119,17 @@ class ZoomMap extends Component{
 			if(currentState){
 				return heatmap(currentState.value)
 			}
-		})
+		}).on('mousemove', (d) => {
+            var mouse = d3.mouse(document.body);
+            var currentState = stateData[getStateInfo(d.id).state];
+            var value = currentState ? currentState.value : 'Missing Data';
+            this.tooltip.classed('hidden', false)
+                .attr('style', 'left:' + (mouse[0] + 15) +
+                        'px; top:' + (mouse[1] - 35) + 'px')
+                .html(getStateInfo(d.id).state + '<br/>Value: ' + value);
+        }).on('mouseout', () => {
+        	this.tooltip.classed('hidden', true)
+        })
     }
 
 	drawMap = () => {
@@ -134,47 +147,10 @@ class ZoomMap extends Component{
 			
 			// draw county lines if we are plotting the Health Outcomes data
 			if(this.props.dataset === 'health-outcomes' && this.props.data){
-				var component = this;
-				var {data, min, max} = _.reduce(this.props.data, (res, d) => {
-
-	            		if(!res.data[d.statecode])
-	            			res.data[d.statecode] = d;
-	            		else
-	            			res.data[d.statecode][d.countycode] = d;
-	            		res.min = Math.min(res.min, d.value);
-	            		res.max = Math.max(res.max, d.value);
-	            		return res;
-	            	}, {data : {}, min : Number.MAX_VALUE, max : Number.MIN_VALUE});
-
-				var heatmap = d3.scaleLinear()
-			    	.domain([min, max])
-				    .interpolate(d3.interpolateRgb)
-				    .range(["#EFEFFF","#02386F"])
 
 				this.counties = this.g.append('g').attr('id', 'county-lines').selectAll('path')
 					.data(topojson.feature(GEO_JSON, GEO_JSON.objects.counties).features)
 					.enter().append('path').attr('d', path)
-					.style('fill', function(d){
-						var county = d.id % 1000
-						var state = Math.floor(d.id / 1000)
-						if(data[state] && data[state][county])
-							return heatmap(data[state][county].value)
-						else{
-							console.log('no state or county')
-						}
-					})
-					.on('mousemove', d => {
-	                    var mouse = d3.mouse(document.body);
-	                    var county = d.id % 1000
-						var state = Math.floor(d.id / 1000)
-						var value = (data[state] && data[state][county]) ? data[state][county].value : 'Missing Data'
-	                    this.tooltip.classed('hidden', false)
-	                        .attr('style', 'left:' + (mouse[0] + 15) +
-	                                'px; top:' + (mouse[1] - 35) + 'px')
-	                        .html('<b>' + data[state][county].state + '</b><br/>value: ' + 
-	                        	  value);
-	                })
-	                .on('mouseout', () => this.tooltip.classed('hidden', true))
 
 	            // Draw the state lines.  
 	            this.states = this.g.append('g').attr('id', 'state-lines').selectAll('path')
@@ -185,8 +161,10 @@ class ZoomMap extends Component{
 	                .style('stroke', '#fff')
 	                .style('fill-opacity', '0.0')
 	                .style('cursor', 'pointer')
+	               	.on('mouseout', () => this.tooltip.classed('hidden', true))
 
-	            this.addStateHover({withColor : false})
+				this.updateCounties();
+				this.states.on('mousemove', this.passThru);
 			}else{
 				// Draw the state lines.  
 	            this.states = this.g.append('g').selectAll('path')
@@ -197,35 +175,15 @@ class ZoomMap extends Component{
 	                .style('stroke', '#fff')
 	                .style('cursor', 'pointer')
 	                .style('fill', '#ccc')
-	            this.addStateHover({withColor : this.props.data == undefined})
 	            if(this.props.data){
-	            	var {stateData, min, max} = _.reduce(this.props.data, (res, d) => {
-	            		res.stateData[d.state] = d;
-	            		res.min = Math.min(res.min, d.value);
-	            		res.max = Math.max(res.max, d.value);
-	            		return res;
-	            	}, {stateData : {}, min : Number.MAX_VALUE, max : Number.MIN_VALUE});
-
-					var heatmap = d3.scaleLinear()
-				    	.domain([min, max])
-					    .interpolate(d3.interpolateRgb)
-					    .range(["#EFEFFF","#02386F"])
-
-					this.states.style('fill', (d) => {
-						if(d.id > 56)
-							return
-						var currentState = stateData[getStateInfo(d.id).state]
-						if(currentState){
-							return heatmap(currentState.value)
-						}
-					})
+	            	this.updateStates();
 	            }
 			}
 		})
 	}
 
 	reset = (component) => {
-		this.addStateHover({withColor : this.props.data == undefined})
+		//this.addStateHover({withColor : this.props.data == undefined})
 	  	this.g.transition()
 	     	.duration(750)
 	      	.style("stroke-width", "1.5px")
