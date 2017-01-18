@@ -8,6 +8,7 @@ var net = require('net')
 var webpack = require('webpack')
 var config = require('../webpack.config')
 var express = require('express')
+var bodyParser = require('body-parser')
 
 var port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 8080;
 var ip = process.env.OPENSHIFT_NODEJS_IP || "localhost";
@@ -28,8 +29,9 @@ if (process.env.NODE_ENV !== 'production') {
   }))
 }
 
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended : true}))
 app.use('/', require('./routes'))
-
 app.use(express.static(path.join(__dirname, '../static')))
 
 app.listen(port, ip, function (err) {
