@@ -5,13 +5,32 @@ var rio = require('rio');
 var child_process = require('child_process');
 var rimraf = require('rimraf')
 var net = require('net')
-var app = require('./app').app;
+var webpack = require('webpack')
+var config = require('../webpack.config')
+var express = require('express')
 
-var port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 8082;
+var port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 8080;
 var ip = process.env.OPENSHIFT_NODEJS_IP || "localhost";
 
+var app = express()
+var compiler = webpack(config)
 
+// If this is in development mode, then enable hot reloading
+if (process.env.NODE_ENV !== 'production') {
+  app.use(require('webpack-dev-middleware')(compiler, {
+    noInfo: true, publicPath: config.output.publicPath
+  }))
 
+  app.use(require('webpack-hot-middleware')(compiler, {
+    log: console.log,
+    path: '/__webpack_hmr',
+    heartbeat: 10 * 1000
+  }))
+}
+
+app.use('/', require('./routes'))
+
+app.use(express.static(path.join(__dirname, '../static')))
 
 app.listen(port, ip, function (err) {
 	if (err) {
@@ -64,7 +83,9 @@ rserveSocket.listen(__dirname + '/rserve.sock', function() { //'listening' liste
 
 
 
-
+setTimeout(function(){request(ip + ':' + port + '/Wakeup', function(err, res){
+  console.log('Wakeup result = ' + res)
+})}, 3600000)
 
 
 

@@ -1,33 +1,17 @@
 var pg = require('pg')
 var express = require('express')
+var router = express.Router()
 var pg = require('pg');
-var cors = require('cors');
-var stats = require('simple-statistics')
-require('dotenv').config({silent : true});
 var rio = require('rio');
 var path = require('path')
 var _ = require('lodash')
-var request = require('request')
-var bodyParser = require('body-parser');
-var fs = require('fs')
 
-var port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 8082;
-var ip = process.env.OPENSHIFT_NODEJS_IP || "localhost";
 var config = process.env.OPENSHIFT_POSTGRESQL_DB_URL ? 
-                       process.env.OPENSHIFT_POSTGRESQL_DB_URL : {database : 'sociome', password : process.env.DB_PWD};
+            process.env.OPENSHIFT_POSTGRESQL_DB_URL : 
+            {database : 'sociome', password : process.env.DB_PWD};
 
 var db = new pg.Client(config);
 db.connect();
-
-var app = express()
-app.use(cors());
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended : true}));
-
-module.exports.app = app;
-
-app.use(express.static(__dirname + '/../static/'));
 
 var health_outcomes = {
   'children_in_poverty' : true
@@ -46,7 +30,7 @@ var health_outcomes = {
 }
 
 // depVar 
-app.get('/SynthGetYears', function(req, res){
+router.get('/SynthGetYears', function(req, res){
   var depVar = req.query.depVar
   var predVars = !req.query.predVars || typeof(req.query.predVars) === 'string' ? [req.query.predVars] : req.query.predVars
   var notNullCond = predVars.map(function(pv){return `demographics.${pv} IS NOT NULL`}).join(' AND ')
@@ -64,7 +48,7 @@ app.get('/SynthGetYears', function(req, res){
 })
 
 //Get a distinct ordered array of years available
-app.get('/GetYears', function(req, res){
+router.get('/GetYears', function(req, res){
   var table = req.query.table;
   if(health_outcomes[table]){
     db.query('SELECT DISTINCT start_year FROM ' + table + ' ORDER BY start_year;').then(function(data){
@@ -81,7 +65,7 @@ app.get('/GetYears', function(req, res){
   }
 })
 
-app.get('/GetPolicyData', function(req, res){
+router.get('/GetPolicyData', function(req, res){
   var table = req.query.policy
   var field = req.query.field
   var yearClause = req.query.year ? `AND year=${req.query.year}` : `ORDER BY year`
@@ -99,7 +83,7 @@ app.get('/GetPolicyData', function(req, res){
   )
 })
 
-app.get('/GetDemographics', function(req, res){
+router.get('/GetDemographics', function(req, res){
   var col = req.query.col;
   var yearClause = req.query.year ? `AND year=${req.query.year}` : `ORDER BY year`;
   var query = `SELECT year, county_name as state, ${col} as value, fips_state_code as statecode, fips_county_code as countycode FROM demographics WHERE ${col} IS NOT NULL ${yearClause};`;
@@ -116,7 +100,7 @@ app.get('/GetDemographics', function(req, res){
   )
 })
 
-app.get('/GetHealthOutcomes', function(req, res){
+router.get('/GetHealthOutcomes', function(req, res){
   var measure_name = req.query.measure_name;
   var yearClause = req.query.year ? `AND year=${req.query.year}` : `ORDER BY year`;
   var query = `SELECT year, county as state, rawvalue as value, countycode, statecode FROM health_outcomes WHERE measurename='${measure_name}' AND rawvalue IS NOT NULL ${yearClause};`;
@@ -132,7 +116,7 @@ app.get('/GetHealthOutcomes', function(req, res){
   )
 })
 
-app.get('/GetHealthOutcomeTypes', function(req, res){
+router.get('/GetHealthOutcomeTypes', function(req, res){
   db.query('SELECT DISTINCT measurename FROM health_outcomes WHERE measurename IS NOT NULL;').then((data) => {
     res.json(data.rows.map((t) => t.measurename));
   }).catch((err) => {
@@ -141,7 +125,7 @@ app.get('/GetHealthOutcomeTypes', function(req, res){
   })
 })
 
-app.get('/Multilevel', function(req, res){
+router.get('/Multilevel', function(req, res){
   var depVar = req.query.depVar;
   var predVar = req.query.predVar;
   var command = `runMultilevelModeling(${depVar}, ${predVar})`;
@@ -158,7 +142,7 @@ app.get('/Multilevel', function(req, res){
   })
 })
 
-app.post('/LinRegression', function(req, res){
+router.post('/LinRegression', function(req, res){
 
   var params = req.body;
   params.controls = params.controls ? params.controls : [];
@@ -200,7 +184,7 @@ app.post('/LinRegression', function(req, res){
   })
 })
 
-app.get('/DiffInDiff', function(req, res){
+router.get('/DiffInDiff', function(req, res){
   var depVar = req.query.depVar
   var predVars = typeof(req.query.predVars) === 'string' ? [req.query.predVars] : req.query.predVars
   predVars = predVars.join(',')
@@ -225,7 +209,7 @@ app.get('/DiffInDiff', function(req, res){
   })
 })
 
-app.get('/Synth', function(req, res){
+router.get('/Synth', function(req, res){
   var depVar = req.query.depVar
   var predVars = typeof(req.query.predVars) === 'string' ? [req.query.predVars] : req.query.predVars
   var treatment = req.query.treatment
@@ -255,15 +239,14 @@ app.get('/Synth', function(req, res){
   })
 })
 
-app.get('/', function(req, res){
+router.get('/', function(req, res){
     res.sendFile(path.resolve(__dirname + '/../static/index.html'));
 });
 
 // Openshift puts the app to sleep after 24 hours of innactivity.
 // Continually ping the server to keep it awake...
-app.get('/Wakeup', function(req, res){
+router.get('/Wakeup', function(req, res){
   res.json({success : true})
 })
-setTimeout(function(){request(ip + ':' + port + '/Wakeup', function(err, res){
-  console.log('Wakeup result = ' + res)
-})}, 3600000)
+
+module.exports = router
