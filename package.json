@@ -17,8 +17,6 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.15.2",
-    "brfs": "^1.4.3",
-    "cors": "^2.7.1",
     "d3": "^4.2.1",
     "datamaps": "^0.5.7",
     "dotenv": "^2.0.0",
@@ -45,7 +43,6 @@
     "request": "^2.74.0",
     "rimraf": "^2.5.4",
     "rio": "^2.4.1",
-    "simple-statistics": "^2.1.0",
     "sinon": "^1.17.5",
     "topojson": "^1.6.26",
     "transform-loader": "^0.2.3",
