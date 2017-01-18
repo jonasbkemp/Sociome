@@ -29,99 +29,113 @@ var health_outcomes = {
  ,'diabetic_monitoring' : true
 }
 
-// depVar 
+/**
+ * Get the available years for Synthetic Control.  The user should
+ * only be allowed so select years where dependent and predictive
+ * variables line up.
+ * 
+ * @param  {String} depVar - Dependent variable
+ * @param  {Array<String>} predVars - predictive variables
+ * @return {Array<Integer>} - Array of years
+ */
 router.get('/SynthGetYears', function(req, res){
   var depVar = req.query.depVar
   var predVars = !req.query.predVars || typeof(req.query.predVars) === 'string' ? [req.query.predVars] : req.query.predVars
   var notNullCond = predVars.map(function(pv){return `demographics.${pv} IS NOT NULL`}).join(' AND ')
 
-  var q = `SELECT DISTINCT demographics.year FROM demographics INNER JOIN ${depVar}
- ON demographics.year=${depVar}.start_year AND demographics.state_name=${depVar}.county
- WHERE demographics.fips_county_code=0 AND ${notNullCond} AND ${depVar}.rawvalue IS NOT NULL ORDER BY year;`
-  console.log(q)
+  var q = `
+    SELECT DISTINCT demographics.year 
+    FROM demographics 
+    INNER JOIN ${depVar} ON 
+      demographics.year=${depVar}.start_year AND 
+      demographics.state_name=${depVar}.county
+    WHERE 
+      demographics.fips_county_code=0 AND 
+      ${notNullCond} AND 
+      ${depVar}.rawvalue IS NOT NULL 
+    ORDER BY year;`
   db.query(q).then(function(data){
     res.json(data.rows.map(function(d){return d.year}));
   }).catch(function(err){
-    console.log(err)
-    throw(err)
+    res.status(500).send(err)
   })
 })
 
-//Get a distinct ordered array of years available
-router.get('/GetYears', function(req, res){
-  var table = req.query.table;
-  if(health_outcomes[table]){
-    db.query('SELECT DISTINCT start_year FROM ' + table + ' ORDER BY start_year;').then(function(data){
-      res.json(data.rows.map(function(x){return x.start_year}))
-    }).catch(function(err){
-      console.log(err)
-    })
-  }else{
-    db.query('SELECT DISTINCT year FROM ' + table + ' ORDER BY year;').then(function(data){
-      res.json(data.rows.map(function(x){return x.year}))
-    }).catch(function(err){
-      console.log(err)
-    })
-  }
-})
-
-router.get('/GetPolicyData', function(req, res){
+/**
+ * Get the policy data for a specific field.  The year
+ * parameter is optional.  If it is not provided, then all 
+ * data points will be returned ordered by year
+ * @param  {String} policy - The policy to select (table)
+ * @param  {String} field - The policy field (column)
+ * @param  {Integer} year - Which year to select for
+ * @return {Array<{state : String, year : Integer, value : Float}>}
+ */
+router.get('/PolicyData', function(req, res){
   var table = req.query.policy
   var field = req.query.field
   var yearClause = req.query.year ? `AND year=${req.query.year}` : `ORDER BY year`
-  var query = `SELECT state, year, ${field} as value FROM ${table} WHERE ${field} IS NOT NULL ${yearClause};`
-  console.log(query)
-  db.query(query).then(
-    function(data){
-      res.json(data.rows)
-    }
-  ).catch(
-    function(err){
-      console.log(err)
-      res.json(err)
-    }
-  )
+  var query = `
+    SELECT state, year, ${field} as value 
+    FROM ${table} 
+    WHERE ${field} IS NOT NULL ${yearClause};`
+
+  db.query(query).then(data => {
+    res.json(data.rows)
+  }).catch(err => {
+    res.status(500).send(err)
+  })
 })
 
-router.get('/GetDemographics', function(req, res){
+/**
+/* Get a column out of the demographics table.  `year` is 
+ * optional.  If not provided, all years are returned ordered by year
+ * @param  {String} col - Which demographics column to select
+ * @param  {Integer} year - Which year to select for
+ * @return {Array<Object>}
+ */
+router.get('/Demographics', function(req, res){
   var col = req.query.col;
   var yearClause = req.query.year ? `AND year=${req.query.year}` : `ORDER BY year`;
-  var query = `SELECT year, county_name as state, ${col} as value, fips_state_code as statecode, fips_county_code as countycode FROM demographics WHERE ${col} IS NOT NULL ${yearClause};`;
-  console.log(query)
-  db.query(query).then(
-    function(data){
-      res.json(data.rows)
-    }
-  ).catch(
-    function(err){
-      console.log(err)
-      res.json({})
-    }
-  )
+
+  var query = `
+    SELECT 
+      year, 
+      county_name as state, 
+      ${col} as value, 
+      fips_state_code as statecode, 
+      fips_county_code as countycode 
+    FROM demographics 
+    WHERE ${col} IS NOT NULL ${yearClause};`;
+  db.query(query).then(data => {
+    res.json(data.rows)
+  }).catch(err => {
+    res.status(500).send(err)
+  })
 })
 
-router.get('/GetHealthOutcomes', function(req, res){
+/**
+ * Get a column out of the Health Outcomes table.
+ * 
+ * @param  {String} measure_name - Which measure to select
+ * @param  {Integer} year - Which year to select for
+ * @return {Array<Object>}
+ */
+router.get('/HealthOutcomes', function(req, res){
   var measure_name = req.query.measure_name;
   var yearClause = req.query.year ? `AND year=${req.query.year}` : `ORDER BY year`;
-  var query = `SELECT year, county as state, rawvalue as value, countycode, statecode FROM health_outcomes WHERE measurename='${measure_name}' AND rawvalue IS NOT NULL ${yearClause};`;
-  db.query(query).then(
-    function(data){
-      res.json(data.rows)
-    }
-  ).catch(
-    function(err){
-      console.log(err)
-      res.json({})
-    }
-  )
-})
-
-router.get('/GetHealthOutcomeTypes', function(req, res){
-  db.query('SELECT DISTINCT measurename FROM health_outcomes WHERE measurename IS NOT NULL;').then((data) => {
-    res.json(data.rows.map((t) => t.measurename));
-  }).catch((err) => {
-    console.log(err);
-    res.status(500).send(err);
+  var query = `
+    SELECT 
+      year, 
+      county as state, 
+      rawvalue as value, 
+      countycode, 
+      statecode 
+    FROM health_outcomes 
+    WHERE measurename='${measure_name}' AND rawvalue IS NOT NULL ${yearClause};`;
+  db.query(query).then(data => {
+    res.json(data.rows)
+  }).catch(err => {
+    res.status(500).send(err)
   })
 })
 
@@ -143,7 +157,6 @@ router.get('/Multilevel', function(req, res){
 })
 
 router.post('/LinRegression', function(req, res){
-
   var params = req.body;
   params.controls = params.controls ? params.controls : [];
 
@@ -157,10 +170,7 @@ router.post('/LinRegression', function(req, res){
     return `list(${fields.join(',')})`;
   }
 
-
-
   var controls = params.controls.map(mkArg)
-
 
   var cmd = `{source("${__dirname}/R-scripts/Synth.r");\n`
   cmd += `runRegression(${mkArg(params.dependent)}, ${mkArg(params.independent)}, list(${controls.join(',')}))}`

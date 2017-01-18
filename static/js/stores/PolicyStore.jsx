@@ -73,7 +73,7 @@ class PolicyStore extends EventEmitter{
 
 	setPolicyField(field){
 		this.currentField = field;
-		var url = `/GetPolicyData?policy=${this.currentPolicy.code}&field=${field.code}`
+		var url = `/PolicyData?policy=${this.currentPolicy.code}&field=${field.code}`
 		console.log(url)
 		$.get(url).then((data) => {
 			this.data = data

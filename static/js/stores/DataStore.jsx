@@ -198,13 +198,13 @@ class DataStore extends EventEmitter{
 		this.lastCategory = category.value;
 		switch(this.currentDataset){
 			case 'Policy':
-				this.requestData(`/GetPolicyData?policy=${category.table}&field=${category.value}`)
+				this.requestData(`/PolicyData?policy=${category.table}&field=${category.value}`)
 				break;
 			case 'Health Outcomes':
-				this.requestData(`/GetHealthOutcomes?measure_name=${category.value}`)
+				this.requestData(`/HealthOutcomes?measure_name=${category.value}`)
 				break;
 			case 'Demographics':
-				this.requestData(`/GetDemographics?col=${category.value}`);
+				this.requestData(`/Demographics?col=${category.value}`);
 				break;
 		}
  	}
