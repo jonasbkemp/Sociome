@@ -5,7 +5,6 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import {DragDropContext} from 'react-dnd';
 import update from 'react/lib/update';
 import RegressionResults from 'sociome/components/RegressionResults';
-import {BACKEND_URL} from 'sociome/Constants';
 
 class Regression extends React.Component{
 	constructor(props){
@@ -52,7 +51,7 @@ class Regression extends React.Component{
 
 	generateModel = () => {
 		var component = this;
-		$.post(`${BACKEND_URL}/LinRegression`, {
+		$.post(`/LinRegression`, {
 			dependent : this.state.bins[0].items[0],
 			independent : this.state.bins[1].items[0],
 			controls : this.state.bins[2].items

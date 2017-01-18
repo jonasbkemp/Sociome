@@ -2,8 +2,6 @@ import {EventEmitter} from 'events';
 import dispatcher from 'sociome/Dispatcher';
 import {fields} from 'sociome/stores/PolicyFields';
 import * as _ from 'lodash';
-import {BACKEND_URL} from 'sociome/Constants';
-
 
 class PolicyStore extends EventEmitter{
 	constructor(){
@@ -75,7 +73,7 @@ class PolicyStore extends EventEmitter{
 
 	setPolicyField(field){
 		this.currentField = field;
-		var url = `${BACKEND_URL}/GetPolicyData?policy=${this.currentPolicy.code}&field=${field.code}`
+		var url = `/GetPolicyData?policy=${this.currentPolicy.code}&field=${field.code}`
 		console.log(url)
 		$.get(url).then((data) => {
 			this.data = data

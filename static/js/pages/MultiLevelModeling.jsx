@@ -5,8 +5,6 @@ import {policyStore} from 'sociome/stores/DataStore';
 import {states} from 'sociome/data/StateCodes';
 import Spinner from 'react-spinkit';
 import * as _ from 'lodash';
-import {BACKEND_URL} from 'sociome/Constants';
-
 
 /*
 the error components model (random).
@@ -37,7 +35,7 @@ export default class MultiLevelModeling extends React.Component{
 	}
 
 	runR = (event) => {
-		var url = `${BACKEND_URL}/Multilevel?predVar=\"${this.state.predVar}\"&depVar=\"${this.state.depVar}\"`
+		var url = `/Multilevel?predVar=\"${this.state.predVar}\"&depVar=\"${this.state.depVar}\"`
 		console.log(url)
 		this.setState(_.extend({}, this.state, {runningR : true}))
 		$.get(url, (res) => {

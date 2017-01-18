@@ -6,7 +6,6 @@ import {states} from 'sociome/data/StateCodes';
 import Spinner from 'react-spinkit';
 import DiffInDiffResults from 'sociome/components/DiffInDiffResults';
 import * as _ from 'lodash';
-import {BACKEND_URL} from 'sociome/Constants';
 
 /*
 both predictor variable and dependent variables are from the health outcomes dataset
@@ -36,7 +35,7 @@ export default class Sandbox extends React.Component{
 	runR = (event) => {
 		var predVars = this.state.predVars.map((v) => `predVars=\"${v.value}\"`).join('&')
 		var treatmentGroup = this.state.treatmentGroup.map((i) => `treatmentGroup=\"${i.label}\"`).join('&')
-		var url = `${BACKEND_URL}/DiffInDiff?${predVars}&depVar=\"${this.state.depVar}\"
+		var url = `/DiffInDiff?${predVars}&depVar=\"${this.state.depVar}\"
 &${treatmentGroup}&yearOfTreatment=${this.state.yearOfTreatment}`
 		console.log(url)
 		this.setState(_.extend({}, this.state, {runningR : true}))
@@ -97,7 +96,7 @@ export default class Sandbox extends React.Component{
 
 	getYears = (depVar) => {
 		var predVars = this.state.predVars.map((pv) => `predVars=${pv.value}`).join('&')
-		$.get(`${BACKEND_URL}/SynthGetYears?depVar=${depVar}&${predVars}`).then((years) => {
+		$.get(`/SynthGetYears?depVar=${depVar}&${predVars}`).then((years) => {
 			var options = []
 			// Start at 1 because we need at least one year prior for pre-treatment years
 			for(var i = 1; i < years.length; i++){

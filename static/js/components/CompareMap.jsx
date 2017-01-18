@@ -3,8 +3,6 @@ import Select from 'react-select';
 import ZoomMap from 'sociome/components/ZoomMap';
 import * as _ from 'lodash';
 
-import {BACKEND_URL} from 'sociome/Constants';
-
 export default class CompareMap extends Component{
 	updatePolicy = () => {
 		this.setState(_.extend({}, this.state, {
@@ -36,7 +34,7 @@ export default class CompareMap extends Component{
 	}
 
 	changePolicyField = (event) => {
-		$.get(BACKEND_URL + 'GetYears?table=' + this.state.feature.value).then((data) => {
+		$.get('/GetYears?table=' + this.state.feature.value).then((data) => {
 			this.setState(_.extend({}, this.state, {
 				years : data.map((y) => {return {value:y, label:y}}), 
 				field : event
@@ -55,7 +53,7 @@ export default class CompareMap extends Component{
 					data : undefined,
 				}))
 			}else{
-				$.get(BACKEND_URL+'GetYears?table=' + event.value).then((data) => {
+				$.get('/GetYears?table=' + event.value).then((data) => {
 					this.setState(_.extend({}, this.state, {
 						years : data.map((y) => {return{value:y,label:y}}),
 						feature : event,
@@ -70,14 +68,12 @@ export default class CompareMap extends Component{
 			this.setState(_.extend({}, this.state, {year : undefined}));
 		}else{
 			if(this.state.dataset === 'health-outcomes'){
-				console.log(BACKEND_URL + 'GetHealthOutcomes?measure_name=' + this.state.feature.value + 
-					'&year=' + event.value)
-				$.get(BACKEND_URL + 'GetHealthOutcomes?measure_name=' + this.state.feature.value + 
+				$.get('/GetHealthOutcomes?measure_name=' + this.state.feature.value + 
 					'&year=' + event.value).then((data) => {
 					this.setState(_.extend({}, this.state, {data : data,year:event}))	
 				})
 			}else if(this.state.dataset === 'policy'){
-				$.get(BACKEND_URL + 'GetPolicyData?policy=' + this.state.feature.value + '&field=' + this.state.field.value).then((data) => {
+				$.get('/GetPolicyData?policy=' + this.state.feature.value + '&field=' + this.state.field.value).then((data) => {
 					this.setState(_.extend({}, this.state, {data : data,year:event}))
 				})
 			}else{

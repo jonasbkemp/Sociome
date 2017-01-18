@@ -6,8 +6,6 @@ import {states} from 'sociome/data/StateCodes';
 import SynthResults from 'sociome/components/SynthResults';
 import Spinner from 'react-spinkit';
 import * as _ from 'lodash';
-import {BACKEND_URL} from 'sociome/Constants';
-
 				
 export default class Sandbox extends React.Component{
 	constructor(props){
@@ -39,7 +37,7 @@ export default class Sandbox extends React.Component{
 		}
 		var predVars = this.state.predVars.map((v) => `predVars=\"${v.value}\"`).join('&')
 		var controlIdentifiers = this.state.controlIdentifiers.map((i) => `controlIdentifiers=\"${i.label}\"`).join('&')
-		var url = `${BACKEND_URL}/Synth?${predVars}&depVar=\"${this.state.depVar}\"&treatment=\"${this.state.treatment.label}\"
+		var url = `/Synth?${predVars}&depVar=\"${this.state.depVar}\"&treatment=\"${this.state.treatment.label}\"
 &${controlIdentifiers}&yearOfTreatment=${this.state.yearOfTreatment}`
 		console.log(url)
 		this.setState(_.extend({}, this.state, {runningSynth : true}))
@@ -119,7 +117,7 @@ export default class Sandbox extends React.Component{
 
 	getYears = (depVar) => {
 		var predVars = this.state.predVars.map((pv) => `predVars=${pv.value}`).join('&')
-		var url = `${BACKEND_URL}/SynthGetYears?depVar=${depVar}&${predVars}`
+		var url = `/SynthGetYears?depVar=${depVar}&${predVars}`
 		console.log(url)
 		$.get(url).then((years) => {
 			var options = []

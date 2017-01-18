@@ -4,8 +4,6 @@ import * as _ from 'lodash';
 import {policyCategories} from 'sociome/data/PolicyCategories';
 import {demographicCategories} from 'sociome/data/DemographicCategories';
 import {healthOutcomesCategories} from 'sociome/data/HealthOutcomesCategories';
-import {BACKEND_URL} from 'sociome/Constants';
-
 
 class DataStore extends EventEmitter{
 	constructor(){
@@ -200,13 +198,13 @@ class DataStore extends EventEmitter{
 		this.lastCategory = category.value;
 		switch(this.currentDataset){
 			case 'Policy':
-				this.requestData(`${BACKEND_URL}/GetPolicyData?policy=${category.table}&field=${category.value}`)
+				this.requestData(`/GetPolicyData?policy=${category.table}&field=${category.value}`)
 				break;
 			case 'Health Outcomes':
-				this.requestData(`${BACKEND_URL}/GetHealthOutcomes?measure_name=${category.value}`)
+				this.requestData(`/GetHealthOutcomes?measure_name=${category.value}`)
 				break;
 			case 'Demographics':
-				this.requestData(`${BACKEND_URL}/GetDemographics?col=${category.value}`);
+				this.requestData(`/GetDemographics?col=${category.value}`);
 				break;
 		}
  	}
