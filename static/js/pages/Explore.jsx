@@ -4,8 +4,6 @@ import ZoomMap from 'sociome/components/ZoomMap';
 import * as _ from 'lodash';
 import FieldMenu from 'sociome/components/FieldMenu';
 import DataStore from 'sociome/stores/DataStore';
-import {BACKEND_URL} from 'sociome/Constants';
-
 
 export default class Explore extends Component{
 	constructor(props){
