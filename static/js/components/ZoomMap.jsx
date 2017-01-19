@@ -12,7 +12,7 @@ var topojson = require('topojson')
 // digits representing the state and "ccc" is the 
 // three digit code corresponding to the county id.
 
-class ZoomMap extends Component{
+export class ZoomMap extends Component{
 	constructor(props){
 		super(props)
 		this.width = this.props.containerWidth; //650;

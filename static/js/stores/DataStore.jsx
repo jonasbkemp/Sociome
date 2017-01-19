@@ -42,6 +42,8 @@ class DataStore extends EventEmitter{
 	}
 
 	getUniqueYears = (left, right, skipFirst) => {
+		if(left > right)// `this.data` is empty
+			return
 		// contiguous chunk of same values (a...a)
 		if(this.data[left].year === this.data[right].year){
 			if(!skipFirst)

@@ -1,6 +1,13 @@
 language: node_js
 node_js:
-  - "5.8.0"
+- 5.8.0
 before_install:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+env:
+  matrix:
+    secure: EFwnmiMg3+GUYl5lb2SQ5rbdfaV75XAW7WWmeM6K0Ezo7lYeeOKh++M+w5wNGAjlGi2XvRDGctQjF4pgV8uI+BanJSBb0/CIHt2AztYZAzAAGv4HkLnWTXKIhTYSJ33TNgUusW/EQCO2rkbaNoF00lP3cj4ySHIsLZbDGxyh+QYJkhnx9EfF5glIiB45cYtn7Je/qib6Mm0tX81YF07JD2pE/HkazvWLEJBhJ4YDOWj3NMg5xss5LwxBHAejVX8hof9Cgqz5OvDdF2p8+tu0rf7KdlKKyTP9r8DJTEgLASSbbWiugTYtunY0O6VWYBx4XScTgFdDsfqJvRI7R5k9zLX40GjUt3q+P4fGsCPvGfxWv8ewQWRlOBbPBOR03UwjaHLQL5BnavlhbUN1AbWfJ82sOPzM/X0+/5fDbbK1rMbqziky+FIrsGz3hl8nlJ4uJtwG/pnAHmmPtxFApRmmjcH6ECS7Lmbnnt34QoX0I8RbU1jKMl/EQvDV/fycT2KLSjIun4KnNTApwAB9ypiA4gJR+maEJKRZ6t5f42OujqI/Dg4jL+BCAGZgUPLmLujs1Q4NH0lIHI1Hlkh3MBONVsQY6DKPyTWxuZJZ1FA2v7/1GwnmOgrNQBkhUb6mUs6Gfy7Z8HXIAe6NELqr4/CrsFE/qxErxX0fSI0O61S+y2k=
+script:
+  - npm run test
+after_success:
+  - cat coverage/lcov.info | ./node_modules/.bin/coveralls 
