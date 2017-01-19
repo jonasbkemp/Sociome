@@ -84,10 +84,6 @@ runDiffInDiff <- function(predVars, depVar, treatmentGroup, yearOfTreatment){
 		'ORDER BY state'
 	, sep='')
 
-	print('-------')
-	print(query)
-	print('-------')
-
 	dataframe <- dbGetQuery(conn, query)
 
 	dataframe$time = ifelse(dataframe$year >= yearOfTreatment, 1, 0)
@@ -106,6 +102,10 @@ runDiffInDiff <- function(predVars, depVar, treatmentGroup, yearOfTreatment){
 	time = didreg$coefficients['time']
 	treated = didreg$coefficients['treated']
 
+	# A = Intercept
+	# B = Intercept + time
+	# C = Intercept + treated
+	# D = Intercept + time + treated + treated * time
 	res = list(
 		A = unname(intercept),
 		B = unname(intercept + time),
@@ -116,10 +116,6 @@ runDiffInDiff <- function(predVars, depVar, treatmentGroup, yearOfTreatment){
 	return(toJSON(res));
 }
 
-# A = Intercept
-# B = Intercept + time
-# C = Intercept + treated
-# D = Intercept + time + treated + treated * time
 
 testDiffInDiff <- function(){
 	predVars <- c("population_white", "population_wh_hisp_latino")
@@ -161,24 +157,43 @@ testMultilevelModeling <- function(){
 runSynth <- function(predVars, depVar, treatment, controlIdentifiers, yearOfTreatment){
 	conn <- dbConnect(PostgreSQL(), host=host, dbname=db_name, user=user,password=pwd, port=port);
 
-	nullCond <- paste(sapply(predVars, function(p){return(paste('demographics.', p, ' IS NOT NULL', collapse=''));}), collapse=' AND ')
+	query <- paste(
+		'SELECT 
+			demographics.year,
+			demographics.state_name,
+			health_outcomes.statecode,
+			health_outcomes.rawvalue as depvar', 
+			paste(
+				sapply(predVars, function(p){
+					return(paste(',demographics.', p, sep=''));
+				}), 
+				collapse=''
+			), 
+		' FROM demographics
+		  INNER JOIN health_outcomes ON
+			demographics.year=health_outcomes.year AND
+			demographics.state_name=health_outcomes.county 
+		WHERE 
+			demographics.fips_county_code=0 AND 
+			health_outcomes.measurename=\'', depVar , '\' AND
+		', 
+			paste(
+				sapply(predVars, function(p){
+					return(paste('demographics.', p, ' IS NOT NULL', sep=''));
+				}),
+				collapse=' AND '
+			), 
+			' AND demographics.state_name<>\'District of Columbia\' ',
+		'ORDER BY state_name',
+		sep=''
+	)
 
-	#Do an INNER JOIN on the health outcome and demographics data to get them aligned on state and year
-	query <- paste('SELECT demographics.year, demographics.state_name, ', depVar, '.statecode',
-			 paste(sapply(predVars, function(p){return(paste(',demographics.', p, collapse=''));}), collapse=''), 
-			 ',', depVar, '.rawvalue as ', depVar, ' FROM demographics INNER JOIN ', depVar, ' ON demographics.year=', depVar, '.start_year AND ',
-			 'demographics.state_name = ', depVar, '.county WHERE demographics.fips_county_code = 0 AND ', 
-			 nullCond, ' AND ', depVar, '.rawvalue IS NOT NULL',
-			 ' AND demographics.state_name <> \'District of Columbia\' ORDER BY state')
-
-	#print(query)
+	print(query)
 	dataframe <- dbGetQuery(conn, query)
 
 	if(nrow(dataframe) == 0){
 		return(toJSON(list(message="No common data")))
 	}
-
-	browser()
 
 	years = sort(unique(dataframe[1])$year)
 	priorYears = years[years < yearOfTreatment]
@@ -194,7 +209,7 @@ runSynth <- function(predVars, depVar, treatment, controlIdentifiers, yearOfTrea
 			foo=dataframe,
 			predictors=c(predVars),
 			predictors.op=c("mean"),
-			dependent=c(depVar),
+			dependent=c('depvar'),
 			unit.variable=c("statecode"),
 			time.variable=c("year"),
 			treatment.identifier=stateCodes[[treatment]],
@@ -226,7 +241,6 @@ runSynth <- function(predVars, depVar, treatment, controlIdentifiers, yearOfTrea
 
 	jsRes <- list(
 		success = TRUE,
-
 		treatedX = dataprep.out$tag$time.plot,
 		treatedY = as.vector(dataprep.out$Y1plot),
 		syntheticX = dataprep.out$tag$time.plot,
@@ -239,7 +253,7 @@ runSynth <- function(predVars, depVar, treatment, controlIdentifiers, yearOfTrea
 # Sample for parameters for testing purposes
 testSynth <- function(){
 	predVars <- c("population_white", "population_wh_hisp_latino")
-	depVar <- "air_pollution_particulate_matter"
+	depVar <- "Air Pollution - Particulate Matter"
 	treatment <- "Minnesota"
 	controlIdentifiers <- c("Arizona", "California", "Delaware", "Georgia")
 	yearOfTreatment <- 2007
@@ -249,7 +263,7 @@ testSynth <- function(){
 testSynth2 <- function(){
 
 	predVars <- c("population_white", "population_wh_hisp_latino", "population_female")
-	depVar <- "air_pollution_particulate_matter"
+	depVar <- "Air Pollution - Particulate Matter"
 	treatment <- "Alabama"
 	controlIdentifiers <- c("Alaska", "California", "Connecticut")
 	yearOfTreatment <- 2009
