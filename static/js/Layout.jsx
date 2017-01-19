@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import Nav from 'sociome/components/Nav';
-import ExploreBar from 'sociome/components/ExploreBar';
+import Nav from './components/Nav';
+import ExploreBar from './components/ExploreBar';
 
 export default class Layout extends React.Component {
   render() {

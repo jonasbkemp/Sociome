@@ -1,9 +1,9 @@
 import React from 'react';
 import Select from 'react-select';
 import {Button, Alert} from 'react-bootstrap';
-import {policyStore} from 'sociome/stores/DataStore';
-import {states} from 'sociome/data/StateCodes';
-import SynthResults from 'sociome/components/SynthResults';
+import {policyStore} from '../stores/DataStore';
+import {states} from '../data/StateCodes';
+import SynthResults from '../components/SynthResults';
 import Spinner from 'react-spinkit';
 import * as _ from 'lodash';
 				

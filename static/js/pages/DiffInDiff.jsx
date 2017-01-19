@@ -1,10 +1,10 @@
 import React from 'react';
 import Select from 'react-select';
 import {Button} from 'react-bootstrap';
-import {policyStore} from 'sociome/stores/DataStore';
-import {states} from 'sociome/data/StateCodes';
+import {policyStore} from '../stores/DataStore';
+import {states} from '../data/StateCodes';
 import Spinner from 'react-spinkit';
-import DiffInDiffResults from 'sociome/components/DiffInDiffResults';
+import DiffInDiffResults from '../components/DiffInDiffResults';
 import * as _ from 'lodash';
 
 /*

@@ -2,8 +2,8 @@ import React from 'react';
 import Select from 'react-select';
 import * as _ from 'lodash';
 import * as BS from 'react-bootstrap';
-import DataStore from 'sociome/stores/DataStore';
-import * as DataActions from 'sociome/actions/DataActions';
+import DataStore from '../stores/DataStore';
+import * as DataActions from '../actions/DataActions';
 
 export default class ExploreBar extends React.Component{
 	constructor(props){

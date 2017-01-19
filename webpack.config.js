@@ -13,7 +13,6 @@ module.exports = {
   resolve: {
     extensions: ['', '.js', '.jsx'],
     alias: {
-      sociome : path.resolve(__dirname + '/static/js'),
       webworkify: 'webworkify-webpack',
       'mapbox-gl': path.resolve(__dirname + '/node_modules/mapbox-gl/dist/mapbox-gl.js')
     }

@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-import ExploreBar from 'sociome/components/ExploreBar';
-import ZoomMap from 'sociome/components/ZoomMap';
+import ExploreBar from '../components/ExploreBar';
+import ZoomMap from '../components/ZoomMap';
 import * as _ from 'lodash';
-import FieldMenu from 'sociome/components/FieldMenu';
-import DataStore from 'sociome/stores/DataStore';
+import FieldMenu from '../components/FieldMenu';
+import DataStore from '../stores/DataStore';
 
 export default class Explore extends Component{
 	constructor(props){

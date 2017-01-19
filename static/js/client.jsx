@@ -3,9 +3,9 @@ import ReactDOM from "react-dom";
 import {Router, Route, IndexRoute, hashHistory, IndexRedirect} from 'react-router';
 require('react-select/dist/react-select.css');
 
-import Layout from 'sociome/Layout';
-import Explore from 'sociome/pages/Explore';
-import Regression from 'sociome/pages/Regression';
+import Layout from './Layout';
+import Explore from './pages/Explore';
+import Regression from './pages/Regression';
 
 const app = document.getElementById('app');
 

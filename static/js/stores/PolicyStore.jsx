@@ -1,6 +1,6 @@
 import {EventEmitter} from 'events';
-import dispatcher from 'sociome/Dispatcher';
-import {fields} from 'sociome/stores/PolicyFields';
+import dispatcher from '../Dispatcher';
+import {fields} from '../stores/PolicyFields';
 import * as _ from 'lodash';
 
 class PolicyStore extends EventEmitter{

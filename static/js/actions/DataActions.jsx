@@ -1,4 +1,4 @@
-import dispatcher from 'sociome/Dispatcher';
+import dispatcher from '../Dispatcher';
 
 export function setDataset(dataset){
 	dispatcher.dispatch({

@@ -1,7 +1,7 @@
 import React from 'react';
-import DataStore from 'sociome/stores/DataStore';
+import DataStore from '../stores/DataStore';
 import * as _ from 'lodash';
-import * as DataActions from 'sociome/actions/DataActions';
+import * as DataActions from '../actions/DataActions';
 import Select from 'react-select';
 
 export default class FieldMenu extends React.Component{

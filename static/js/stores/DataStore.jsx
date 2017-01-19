@@ -1,9 +1,9 @@
 import {EventEmitter} from 'events';
-import dispatcher from 'sociome/Dispatcher';
+import dispatcher from '../Dispatcher';
 import * as _ from 'lodash';
-import {policyCategories} from 'sociome/data/PolicyCategories';
-import {demographicCategories} from 'sociome/data/DemographicCategories';
-import {healthOutcomesCategories} from 'sociome/data/HealthOutcomesCategories';
+import {policyCategories} from '../data/PolicyCategories';
+import {demographicCategories} from '../data/DemographicCategories';
+import {healthOutcomesCategories} from '../data/HealthOutcomesCategories';
 
 class DataStore extends EventEmitter{
 	constructor(){

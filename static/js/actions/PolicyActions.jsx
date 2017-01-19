@@ -1,4 +1,4 @@
-import dispatcher from 'sociome/Dispatcher';
+import dispatcher from '../Dispatcher';
 
 export function changePolicy(policy){
 	dispatcher.dispatch({

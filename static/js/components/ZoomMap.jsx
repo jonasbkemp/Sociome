@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import Select from 'react-select';
-import {topoJsonStore} from 'sociome/stores/TopoJsonStore';
-import {getStateInfo} from 'sociome/data/StateCodes';
+import {topoJsonStore} from '../stores/TopoJsonStore';
+import {getStateInfo} from '../data/StateCodes';
 import Dimensions from 'react-dimensions';
 import * as _ from 'lodash';
 var d3 = require('d3')

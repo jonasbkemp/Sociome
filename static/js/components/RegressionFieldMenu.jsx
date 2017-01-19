@@ -1,10 +1,10 @@
 import React from 'react';
 import {DragSource} from 'react-dnd';
-import DataStore from 'sociome/stores/DataStore';
+import DataStore from '../stores/DataStore';
 import * as _ from 'lodash';
-import * as DataActions from 'sociome/actions/DataActions';
+import * as DataActions from '../actions/DataActions';
 import Select from 'react-select';
-import RegressionVariableBox from 'sociome/components/RegressionVariableBox';
+import RegressionVariableBox from '../components/RegressionVariableBox';
 import update from 'react/lib/update';
 import {Button} from 'react-bootstrap';
 
