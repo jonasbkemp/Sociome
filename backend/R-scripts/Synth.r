@@ -6,7 +6,7 @@
 
 require(Synth)
 require(RPostgreSQL)
-#require(dotenv)
+require(dotenv)
 require(hash)
 require(RJSONIO)
 #require(nlme)
@@ -49,19 +49,44 @@ if(Sys.getenv('OPENSHIFT_POSTGRESQL_DB_USERNAME') ==''){
 # 	- Pr(>|t|) summarizes noise
 # 	- one astericks is the convention for a "good result"
 # 	- 
-
 runDiffInDiff <- function(predVars, depVar, treatmentGroup, yearOfTreatment){
 	conn <- dbConnect(PostgreSQL(), host=host, dbname=db_name, user=user,password=pwd, port=port);
 
-	nullCond <- paste(sapply(predVars, function(p){return(paste('demographics.', p, ' IS NOT NULL', collapse=''));}), collapse=' AND ')
+	# Only select the non-NULL predictive variables
+	nullCond <- paste(
+		sapply(predVars, function(p){
+			return(paste('demographics.', p, ' IS NOT NULL', sep=''));
+		}), 
+		collapse=' AND '
+	)
 
-	#Do an INNER JOIN on the health outcome and demographics data to get them aligned on state and year
-	query <- paste('SELECT demographics.year, demographics.state_name, ', depVar, '.statecode',
-			 paste(sapply(predVars, function(p){return(paste(',demographics.', p, collapse=''));}), collapse=''), 
-			 ',', depVar, '.rawvalue as ', depVar, ' FROM demographics INNER JOIN ', depVar, ' ON demographics.year=', depVar, '.start_year AND ',
-			 'demographics.state_name = ', depVar, '.county WHERE demographics.fips_county_code = 0 AND ', 
-			 nullCond, ' AND ', depVar, '.rawvalue IS NOT NULL',
-			 ' AND demographics.state_name <> \'District of Columbia\' ORDER BY state')
+	query = paste('
+		SELECT 
+			demographics.year,
+			demographics.state_name,
+			health_outcomes.statecode ',
+			paste(
+				sapply(predVars, function(p){
+					return(paste(',demographics.', p, sep=''));
+				}),
+			collapse = ''), ',',
+			' health_outcomes.rawvalue as depvar ', 
+		'FROM demographics ',
+		'INNER JOIN health_outcomes ON ', 
+			'demographics.year=health_outcomes.year AND ',
+			'demographics.state_name=health_outcomes.county ',
+		'WHERE ',
+			'health_outcomes.measurename=\'', depVar, '\' AND ',
+			'demographics.fips_county_code=0 AND ',
+			nullCond, ' AND ',
+			'health_outcomes.rawvalue IS NOT NULL AND ',
+			'demographics.state_name <> \'District of Columbia\' ',
+		'ORDER BY state'
+	, sep='')
+
+	print('-------')
+	print(query)
+	print('-------')
 
 	dataframe <- dbGetQuery(conn, query)
 
@@ -73,7 +98,7 @@ runDiffInDiff <- function(predVars, depVar, treatmentGroup, yearOfTreatment){
 
 	dataframe$did <- dataframe$time * dataframe$treated
 
-	formula <- as.formula(paste(depVar, ' ~ treated + time + did', collapse=''))
+	formula <- as.formula('depvar ~ treated + time + did')
 
 	didreg <- lm(formula, data=dataframe)
 
@@ -98,7 +123,7 @@ runDiffInDiff <- function(predVars, depVar, treatmentGroup, yearOfTreatment){
 
 testDiffInDiff <- function(){
 	predVars <- c("population_white", "population_wh_hisp_latino")
-	depVar <- "air_pollution_particulate_matter"
+	depVar <- "Air Pollution - Particulate Matter"
 	treatmentGroup <- c("Arizona", "California", "Delaware", "Georgia")
 	yearOfTreatment <- 2007
 	return(runDiffInDiff(predVars, depVar, treatmentGroup, yearOfTreatment))
