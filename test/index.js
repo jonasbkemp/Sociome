@@ -1,3 +1,0 @@
-
-
-require('./specs/Explore/PolicyMenu');
