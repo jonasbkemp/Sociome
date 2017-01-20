@@ -1,5 +1,4 @@
 import React from 'react';
-import Select from 'react-select';
 import * as _ from 'lodash';
 import * as BS from 'react-bootstrap';
 import DataStore from '../stores/DataStore';
@@ -40,139 +39,60 @@ export default class ExploreBar extends React.Component{
 		DataStore.removeListener('change-sub-category', this.changeSubCategory);
 	}
 
-	selectDS = (event) => {
-		DataActions.setDataset(event.target.id);
+	selectDS = dataset => {
+		console.log('Selecting data set')
+		DataActions.setDataset(dataset);
 	}
 
 	selectCategory = (event) => {
+		event.target.blur()
 		DataActions.setCategory(event.target.id);
 	}
 
-	selectSubCategory = (category) => (event) => {
-		DataActions.setSubCategory(category, event.target.id);
-	}
-
-	shouldComponentUpdate(){
-		return true;
+	selectSubCategory = category => subCategory => {
+		DataActions.setSubCategory(category, subCategory);
 	}
 
 	render(){
-		/*
-		return(
-			<BS.Navbar>
-        		<BS.Nav class="pull-right" activeKey={this.state.activeKey} onSelect={this.onSelect}>
-        			<BS.NavDropdown id="ds-dropdown" eventKey={1} title="Dataset">
-        			{
-        				this.state.datasets.map((ds, i) => 
-        					<BS.MenuItem eventKey={`1.${i}`} >
-        						{ds}
-        					</BS.MenuItem>
-        				)
-        			}
-        			</BS.NavDropdown>
-        		</BS.Nav>
-        	</BS.Navbar>
-		);*/
-
-		
 		return(
 			<nav class="navbar navbar-default" style={{marginBottom : 0}}>
 				<div class="container-fluid">
 					<ul class="nav navbar-nav">
-						<li class="dropdown">
-							<BS.SafeAnchor
-								href="#"
-								class="dropdown-toggle"
-								data-toggle='dropdown'
-								role='button'
-								aria-has-popup={true}
-								aria-expanded={false}
-								style={{
-									fontFamily : 'Avenir-Light,Avenir Light,Avenir Book,Avenir',
-									fontWeight : 200,
-									fontSize : '16px',
-								}}
-							>
-								<span class="caret"></span>
-								Dataset
-							</BS.SafeAnchor>
-							<ul class="dropdown-menu">
-							{
-								this.state.datasets.map((ds) => 
-									this.state.whichDataset === ds ? 
-										<li key={ds} class='active'><BS.SafeAnchor id={ds} href="#">{ds}</BS.SafeAnchor></li> : 
-										<li key={ds} onClick={this.selectDS}><BS.SafeAnchor id={ds} href="#">{ds}</BS.SafeAnchor></li>
-								)
-							}
-					        </ul>
-						</li>
+						<BS.NavDropdown id='dataset-dropdown' onSelect={this.selectDS} title="Dataset">
+						{
+							this.state.datasets.map(ds => 
+								<BS.MenuItem key={ds} eventKey={ds} >{ds}</BS.MenuItem>
+							)
+						}
+						</BS.NavDropdown>
 						{
 							this.state.whichDataset === 'Policy' ? 
 								this.state.categories.map((category) => 
-									<li 
-										class="dropdown" 
-										key={category.value} 
+									<BS.NavDropdown 
+										style={{fontSize : 11}}
+										id='policy-dropdown' 
+										key={category.value}
+										onSelect={this.selectSubCategory(category.value)} 
+										title={category.label}
 									>
-										<BS.SafeAnchor
-											href="#"
-											class="dropdown-toggle"
-											data-toggle='dropdown'
-											role='button'
-											aria-has-popup={true}
-											aria-expanded={false}
-											style={{
-												fontFamily : 'Avenir-Light,Avenir Light,Avenir Book,Avenir',
-												fontWeight : 200,
-												fontSize : '12px',
-											}}
-										>
-											{category.label}
-										</BS.SafeAnchor>
-										<ul class="dropdown-menu">
-								            {
-								            	DataStore.getSubCategories(category.value).map((v) => 
-								            		<li 
-								            			id={v.value} 
-								            			key={v.value} 
-								            			onClick={this.selectSubCategory(category.value)}
-								            			class={this.state.whichSubCategory === v.value ? 'active' : undefined}
-								            		>
-									            		<BS.SafeAnchor id={v.value} href="#">
-									            			<p
-									            				id={v.value}
-									            				style={{
-									            					fontFamily : 'Avenir-Light, Avenir Light, Avenir Book, Avenir',
-									            					fontWeight : 200,
-									            					fontSize : '12px',
-									            					textAlign : 'left',
-									            				}}
-									            			>
-									            				{v.label}
-									            			</p>
-									            		</BS.SafeAnchor>
-								            		</li>
-								            	)
-								            }
-								        </ul>
-									</li>
+									{
+										DataStore.getSubCategories(category.value).map(v => 
+											<BS.MenuItem key={v.value} eventKey={v.value} style={{fontSize : 11}}>
+												{v.label}
+											</BS.MenuItem>
+										)
+									}
+									</BS.NavDropdown>									
 								) : 
 								this.state.categories.map((category) => 
-									<li id={category.label} key={category.value} onClick={this.selectCategory}>
-										<BS.SafeAnchor 
-											id={category.label}
-											href="#"
-											role='button'
-											aria-has-popup={true}
-											aria-expanded={false}
-											style={{
-												fontFamily : 'Avenir-Light,Avenir Light,Avenir Book,Avenir',
-												fontWeight : 200,
-												fontSize : '12px',
-											}}
-										>
-											{category.label}
-										</BS.SafeAnchor>
-									</li>
+									<BS.MenuItem 
+										style={{fontSize : 11}}
+										key={category.value}
+										id={category.value}
+										onClick={this.selectCategory}
+									>
+										{category.label}
+									</BS.MenuItem>
 								)
 						}
 					</ul>
