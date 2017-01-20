@@ -172,8 +172,8 @@ router.post('/LinRegression', function(req, res){
 
   var controls = params.controls.map(mkArg)
 
-  var cmd = `{source("${__dirname}/R-scripts/Synth.r");\n`
-  cmd += `runRegression(${mkArg(params.dependent)}, ${mkArg(params.independent)}, list(${controls.join(',')}))}`
+  //var cmd = `{source("${__dirname}/R-scripts/Synth.r");\n`
+  var cmd = `runRegression(${mkArg(params.dependent)}, ${mkArg(params.independent)}, list(${controls.join(',')}))}`
 
   console.log(cmd)
 

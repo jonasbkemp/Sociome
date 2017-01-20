@@ -72,7 +72,7 @@ rserveSocket.listen(__dirname + '/rserve.sock', function() { //'listening' liste
     console.log('R server bound');
 
     const child = child_process.spawn(R, 
-      ['CMD', 'Rserve', '--no-save', /*'--RS-conf', path.join(__dirname, '../rserve.config'),*/ '--RS-socket', path.join(__dirname, 'rserve.sock')])
+      ['CMD', 'Rserve', '--no-save', '--RS-conf', path.join(__dirname, '../rserve.config'), '--RS-socket', path.join(__dirname, 'rserve.sock')])
 
     child.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
