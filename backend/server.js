@@ -34,12 +34,15 @@ app.use(bodyParser.urlencoded({extended : true}))
 app.use('/', require('./routes'))
 app.use(express.static(path.join(__dirname, '../static')))
 
-app.listen(port, ip, function (err) {
+
+app.listen(port, function (err) {
 	if (err) {
 	  	return console.error(err);
 	}
-	console.log(`Listening at http://${ip}:${port}`);
+	console.log(`Listening on port ${port}`);
 });
+
+const socket = process.env.SOCK_LOC || path.join(__dirname, 'rserve.sock')
 
 // Shutdown `Rserve`
 function shutdown(err){
@@ -48,7 +51,7 @@ function shutdown(err){
     callback : function(err, res){
       process.exit();
     },
-    path : path.join(__dirname, 'rserve.sock'),
+    path : socket,
   });
 }
 
@@ -60,7 +63,7 @@ process.on('uncaughtException', shutdown);
 
 // Delete the old socket file if it exists.  Otherwise this gives
 // us an EADDRINUSE error
-rimraf.sync(__dirname + '/rserve.sock')
+rimraf.sync(socket)
 
 var rserveSocket = net.createServer(function(c) {
     console.log('Rserve socket connected!');
@@ -68,11 +71,11 @@ var rserveSocket = net.createServer(function(c) {
 
 var R = process.env.R_PATH ? process.env.R_PATH + '/R' : 'R'
 
-rserveSocket.listen(__dirname + '/rserve.sock', function() { //'listening' listener
+rserveSocket.listen(socket, function() { //'listening' listener
     console.log('R server bound');
 
     const child = child_process.spawn(R, 
-      ['CMD', 'Rserve', '--no-save', '--RS-conf', path.join(__dirname, '../rserve.config'), '--RS-socket', path.join(__dirname, 'rserve.sock')])
+      ['CMD', 'Rserve', '--no-save', '--RS-conf', path.join(__dirname, '../rserve.config'), '--RS-socket', socket])
 
     child.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);

@@ -10,6 +10,16 @@ var config = process.env.OPENSHIFT_POSTGRESQL_DB_URL ?
             process.env.OPENSHIFT_POSTGRESQL_DB_URL : 
             {database : 'sociome', password : process.env.DB_PWD};
 
+var config = {
+  database : 'sociome',
+  user : process.env.DB_USER,
+  password : process.env.DB_PASSWORD,
+  host : process.env.DB_HOST,
+  port : process.env.DB_PORT
+}
+
+const socket = process.env.SOCK_LOC || path.join(__dirname, 'rserve.sock')
+
 var db = new pg.Client(config);
 db.connect();
 
@@ -145,7 +155,7 @@ router.get('/Multilevel', function(req, res){
   var command = `runMultilevelModeling(${depVar}, ${predVar})`;
   rio.e({
     command : command,
-    path : path.join(__dirname, 'rserve.sock'),
+    path : socket,
     callback : function(err, result){
       if(err){
         throw err;
@@ -172,14 +182,11 @@ router.post('/LinRegression', function(req, res){
 
   var controls = params.controls.map(mkArg)
 
-  //var cmd = `{source("${__dirname}/R-scripts/Synth.r");\n`
   var cmd = `runRegression(${mkArg(params.dependent)}, ${mkArg(params.independent)}, list(${controls.join(',')}))}`
-
-  console.log(cmd)
 
   rio.e({
     command : cmd,
-    path : path.join(__dirname, 'rserve.sock'),
+    path : socket,
     callback : (err, result) => {
       console.log('callback')
       debugger
@@ -207,7 +214,7 @@ router.get('/DiffInDiff', function(req, res){
   console.log(command)
   rio.e({
     command : command,
-    path : path.join(__dirname, 'rserve.sock'),
+    path : socket,
     callback : function(err, result){
       if(err){
         console.log(err)
@@ -231,7 +238,7 @@ router.get('/Synth', function(req, res){
   console.log(command)
   rio.e({
     command : command,
-    path : path.join(__dirname, 'rserve.sock'),
+    path : socket,
     callback : function(err, result){
       if(err){
         console.log(err)

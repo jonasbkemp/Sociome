@@ -7,7 +7,7 @@ RUN apt-get install -y postgresql postgresql-contrib libpq-dev wget vim ed curl 
 USER postgres
 
 RUN /etc/init.d/postgresql start &&\
-    psql --command "CREATE USER root WITH SUPERUSER CREATEDB CREATEROLE REPLICATION BYPASSRLS;" &&\
+    psql --command "CREATE USER root WITH SUPERUSER CREATEDB CREATEROLE REPLICATION BYPASSRLS PASSWORD 'root';" &&\
     createdb root
 
 USER root
@@ -23,3 +23,5 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD5
 ADD backend/R-scripts/InstallPackages.r /
 
 RUN Rscript /InstallPackages.r
+
+EXPOSE 8080
