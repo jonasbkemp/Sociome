@@ -182,14 +182,18 @@ router.post('/LinRegression', function(req, res){
 
   var controls = params.controls.map(mkArg)
 
-  var cmd = `runRegression(${mkArg(params.dependent)}, ${mkArg(params.independent)}, list(${controls.join(',')}))}`
+  var cmd = `
+    runRegression(
+      ${mkArg(params.dependent)}, 
+      ${mkArg(params.independent)}, 
+      list(${controls.join(',')})
+    )
+  `
 
   rio.e({
     command : cmd,
     path : socket,
     callback : (err, result) => {
-      console.log('callback')
-      debugger
       if(err){
         console.log(err)
         res.status(500).json(err)
