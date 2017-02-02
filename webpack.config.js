@@ -5,13 +5,13 @@ var path = require('path');
 
 module.exports = {
   context: path.resolve(__dirname + '/'),
-  devtool: debug ? "inline-sourcemap" : null,
+  devtool: debug ? "inline-sourcemap" : false,
   entry: "./static/js/client.jsx",
   resolveLoader: {
-    root: path.join(__dirname, 'node_modules')
+    modules : ['node_modules']
   },
   resolve: {
-    extensions: ['', '.js', '.jsx'],
+    extensions: ['.js', '.jsx'],
     alias: {
       webworkify: 'webworkify-webpack',
       'mapbox-gl': path.resolve(__dirname + '/node_modules/mapbox-gl/dist/mapbox-gl.js')
@@ -32,18 +32,11 @@ module.exports = {
         test: /\.json$/,
         loader: 'json-loader'
       },
-      {
-        test: /mapbox-gl.+\.js$/,
-        include: path.resolve(__dirname + '/node_modules/mapbox-gl-shaders/index.js'),
-        loader: 'transform/cacheable?brfs'
-      },
-      { test: /\.css$/, loader: 'style!css' },
-    ],
-    postLoaders: [{
-      include: /node_modules\/mapbox-gl-shaders/,
-      loader: 'transform',
-      query: 'brfs'
-    }]    
+      { 
+        test: /\.css$/, 
+        loader: 'css-loader' 
+      }
+    ]
   },
   output: {
     path: __dirname + '/static/',
@@ -52,9 +45,8 @@ module.exports = {
   },
   plugins: debug ? 
     [
-    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin(),
     new webpack.DefinePlugin({
       'process.env' : client ? {'NODE_ENV' : JSON.stringify('production')} : {}
     })
@@ -63,7 +55,7 @@ module.exports = {
       'process.env' : {'NODE_ENV' : JSON.stringify('production')}
     }),
     new webpack.optimize.DedupePlugin(),
-    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false }),
   ],
 };
