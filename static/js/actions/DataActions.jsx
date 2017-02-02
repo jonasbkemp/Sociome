@@ -43,7 +43,10 @@ export function setLastCategory(category){
 			data : data
 		})
 	}).fail(err => {
-		console.log(err)
+		dispatcher.dispatch({
+			type : 'SET_ERROR',
+			msg : err.responseText
+		})
 	})
 }
 

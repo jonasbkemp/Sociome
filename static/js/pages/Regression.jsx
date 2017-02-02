@@ -5,6 +5,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import {DragDropContext} from 'react-dnd';
 import update from 'react/lib/update';
 import RegressionResults from '../components/RegressionResults';
+import dispatcher from '../Dispatcher'
 
 class Regression extends React.Component{
 	constructor(props){
@@ -59,7 +60,10 @@ class Regression extends React.Component{
 			result = JSON.parse(result);
 			this.setState(_.extend({}, this.state, {results : result}));
 		}).fail(err => {
-			console.log(err)
+			dispatcher.dispatch({
+				type : 'SET_ERROR',
+				msg : err.responseText
+			})
 		})
 	}
 

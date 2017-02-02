@@ -176,6 +176,8 @@ class DataStore extends ReduceStore{
 				return this.setNewData(state, action.data)
 			case 'CHANGE_YEAR':
 				return this.updateYear(state, action.year);
+			default:
+				return state
 		}
 	}
 }
