@@ -1,46 +1,20 @@
 import React from 'react';
 import * as _ from 'lodash';
 import * as BS from 'react-bootstrap';
-import DataStore from '../stores/DataStore';
+import DataStore from '../stores/DataStore2';
 import * as DataActions from '../actions/DataActions';
+import {Container} from 'flux/utils'
 
-export default class ExploreBar extends React.Component{
-	constructor(props){
-		super(props);
-		this.state = {
-			datasets : DataStore.getDatasets(),
-			whichDataset : undefined,
-			categories : [],
-		}
+class ExploreBar extends React.Component{
+	static getStores(){
+		return [DataStore]
 	}
 
-	changeDataset = () => {
-		this.setState(_.extend({}, this.state, {
-			whichDataset : DataStore.getCurrentDataset(),
-			categories : DataStore.getCategories(),
-		}))
-	}
-
-	changeSubCategory = () => {
-		this.setState(_.extend({}, this.state, {
-			whichSubCategory : DataStore.getCurrentSubCategory(),
-		}))
-	}
-
-	componentWillMount(){
-		console.log('adding listeners')
-		DataStore.on('change-dataset', this.changeDataset);
-		DataStore.on('change-sub-category', this.changeSubCategory);
-	}
-
-	coponentWillUnmount(){
-		console.log('Unmounting ExploreBar')
-		DataStore.removeListener('change-dataset', this.changeDataset);
-		DataStore.removeListener('change-sub-category', this.changeSubCategory);
+	static calculateState(){
+		return DataStore.getState()
 	}
 
 	selectDS = dataset => {
-		console.log('Selecting data set')
 		DataActions.setDataset(dataset);
 	}
 
@@ -66,32 +40,32 @@ export default class ExploreBar extends React.Component{
 						}
 						</BS.NavDropdown>
 						{
-							this.state.whichDataset === 'Policy' ? 
-								this.state.categories.map((category) => 
+							this.state.currentDataset === 'Policy' ? 
+								Object.keys(this.state.categories).map(category => 
 									<BS.NavDropdown 
 										style={{fontSize : 11}}
 										id='policy-dropdown' 
-										key={category.value}
-										onSelect={this.selectSubCategory(category.value)} 
-										title={category.label}
+										key={category}
+										onSelect={this.selectSubCategory(category)} 
+										title={category}
 									>
 									{
-										DataStore.getSubCategories(category.value).map(v => 
-											<BS.MenuItem key={v.value} eventKey={v.value} style={{fontSize : 11}}>
-												{v.label}
+										Object.keys(this.state.categories[category]).map(v => 
+											<BS.MenuItem key={v} eventKey={v} style={{fontSize : 11}}>
+												{v}
 											</BS.MenuItem>
 										)
 									}
 									</BS.NavDropdown>									
 								) : 
-								this.state.categories.map((category) => 
+								Object.keys(this.state.categories).map(category => 
 									<BS.MenuItem 
 										style={{fontSize : 11}}
-										key={category.value}
-										id={category.value}
+										key={category}
+										id={category}
 										onClick={this.selectCategory}
 									>
-										{category.label}
+										{category}
 									</BS.MenuItem>
 								)
 						}
@@ -102,3 +76,4 @@ export default class ExploreBar extends React.Component{
 	}
 }
 
+export default Container.create(ExploreBar)

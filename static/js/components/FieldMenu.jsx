@@ -1,68 +1,36 @@
 import React from 'react';
-import DataStore from '../stores/DataStore';
+import DataStore from '../stores/DataStore2';
 import * as _ from 'lodash';
 import * as DataActions from '../actions/DataActions';
 import Select from 'react-select';
+import {Container} from 'flux/utils'
 
-export default class FieldMenu extends React.Component{
-	constructor(props){
-		super(props)
-		this.state = {
-			fields : DataStore.getFields(),
-			highlighted : undefined,
-			years : DataStore.getYears(),
-			yearIndex : DataStore.getYearIndex(),
-		}
-	}	
-
-	updateFields = () => {
-		this.setState(_.extend({}, this.state, {
-			fields : DataStore.getFields()
-		}))
+class FieldMenu extends React.Component{
+	static getStores(){
+		return [DataStore]
 	}
 
-	updateData = () => {
-		this.setState(_.extend({}, this.state, {
-			data : DataStore.getData(),
-			years : DataStore.getYears(),
-			yearIndex : DataStore.getYearIndex(),
-		}))
+	static calculateState(){
+		return DataStore.getState()
 	}
 
-	updateYear = () => {
-		this.setState(_.extend({}, this.state, {yearIndex : DataStore.getYearIndex()}))
-	}
-
-	componentWillMount(){
-		DataStore.on('change-fields', this.updateFields);
-		DataStore.on('change-data', this.updateData);
-		DataStore.on('change-year', this.updateYear);
-	}
-
-	componentWillUnmount(){
-		DataStore.removeListener('change-fields', this.updateFields);
-		DataStore.removeListener('change-data', this.updateData);
-		DataStore.removeListener('change-year', this.updateYear);
-	}
-
-	mouseEnter = (event) => {
+	mouseEnter = event => {
 		var target = event.target;
 		while(target.id === ''){
 			target = target.parentNode;
 		}
-		console.log('setting state')
 		this.setState(_.extend({}, this.state, {highlighted : target.id}));
 	}
 
-	mouseLeave = (event) => {
+	mouseLeave = event => {
 		this.setState(_.extend({}, this.state, {highlighted : undefined}));
 	}
 
-	click = (obj) => (event) => {
+	click = obj => event => {
 		DataActions.setLastCategory(obj);
 	}
 
-	changeYear = (event) => {
+	changeYear = event => {
 		event.target.blur();
 		DataActions.changeYear(event.target.value);
 	}
@@ -82,7 +50,7 @@ export default class FieldMenu extends React.Component{
 						>
 							<div style={{
 								display : 'table-cell',
-								backgroundColor : this.state.highlighted === f.value || DataStore.getLastCategory() == f.value ? 'gray' : 'lightgray',
+								backgroundColor : this.state.highlighted === f.value ? 'gray' : 'lightgray',
 								borderRadius : '50%',
 								width : '13px',
 								height : '13px',
@@ -121,6 +89,8 @@ export default class FieldMenu extends React.Component{
 		)
 	}
 }
+
+export default Container.create(FieldMenu)
 
 const styles = {
 	text : {

@@ -3,29 +3,18 @@ import ExploreBar from '../components/ExploreBar';
 import ZoomMap from '../components/ZoomMap';
 import * as _ from 'lodash';
 import FieldMenu from '../components/FieldMenu';
-import DataStore from '../stores/DataStore';
+import DataStore from '../stores/DataStore2';
+import {Container} from 'flux/utils'
 
-export default class Explore extends Component{
-	constructor(props){
-		super(props);
-		this.state = {
-			data : undefined
+class Explore extends Component{
+	static getStores(){
+		return [DataStore]
+	}
+
+	static calculateState(){
+		return {
+			data : DataStore.getState().yearlyData
 		}
-	}
-
-	updateData = () => {
-		this.setState(_.extend({}, this.state, {data : DataStore.getData()}));
-	}
-
-	componentWillMount(){
-		DataStore.on('change-data', this.updateData);
-		DataStore.on('change-year', this.updateData);
-	}
-
-	componentWillUnmount(){
-		console.log('Unmounting Explore')
-		DataStore.removeListener('change-data', this.updateData);
-		DataStore.removeListener('change-year', this.updateData);
 	}
 
 	render(){
@@ -51,3 +40,5 @@ export default class Explore extends Component{
 		)
 	}
 }
+
+export default Container.create(Explore)
