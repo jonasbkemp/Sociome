@@ -1,18 +1,18 @@
 import React from 'react';
 import {DragSource} from 'react-dnd';
-import DataStore from '../stores/DataStore';
+import DataStore from '../stores/DataStore2';
 import * as _ from 'lodash';
 import * as DataActions from '../actions/DataActions';
 import Select from 'react-select';
 import RegressionVariableBox from '../components/RegressionVariableBox';
-import update from 'react/lib/update';
 import {Button} from 'react-bootstrap';
+import {Container} from 'flux/utils'
 
 const fieldSource = {
 	beginDrag(props, monitor, component){
 		return _.extend({}, props, {
 			year : component.state.year,
-			dataset : DataStore.getCurrentDataset(),
+			dataset : DataStore.getState().currentDataset,
 		});
 	}
 };
@@ -72,29 +72,13 @@ const styles = {
 
 const Field = DragSource(props => props.type, fieldSource, collect)(Field_);
 
-export default class RegressionFieldMenu extends React.Component{
-	constructor(props){
-		super(props)
-		this.state = {
-			fields : DataStore.getFields(),
-			dropped : {},
-			bins : []
-		}
-	}	
-
-	updateFields = () => {
-		var fields = DataStore.getFields();
-		this.setState(_.extend({}, this.state, {
-			fields : fields,
-		}))
+class RegressionFieldMenu extends React.Component{
+	static getStores(){
+		return [DataStore]
 	}
 
-	componentWillMount(){
-		DataStore.on('change-fields', this.updateFields);
-	}
-
-	componentWillUnmount(){
-		DataStore.removeListener('change-fields', this.updateFields);
+	static calculateState(){
+		return DataStore.getState()
 	}
 
 	render(){
@@ -142,3 +126,4 @@ export default class RegressionFieldMenu extends React.Component{
 	}
 }
 
+export default Container.create(RegressionFieldMenu)
