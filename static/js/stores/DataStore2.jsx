@@ -55,7 +55,7 @@ class DataStore extends ReduceStore{
 				return {
 					...state,
 					currentCategory : category,
-					subCategories : Object.keys(this.policies[category]).map(c => ({value : c, label : c}))
+					subCategories : Object.keys(state.policies[category]).map(c => ({value : c, label : c}))
 				}
 			case 'Health Outcomes':
 				return {
@@ -174,10 +174,8 @@ class DataStore extends ReduceStore{
 				return this.setCategory(state, action.category);
 			case 'NEW_DATA':
 				return this.setNewData(state, action.data)
-				break;
 			case 'CHANGE_YEAR':
 				return this.updateYear(state, action.year);
-				break;
 		}
 	}
 }
