@@ -19,7 +19,11 @@ var compiler = webpack(config)
 // If this is in development mode, then enable hot reloading
 if (process.env.NODE_ENV !== 'production') {
   app.use(require('webpack-dev-middleware')(compiler, {
-    noInfo: true, publicPath: config.output.publicPath
+    noInfo: true, 
+    publicPath: config.output.publicPath,
+    watchOptions : {
+      poll : 500
+    }
   }))
 
   app.use(require('webpack-hot-middleware')(compiler, {

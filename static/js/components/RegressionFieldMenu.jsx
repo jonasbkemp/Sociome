@@ -37,25 +37,36 @@ class Field_ extends React.Component{
 
 	render(){
 		return this.props.connectDragSource(
+			<div class="container-fluid">
+				<div style={styles.fieldContainer} class="row">
+					<div class="col-xs-7">
+						<p>{this.props.label}</p>
+					</div>
 
-			<div style={{width : '100%', borderRadius : 5, verticalAlign : 'middle', backgroundColor : 'rgb(121,192,183)', marginBottom : 5}}>
-		    	<div style={{display : 'inline-block', width : '75%', verticalAlign: 'middle', height : '100%'}}>
-		    		<p style={{marginLeft : 5}}>{this.props.label}</p>
-		    	</div>
-		    	<div style={{display : 'inline-block', width : '25%'}}>
-		    		<div style={{width : '100%'}}>
-			    		<Select
-			    			clearable={false}
-			    			placeholder="Year"
-			    			style={{height : 20}}
-			    			options={this.props.years.map(y => ({value : y, label : y}))}
-			    			onChange={this.changeYear}
-			    			value={this.state.year}
-			    		/>
-		    		</div>
-		    	</div>
+					<div class="col-xs-5">
+						<Select
+		    			clearable={false}
+		    			placeholder="Year"
+		    			style={{height : 20}}
+		    			options={this.props.years.map(y => ({value : y, label : y}))}
+		    			onChange={this.changeYear}
+		    			value={this.state.year}
+		    		/>
+					</div>
+				</div>
 			</div>
 		)
+	}
+}
+
+const styles = {
+	fieldContainer : {
+		display : 'flex',
+		justifyContent : 'center',
+		alignItems : 'center',
+		borderRadius : 5,
+		backgroundColor : 'rgb(121,192,183)',
+		marginBottom : 5
 	}
 }
 
@@ -88,33 +99,43 @@ export default class RegressionFieldMenu extends React.Component{
 
 	render(){
 		return(
-			<div style={{position : 'relative', top : '10%', width : '100%', marginLeft : 10}}>
-				{
-					this.state.fields.map((f, i) => 
-						<Field
-							type="field"
-							key={f.value}
-							{...f}
-						/>
-					)
-				}
-				<div>
-				{
-					this.props.bins.map((b, i) => 
-						<RegressionVariableBox
-							key={i}
-							{...b}
-							style={{marginBottom : 10}}
-						/>
-					)
-				}
-				<Button
-					bsStyle="primary"
-					disabled={!this.props.bins.slice(0, 2).every(b => b.items.length > 0)}
-					onClick={this.props.generateModel}
-				>
-					Generate Model
-				</Button>
+			<div class='container-fluid' style={{marginTop : 50}}>
+				<div class='row'>
+					<div class="col-xs-11 col-xs-offset-1">
+					{
+						this.state.fields.map((f, i) => 
+							<Field
+								type="field"
+								key={f.value}
+								{...f}
+							/>
+						)
+					}
+					</div>
+				</div>
+				<div class='row'>
+					<div class="col-xs-11 col-xs-offset-1">
+					{
+						this.props.bins.map((b, i) => 
+							<RegressionVariableBox
+								key={i}
+								{...b}
+								style={{marginBottom : 10}}
+							/>
+						)
+					}
+					</div>
+				</div>
+				<div class='row'>
+					<div class="col-xs-11 col-xs-offset-1">
+						<Button
+							bsStyle="primary"
+							disabled={!this.props.bins.slice(0, 2).every(b => b.items.length > 0)}
+							onClick={this.props.generateModel}
+						>
+							Generate Model
+						</Button>
+					</div>
 				</div>
 			</div>
 		)
