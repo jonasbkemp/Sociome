@@ -1,6 +1,6 @@
 import dispatcher from '../Dispatcher';
 import * as $ from 'jquery'
-import DataStore from '../stores/DataStore2'
+import DataStore from '../stores/DataStore'
 
 export function setDataset(dataset){
 	dispatcher.dispatch({

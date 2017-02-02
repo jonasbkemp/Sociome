@@ -3,7 +3,7 @@ import ExploreBar from '../components/ExploreBar';
 import ZoomMap from '../components/ZoomMap';
 import * as _ from 'lodash';
 import FieldMenu from '../components/FieldMenu';
-import DataStore from '../stores/DataStore2';
+import DataStore from '../stores/DataStore';
 import {Container} from 'flux/utils'
 
 class Explore extends Component{

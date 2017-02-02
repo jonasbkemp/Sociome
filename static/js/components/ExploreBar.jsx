@@ -1,7 +1,7 @@
 import React from 'react';
 import * as _ from 'lodash';
 import * as BS from 'react-bootstrap';
-import DataStore from '../stores/DataStore2';
+import DataStore from '../stores/DataStore';
 import * as DataActions from '../actions/DataActions';
 import {Container} from 'flux/utils'
 
