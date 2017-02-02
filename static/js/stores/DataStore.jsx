@@ -150,14 +150,10 @@ class DataStore extends EventEmitter{
  		return this.fields;
  	}
 
- 	requestData = (url) => {
- 		$.get(url).done((res) => {
- 			this.data = res;
- 			this.setYears();
- 			this.emit('change-data');
- 		}).fail((err) => {
- 			console.log(err);
- 		})
+ 	setNewData = data => {
+		this.data = data;
+		this.setYears();
+		this.emit('change-data');
  	}
 
  	// Data is sorted by `year`.  Run a binary search
@@ -196,21 +192,6 @@ class DataStore extends EventEmitter{
  		return this.lastCategory;
  	}
 
- 	setLastCategory = (category) => {
-		this.lastCategory = category.value;
-		switch(this.currentDataset){
-			case 'Policy':
-				this.requestData(`/PolicyData?policy=${category.table}&field=${category.value}`)
-				break;
-			case 'Health Outcomes':
-				this.requestData(`/HealthOutcomes?measure_name=${category.value}`)
-				break;
-			case 'Demographics':
-				this.requestData(`/Demographics?col=${category.value}`);
-				break;
-		}
- 	}
-
 	handleActions = (action) => {
 		switch(action.type){
 			case 'SET_DATASET':
@@ -222,8 +203,8 @@ class DataStore extends EventEmitter{
 			case 'SET_CATEGORY':
 				this.setCategory(action.category);
 				break;
-			case 'SET_LAST_CATEGORY':
-				this.setLastCategory(action.category);
+			case 'NEW_DATA':
+				this.setNewData(action.data)
 				break;
 			case 'CHANGE_YEAR':
 				this.updateYear(action.year);

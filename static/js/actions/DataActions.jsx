@@ -1,4 +1,6 @@
 import dispatcher from '../Dispatcher';
+import * as $ from 'jquery'
+import DataStore from '../stores/DataStore'
 
 export function setDataset(dataset){
 	dispatcher.dispatch({
@@ -23,9 +25,25 @@ export function setSubCategory(category, subCategory){
 }
 
 export function setLastCategory(category){
-	dispatcher.dispatch({
-		type : 'SET_LAST_CATEGORY',
-		category : category
+	var url;
+	switch(DataStore.getCurrentDataset()){
+		case 'Policy':
+			url = `/PolicyData?policy=${category.table}&field=${category.value}`
+			break;
+		case 'Health Outcomes':
+			url = `/HealthOutcomes?measure_name=${category.value}`
+			break;
+		case 'Demographics':
+			url = `/Demographics?col=${category.value}`
+			break;
+	}
+	$.get(url).then(data => {
+		dispatcher.dispatch({
+			type : 'NEW_DATA',
+			data : data
+		})
+	}).fail(err => {
+		console.log(err)
 	})
 }
 
