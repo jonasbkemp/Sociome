@@ -2,7 +2,8 @@ Sociome
 --------
 [![Build Status](https://travis-ci.org/ArnholdInstitute/Sociome.svg?branch=master)](https://travis-ci.org/ArnholdInstitute/Sociome)
 [![Coverage Status](https://coveralls.io/repos/github/ArnholdInstitute/Sociome/badge.svg?branch=master)](https://coveralls.io/github/ArnholdInstitute/Sociome?branch=master)
-[![Deps](https://david-dm.org/ArnholdInstitute/Sociome.svg)](https://david-dm.org/ArnholdInstitute/Sociome)
+[![Dependency Status](https://gemnasium.com/badges/github.com/ArnholdInstitute/Sociome.svg)](https://gemnasium.com/github.com/ArnholdInstitute/Sociome)
+
 
 Sociome is a tool for visualizing the relationship between major policy decisions and health outcomes
 
