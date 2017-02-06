@@ -6,7 +6,7 @@
   "scripts": {
     "start": "NODE_ENV=production node backend/server.js",
     "dev": "node backend/server.js",
-    "build": "NODE_ENV=production webpack",
+    "build": "NODE_ENV=production webpack --progress",
     "test-debug": "node debug --harmony ./node_modules/jest-cli/bin/jest.js --runInBand",
     "test": "jest --coverage"
   },

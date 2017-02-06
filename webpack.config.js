@@ -11,11 +11,7 @@ module.exports = {
     modules : ['node_modules']
   },
   resolve: {
-    extensions: ['.js', '.jsx'],
-    alias: {
-      webworkify: 'webworkify-webpack',
-      'mapbox-gl': path.resolve(__dirname + '/node_modules/mapbox-gl/dist/mapbox-gl.js')
-    }
+    extensions: ['.js', '.jsx']
   },
   module: {
     loaders: [
@@ -35,6 +31,10 @@ module.exports = {
       { 
         test: /\.css$/, 
         loader: ['style-loader', 'css-loader']
+      },
+      { 
+        test: /\.png$/, 
+        loader: "url-loader?mimetype=image/png" 
       }
     ]
   },

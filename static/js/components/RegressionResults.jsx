@@ -20,6 +20,7 @@ export default class RegressionResults extends React.Component{
 		var data = [];
 		var values = this.props.results.values;
 		var coefficients = this.props.results.coefficients;
+		console.log(this.props.results)
 		for(var i = 0; i < values.independent.length; i++){
 			data.push({
 				independent : values.independent[i],
@@ -60,31 +61,36 @@ export default class RegressionResults extends React.Component{
 					<p>Residual Standard Error: {this.props.results.residualStdErr}</p>
 					<p>Multiple R-Squared: {this.props.results.multipleRSquared}</p>
 					<p>Adjusted R-Squared: {this.props.results.adjustedRSquared}</p>
-					<p>P-Values:</p>
-					<table style={_.extend(styles.table, styles.cell)}>
-						<thead>
-							<tr>
-								<th style={styles.cell}>Intercept</th>
-								<th style={styles.cell}>{this.props.independent.label}</th>
-							{
-								this.props.controls.map(c => <th  style={styles.cell} key={c.value}>{c.label}</th>)
-							}
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td style={styles.cell}>{this.props.results.pvalue['(Intercept)']}</td>
-								<td style={styles.cell}>{this.props.results.pvalue.independent}</td>
-								{
-									_.range(0, Object.keys(this.props.results.pvalue).length-2).map(i => 
-										<td style={styles.cell} key={i}>
-											{this.props.results.pvalue['control' + i]}
-										</td>
-									)
-								}
-							</tr>
-						</tbody>
-					</table>
+					{
+						this.props.results.pvalue ? 
+						<div>
+							<p>P-Values:</p>
+							<table style={_.extend(styles.table, styles.cell)}>
+								<thead>
+									<tr>
+										<th style={styles.cell}>Intercept</th>
+										<th style={styles.cell}>{this.props.independent.label}</th>
+										{
+											this.props.controls.map(c => <th style={styles.cell} key={c.value}>{c.label}</th>)
+										}
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td style={styles.cell}>{this.props.results.pvalue['(Intercept)']}</td>
+										<td style={styles.cell}>{this.props.results.pvalue.independent}</td>
+										{
+											_.range(0, Object.keys(this.props.results.pvalue).length-2).map(i => 
+												<td style={styles.cell} key={i}>
+													{this.props.results.pvalue['control' + i]}
+												</td>
+											)
+										}
+									</tr>
+								</tbody>
+							</table>
+						</div> : null
+					}
 					<p>Coefficients:</p>
 					<table style={_.extend(styles.table, styles.cell)}>
 						<thead>
