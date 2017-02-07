@@ -5,6 +5,8 @@ import {Container} from 'flux/utils'
 import ErrorStore from './stores/ErrorStore'
 import * as ErrorActions from './actions/ErrorActions'
 import {Alert} from 'react-bootstrap'
+import HTML5Backend from 'react-dnd-html5-backend';
+import {DragDropContext} from 'react-dnd';
 
 class Layout extends React.Component {
   static getStores(){
@@ -36,4 +38,4 @@ class Layout extends React.Component {
   }
 }
 
-export default Container.create(Layout)
+export default DragDropContext(HTML5Backend)(Container.create(Layout));

@@ -260,6 +260,91 @@ router.get('/Synth', function(req, res){
   })
 })
 
+function nameToTable(field){
+  switch(field.dataset){
+    case 'Policy':
+      return field.table
+    case 'Demographics':
+      return 'demographics'
+    case 'Health Outcomes':
+      return 'health_outcomes_pivot'
+  }
+}
+
+router.post('/CSV', (req, res) => {
+  var fields = req.body.fields
+
+  var cols = []
+  var tableSet = {}
+  var yearAndStateCols;
+
+  for(var field of fields){
+    tableSet[nameToTable(field)] = nameToTable(field)
+    cols.push(`"${nameToTable(field)}"."${field.value}"`)
+    if(field.dataset === 'Policy'){
+      yearAndStateCols = `${field.table}.state, ${field.table}.year, ${field.table}.statecode`
+    }
+  }
+
+  if(_.isEmpty(tableSet)){
+    res.status(500).send('No fields were selected!')
+  }
+ 
+  if(yearAndStateCols == null){
+    if(tableSet.demographics){
+      yearAndStateCols = `
+        demographics.state_name as state,
+        demographics.county_name as county,
+        demographics.year,
+        demographics.statecode, 
+        demographics.countycode
+      `
+    }else{
+      yearAndStateCols = `
+        health_outcomes_pivot.state,
+        health_outcomes_pivot.county,
+        health_outcomes_pivot.year,
+        health_outcomes_pivot.statecode,
+        health_outcomes_pivot.countycode
+      `
+    }
+  }
+
+  var tables = Object.keys(tableSet)
+  var selectFrom = tables[0]
+  for(var i = 1; i < tables.length; i++){
+    selectFrom += `
+      FULL OUTER JOIN ${tables[i]} ON 
+        ${tables[i]}.year=${tables[i-1]}.year AND 
+        ${tables[i]}.statecode=${tables[i-1]}.statecode AND
+        ${tables[i]}.countycode=${tables[i-1]}.countycode
+    `
+  } 
+
+  var query = `
+    SELECT 
+      ${yearAndStateCols},
+      ${cols.join(',')}
+    FROM ${selectFrom}
+    WHERE ${cols.map(c => `${c} IS NOT NULL`).join(' AND ')}
+  `
+
+  db.query(query, (err, result) => {
+    if(err){
+      console.log(err)
+      res.status(500).send(err)
+    }else{
+      res.set('Content-type', 'text/csv')
+      var body = Object.keys(result.rows[0]).join(',') + '\n'
+      result.rows.forEach(row => {
+        body += Object.keys(row).map(k => row[k]).join(',') + '\n'
+      })
+      res.send(body)
+    }
+  })
+
+})
+
 router.get('/', function(req, res){
     res.sendFile(path.resolve(__dirname + '/../static/index.html'));
 });

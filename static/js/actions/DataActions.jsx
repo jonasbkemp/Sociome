@@ -56,3 +56,29 @@ export function changeYear(year){
 		year : year
 	})
 }
+
+/**
+ * Submit a POST request to the server.  Should respond with a .csv file with 
+ * the appropriate data fields in it
+ * 
+ * @param  {Array<Object>} fields - Array of fields to be included in the CSV
+ * @return null        
+ */
+export function downloadData(fields){
+	$.post(`/CSV`, {fields : fields})
+		.done((result, textStatus, request) => {
+			const a = document.createElement('a')
+			a.download = 'data.csv'
+			a.href = `data:text/csv;charset=utf-8,${encodeURIComponent(result)}`
+			a.click()
+		})
+		.fail(err => {
+			dispatcher.dispatch({
+				type : 'SET_ERROR',
+				msg : err.responseText
+			})
+		})
+}
+
+
+

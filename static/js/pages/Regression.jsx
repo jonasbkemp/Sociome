@@ -1,8 +1,6 @@
 import React from 'react';
 import ExploreBar from '../components/ExploreBar';
 import RegressionFieldMenu from '../components/RegressionFieldMenu';
-import HTML5Backend from 'react-dnd-html5-backend';
-import {DragDropContext} from 'react-dnd';
 import update from 'react/lib/update';
 import RegressionResults from '../components/RegressionResults';
 import dispatcher from '../Dispatcher'
@@ -95,4 +93,4 @@ class Regression extends React.Component{
 	}
 }
 
-export default DragDropContext(HTML5Backend)(Regression);
+export default Regression;

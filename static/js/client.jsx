@@ -6,6 +6,7 @@ require('react-select/dist/react-select.css');
 import Layout from './Layout';
 import Explore from './pages/Explore';
 import Regression from './pages/Regression';
+import Download from './pages/Download'
 
 const app = document.getElementById('app');
 
@@ -15,6 +16,7 @@ ReactDOM.render(
 			<IndexRedirect to="/explore"/>
 			<Route path="explore" component={Explore}/>
 			<Route path="regression" component={Regression}/>
+      <route path="download" component={Download}/>
 		</Route>
 	</Router>,
 	app

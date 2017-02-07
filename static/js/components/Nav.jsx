@@ -37,6 +37,14 @@ export default class Nav extends React.Component {
                         </p>
                     </div>
 
+                    <div style={{display : 'table-cell', verticalAlign : 'middle', paddingRight : 10}}>
+                        <p style={{...styles.font, fontSize : 16}}>
+                            <Link to="download">
+                                Download
+                            </Link>
+                        </p>
+                    </div>
+
                     <div style={{display : 'table-cell', verticalAlign : 'middle'}}>
                         <p style={{...styles.font, fontSize : 10}}>
                             about

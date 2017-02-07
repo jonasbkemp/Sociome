@@ -16,6 +16,7 @@ RUN apt-get install -y software-properties-common apt-transport-https
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 &&\
 	add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/' && \
+	curl -sL https://deb.nodesource.com/setup_6.x | bash - \
 	apt-get update && \
 	apt-get install -y r-base nodejs npm git && \
 	ln -s /usr/bin/nodejs /usr/bin/node
