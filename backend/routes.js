@@ -110,7 +110,7 @@ router.get('/Demographics', function(req, res){
   var query = `
     SELECT 
       year, 
-      county_name as state, 
+      state, 
       ${col} as value, 
       statecode as statecode, 
       countycode as countycode 
