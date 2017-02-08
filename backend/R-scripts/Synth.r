@@ -77,7 +77,7 @@ runDiffInDiff <- function(predVars, depVar, treatmentGroup, yearOfTreatment){
 			'demographics.state_name=health_outcomes.county ',
 		'WHERE ',
 			'health_outcomes.measurename=\'', depVar, '\' AND ',
-			'demographics.fips_county_code=0 AND ',
+			'demographics.countycode=0 AND ',
 			nullCond, ' AND ',
 			'health_outcomes.rawvalue IS NOT NULL AND ',
 			'demographics.state_name <> \'District of Columbia\' ',
@@ -174,7 +174,7 @@ runSynth <- function(predVars, depVar, treatment, controlIdentifiers, yearOfTrea
 			demographics.year=health_outcomes.year AND
 			demographics.state_name=health_outcomes.county 
 		WHERE 
-			demographics.fips_county_code=0 AND 
+			demographics.countycode=0 AND 
 			health_outcomes.measurename=\'', depVar , '\' AND
 		', 
 			paste(
@@ -277,7 +277,7 @@ mkQuery <- function(name, args){
 		return(paste('SELECT rawvalue as ', name, ' FROM health_outcomes WHERE measurename=\'', args['label'], '\' AND year=', args['year'], 'AND countycode=0 AND statecode >0 AND statecode <= 56 AND statecode != 11 ORDER BY statecode', sep=''));
 	}else if(args['dataset'] == 'Demographics'){
 		print('demographics')
-		return(paste('SELECT ', args['value'], ' as ', name, ' FROM demographics WHERE year=', args['year'], ' AND fips_county_code=0 AND fips_state_code <= 56 AND fips_state_code != 11 ORDER BY fips_state_code', sep=''))
+		return(paste('SELECT ', args['value'], ' as ', name, ' FROM demographics WHERE year=', args['year'], ' AND countycode=0 AND statecode <= 56 AND statecode != 11 ORDER BY statecode', sep=''))
 	}else if(args['dataset'] == 'Policy'){
 		print('policy')
 		return(paste('SELECT ', args['value'], ' as ', name, ' FROM ', args['table'], ' WHERE year=', args['year'], ' ORDER BY state', sep=''))

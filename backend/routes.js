@@ -60,7 +60,7 @@ router.get('/SynthGetYears', function(req, res){
       demographics.year=${depVar}.start_year AND 
       demographics.state_name=${depVar}.county
     WHERE 
-      demographics.fips_county_code=0 AND 
+      demographics.countycode=0 AND 
       ${notNullCond} AND 
       ${depVar}.rawvalue IS NOT NULL 
     ORDER BY year;`
@@ -112,8 +112,8 @@ router.get('/Demographics', function(req, res){
       year, 
       county_name as state, 
       ${col} as value, 
-      fips_state_code as statecode, 
-      fips_county_code as countycode 
+      statecode as statecode, 
+      countycode as countycode 
     FROM demographics 
     WHERE ${col} IS NOT NULL ${yearClause};`;
   db.query(query).then(data => {
