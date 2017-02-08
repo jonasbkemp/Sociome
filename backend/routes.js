@@ -276,58 +276,74 @@ router.post('/CSV', (req, res) => {
 
   var cols = []
   var tableSet = {}
-  var yearAndStateCols;
-
+  var containsPolicy = false
   for(var field of fields){
     tableSet[nameToTable(field)] = nameToTable(field)
     cols.push(`"${nameToTable(field)}"."${field.value}"`)
     if(field.dataset === 'Policy'){
-      yearAndStateCols = `${field.table}.state, ${field.table}.year, ${field.table}.statecode`
+      containsPolicy = true;
     }
   }
 
   if(_.isEmpty(tableSet)){
     res.status(500).send('No fields were selected!')
   }
- 
-  if(yearAndStateCols == null){
-    if(tableSet.demographics){
-      yearAndStateCols = `
-        demographics.state_name as state,
-        demographics.county_name as county,
-        demographics.year,
-        demographics.statecode, 
-        demographics.countycode
-      `
-    }else{
-      yearAndStateCols = `
-        health_outcomes_pivot.state,
-        health_outcomes_pivot.county,
-        health_outcomes_pivot.year,
-        health_outcomes_pivot.statecode,
-        health_outcomes_pivot.countycode
-      `
+
+
+  var yearAndStateCols = {
+    state : [],
+    county : [],
+    statecode : [],
+    countycode : [],
+    year : []
+  }
+
+  for(table in tableSet){
+    yearAndStateCols.state.push(`${table}.state`)
+    yearAndStateCols.county.push(`${table}.county`)
+    yearAndStateCols.statecode.push(`${table}.statecode`)
+    yearAndStateCols.countycode.push(`${table}.countycode`)
+    yearAndStateCols.year.push(`${table}.year`)
+  }
+
+  if(containsPolicy){
+    delete yearAndStateCols.county
+    delete yearAndStateCols.countycode
+  }
+
+  yearAndStateCols = Object.keys(yearAndStateCols).map(key => 
+    `COALESCE(${yearAndStateCols[key].join(',')}, NULL) as ${key}`
+  ).join(',')
+
+  function mkSelectFrom(table){
+    switch(table){
+      case 'demographics':
+        return containsPolicy ? '(SELECT * FROM demographics WHERE countycode=0)demographics' : 'demographics'
+      case 'health_outcomes_pivot':
+        return containsPolicy ? '(SELECT * FROM health_outcomes_pivot WHERE countycode=0)health_outcomes_pivot' : 'health_outcomes_pivot'
+      default:
+        return table
     }
   }
 
   var tables = Object.keys(tableSet)
-  var selectFrom = tables[0]
+  var selectFrom = mkSelectFrom(tables[0])
   for(var i = 1; i < tables.length; i++){
-    selectFrom += `
-      FULL OUTER JOIN ${tables[i]} ON 
-        ${tables[i]}.year=${tables[i-1]}.year AND 
-        ${tables[i]}.statecode=${tables[i-1]}.statecode AND
-        ${tables[i]}.countycode=${tables[i-1]}.countycode
-    `
+    selectFrom += ` FULL OUTER JOIN ${mkSelectFrom(tables[i])} USING (year,statecode,countycode) `
   } 
 
   var query = `
-    SELECT 
-      ${yearAndStateCols},
-      ${cols.join(',')}
-    FROM ${selectFrom}
-    WHERE ${cols.map(c => `${c} IS NOT NULL`).join(' AND ')}
+    SELECT * FROM(
+      SELECT 
+        ${yearAndStateCols},
+        ${cols.join(',')}
+      FROM ${selectFrom}
+      WHERE ${cols.map(c => `${c} IS NOT NULL`).join(' OR ')}
+    ) subQuery
+    ORDER BY subQuery.year, subQuery.statecode ${containsPolicy ? '' : ', subQuery.countycode'}
   `
+
+  console.log(query)
 
   db.query(query, (err, result) => {
     if(err){
@@ -335,6 +351,7 @@ router.post('/CSV', (req, res) => {
       res.status(500).send(err)
     }else{
       res.set('Content-type', 'text/csv')
+      console.log(`Sending back CSV with ${result.rows.length} rows`)
       var body = Object.keys(result.rows[0]).join(',') + '\n'
       result.rows.forEach(row => {
         body += Object.keys(row).map(k => row[k]).join(',') + '\n'

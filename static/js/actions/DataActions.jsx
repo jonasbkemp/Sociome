@@ -67,9 +67,12 @@ export function changeYear(year){
 export function downloadData(fields){
 	$.post(`/CSV`, {fields : fields})
 		.done((result, textStatus, request) => {
-			const a = document.createElement('a')
+			var a = document.createElement('a')
+			a.setAttribute('download', 'data.csv')
+			a.setAttribute('target', '_blank')
 			a.download = 'data.csv'
-			a.href = `data:text/csv;charset=utf-8,${encodeURIComponent(result)}`
+			var blob = new Blob([result], {type : 'text/csv'})
+			a.href = window.URL.createObjectURL(blob)
 			a.click()
 		})
 		.fail(err => {
