@@ -27,24 +27,33 @@ class DataStore extends ReduceStore{
 	}
 
 	setDataset = (state, dataset) => {
+		const nulls = {
+			currentCategory : null,
+			subCategories : [],
+			currentSubCategory : null,
+			fields : []
+		}
 		switch(dataset){
 			case 'Policy':
 				return {
 					...state, 
 					currentDataset : dataset,
-					categories : state.policies
+					categories : state.policies,
+					...nulls
 				}
 			case 'Health Outcomes':
 				return {
 					...state, 
 					currentDataset : dataset,
-					categories : state.healthOutcomes
+					categories : state.healthOutcomes,
+					...nulls
 				}
 			case 'Demographics':
 				return {
 					...state, 
 					currentDataset : dataset,
-					categories : state.demographics
+					categories : state.demographics,
+					...nulls
 				}
 		}
 	}
