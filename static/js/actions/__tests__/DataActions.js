@@ -1,3 +1,19 @@
+var jsdom = require('jsdom').jsdom;
+
+global.document = jsdom('');
+global.window = document.defaultView;
+Object.keys(document.defaultView).forEach((property) => {
+  if (typeof global[property] === 'undefined') {
+    global[property] = document.defaultView[property];
+  }
+});
+
+
+
+global.navigator = {
+  userAgent: 'node.js'
+};
+
 import React from 'react'
 import sinon from 'sinon'
 import {parse} from 'url-parse'
@@ -6,11 +22,13 @@ describe('DataStore', () => {
   var DataStore;
   var DataActions;
   var server;
+  var ErrorStore;
 
   beforeEach(() => {
     jest.resetModules()
     DataStore = require('../../stores/DataStore').default
     DataActions = require('../DataActions')
+    ErrorStore = require('../../stores/ErrorStore').default
     server = sinon.fakeServer.create()
     server.respondImmediately = true
   })
@@ -87,15 +105,57 @@ describe('DataStore', () => {
     DataActions.setCategory('Race')
     expect(DataStore.getState().currentCategory).toBe("Race")
     DataActions.setLastCategory({value : 'population_white'})
-    
     DataActions.changeYear(1)
-
     expect(DataStore.getState().yearlyData[0].year).toBe(2001)
-
-
   })
 
+  it('(setLastCategory) responds to errors', () => {
+    server.respondWith(
+      'GET',
+      /\/Demographics*/,
+      [400, {'Content-Type' : 'application/json'}, '400 error']
+    )
 
+    expect(DataStore.getState().currentDataset).toBeNull()
+    DataActions.setDataset('Demographics')
+    expect(DataStore.getState().currentDataset).toBe('Demographics')
+    DataActions.setCategory('Race')
+    expect(DataStore.getState().currentCategory).toBe("Race")
+    DataActions.setLastCategory({value : 'population_white'})
+    expect(ErrorStore.getState().msg).toBe('400 error')
+  })
+
+  it('Downloads Data', () => {
+    server.respondWith(
+      'POST',
+      /\/CSV*/,
+      [200, {'Content-Type' : 'text/csv'}, 'c1,c2\n0,1']
+    )
+    var Dispatcher = require('../../Dispatcher').default
+    var spy = sinon.spy(Dispatcher, 'dispatch')
+    var old = global.window.URL
+    global.window.URL = {createObjectURL : jest.fn(() => 'fake-url')}
+    DataActions.downloadData([{table:"a_fiscal_11", value:"anrspt",dataset : 'Policy'}])
+    global.window.URL = old;
+    expect(spy.getCall(0).args[0].type).toBe('DOWNLOAD_DATA_START')
+    expect(spy.getCall(1).args[0].type).toBe('DOWNLOAD_DATA_DONE')
+  })
+
+  it('Reports errors', () => {
+    server.respondWith(
+      'POST',
+      /\/CSV*/,
+      [401, {'Content-Type' : 'text/csv'}, 'c1,c2\n0,1']
+    )
+    var Dispatcher = require('../../Dispatcher').default
+    var spy = sinon.spy(Dispatcher, 'dispatch')
+    var old = global.window.URL
+    global.window.URL = {createObjectURL : jest.fn(() => 'fake-url')}
+    DataActions.downloadData([{table:"a_fiscal_11", value:"anrspt",dataset : 'Policy'}])
+    global.window.URL = old;
+    expect(spy.getCall(0).args[0].type).toBe('DOWNLOAD_DATA_START')
+    expect(spy.getCall(1).args[0].type).toBe('SET_ERROR')
+  })
 
 
 })
