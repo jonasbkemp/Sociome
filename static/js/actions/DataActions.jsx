@@ -37,9 +37,12 @@ export function setLastCategory(category){
 			url = `/Demographics?col=${category.value}`
 			break;
 	}
+	dispatcher.dispatch({
+		type : 'FETCH_DATA_START'
+	})
 	$.get(url).done(data => {
 		dispatcher.dispatch({
-			type : 'NEW_DATA',
+			type : 'FETCH_DATA_DONE',
 			data : data
 		})
 	}).fail(err => {
@@ -65,6 +68,9 @@ export function changeYear(year){
  * @return null        
  */
 export function downloadData(fields){
+	dispatcher.dispatch({
+		type : 'DOWNLOAD_DATA_START'
+	})
 	$.post(`/CSV`, {fields : fields})
 		.done((result, textStatus, request) => {
 			var a = document.createElement('a')
@@ -73,6 +79,9 @@ export function downloadData(fields){
 			a.download = 'data.csv'
 			var blob = new Blob([result], {type : 'text/csv'})
 			a.href = window.URL.createObjectURL(blob)
+			dispatcher.dispatch({
+				type : 'DOWNLOAD_DATA_DONE'
+			})
 			a.click()
 		})
 		.fail(err => {

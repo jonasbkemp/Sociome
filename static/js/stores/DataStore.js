@@ -172,7 +172,7 @@ class DataStore extends ReduceStore{
 				return this.setSubCategory(state, action.category, action.subCategory);
 			case 'SET_CATEGORY':
 				return this.setCategory(state, action.category);
-			case 'NEW_DATA':
+			case 'FETCH_DATA_DONE':
 				return this.setNewData(state, action.data)
 			case 'CHANGE_YEAR':
 				return this.updateYear(state, action.year);
