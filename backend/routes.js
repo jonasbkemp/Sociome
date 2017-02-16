@@ -362,10 +362,6 @@ router.post('/CSV', (req, res) => {
 
 })
 
-router.get('/', function(req, res){
-    res.sendFile(path.resolve(__dirname + '/../static/index.html'));
-});
-
 // Openshift puts the app to sleep after 24 hours of innactivity.
 // Continually ping the server to keep it awake...
 router.get('/Wakeup', function(req, res){

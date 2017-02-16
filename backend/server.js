@@ -38,6 +38,9 @@ app.use(bodyParser.urlencoded({extended : true}))
 app.use('/', require('./routes'))
 app.use(express.static(path.join(__dirname, '../static')))
 
+app.get('*', function(req, res){
+    res.sendFile(path.resolve(__dirname + '/../static/index.html'));
+});
 
 app.listen(port, function (err) {
 	if (err) {

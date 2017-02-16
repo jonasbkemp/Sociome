@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {Router, Route, IndexRoute, hashHistory, IndexRedirect} from 'react-router';
+import {Router, Route, IndexRoute, browserHistory, IndexRedirect} from 'react-router';
 require('react-select/dist/react-select.css');
 
 import Layout from './Layout';
@@ -11,7 +11,7 @@ import Download from './pages/Download'
 const app = document.getElementById('app');
 
 ReactDOM.render(
-	<Router history={hashHistory}>
+	<Router history={browserHistory}>
 		<Route path="/" component={Layout}>
 			<IndexRedirect to="/explore"/>
 			<Route path="explore" component={Explore}/>
