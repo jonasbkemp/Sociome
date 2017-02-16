@@ -1,7 +1,7 @@
 Sociome
 --------
 [![Build Status](https://travis-ci.org/ArnholdInstitute/Sociome.svg?branch=master)](https://travis-ci.org/ArnholdInstitute/Sociome)
-[![Coverage Status](https://coveralls.io/repos/github/ArnholdInstitute/Sociome/badge.svg?branch=master)](https://coveralls.io/github/ArnholdInstitute/Sociome?branch=master)
+[![codecov](https://codecov.io/gh/ArnholdInstitute/Sociome/branch/master/graph/badge.svg)](https://codecov.io/gh/ArnholdInstitute/Sociome)
 [![Dependency Status](https://gemnasium.com/badges/github.com/ArnholdInstitute/Sociome.svg)](https://gemnasium.com/github.com/ArnholdInstitute/Sociome)
 
 
