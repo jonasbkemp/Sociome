@@ -37,9 +37,11 @@ class PagesStore extends ReduceStore{
       case 'SET_ERROR':
       case 'FETCH_DATA_DONE':
       case 'DOWNLOAD_DATA_DONE':
+      case 'LINEAR_REGRESSION_DONE':
         return {popup : null}
       case 'FETCH_DATA_START':
       case 'DOWNLOAD_DATA_START':
+      case 'LINEAR_REGRESSION_START':
         return loader
       default:
         return state

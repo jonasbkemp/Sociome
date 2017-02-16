@@ -4,6 +4,7 @@ import RegressionFieldMenu from '../components/RegressionFieldMenu';
 import update from 'react/lib/update';
 import RegressionResults from '../components/RegressionResults';
 import dispatcher from '../Dispatcher'
+import * as AnalysisActions from '../actions/AnalysisActions'
 
 class Regression extends React.Component{
 	constructor(props){
@@ -49,19 +50,12 @@ class Regression extends React.Component{
 	}
 
 	generateModel = () => {
-		var component = this;
-		$.post(`/LinRegression`, {
+		AnalysisActions.linearRegression({
 			dependent : this.state.bins[0].items[0],
 			independent : this.state.bins[1].items[0],
-			controls : this.state.bins[2].items
-		}).done(result => {
-			result = JSON.parse(result);
-			this.setState(_.extend({}, this.state, {results : result}));
-		}).fail(err => {
-			dispatcher.dispatch({
-				type : 'SET_ERROR',
-				msg : err.responseText
-			})
+			controls : this.state.bins[2].items		
+		}, result => {
+			this.setState({...this.state, results : result})
 		})
 	}
 
