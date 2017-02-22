@@ -37,7 +37,7 @@ if(Sys.getenv('OPENSHIFT_POSTGRESQL_DB_USERNAME') ==''){
 		user <- ''
 		pwd <- ''
 		db_name <- 'sociome'
-		host <- ''
+		host <- 'localhost'
 		port <- ''
 	}
 }
