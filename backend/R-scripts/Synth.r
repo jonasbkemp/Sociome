@@ -67,9 +67,35 @@ runDiffInDiff <- function(query, predVars, depVar, controlGroup, treatmentGroup,
 
 	df <- dbGetQuery(conn, query)
 
+<<<<<<< 9f1cd4ed3e9b9a97a3797b5a396562db02eb2b69
 	getCode <- function(c){
 		return(stateCodes[[c]]);
 	}
+=======
+	query = paste('
+		SELECT 
+			demographics.year,
+			demographics.state,
+			health_outcomes.statecode ',
+			paste(
+				sapply(predVars, function(p){
+					return(paste(',demographics.', p, sep=''));
+				}),
+			collapse = ''), ',',
+			' health_outcomes.rawvalue as depvar ', 
+		'FROM demographics ',
+		'INNER JOIN health_outcomes ON ', 
+			'demographics.year=health_outcomes.year AND ',
+			'demographics.state=health_outcomes.county ',
+		'WHERE ',
+			'health_outcomes.measurename=\'', depVar, '\' AND ',
+			'demographics.countycode=0 AND ',
+			nullCond, ' AND ',
+			'health_outcomes.rawvalue IS NOT NULL AND ',
+			'demographics.state <> \'District of Columbia\' ',
+		'ORDER BY state'
+	, sep='')
+>>>>>>> Changed state_name to state in Synth.r
 
 	controlGroup = sapply(controlGroup, getCode)
 	treatmentGroup = sapply(treatmentGroup, getCode)
@@ -80,7 +106,13 @@ runDiffInDiff <- function(query, predVars, depVar, controlGroup, treatmentGroup,
 		return(state %in% treatmentGroup)
 	})(df$statecode), 1, 0);
 
+<<<<<<< 9f1cd4ed3e9b9a97a3797b5a396562db02eb2b69
 	df = subset(df, statecode %in% treatmentGroup | statecode %in% controlGroup)
+=======
+	dataframe$treated = ifelse(Vectorize(function(country){
+		return(country %in% treatmentGroup)
+	})(dataframe$state), 1, 0);
+>>>>>>> Changed state_name to state in Synth.r
 
 	df$did <- df$time * df$treated
 
@@ -156,7 +188,7 @@ runSynth <- function(predVars, depVar, treatment, controlIdentifiers, yearOfTrea
 	query <- paste(
 		'SELECT 
 			demographics.year,
-			demographics.state_name,
+			demographics.state,
 			health_outcomes.statecode,
 			health_outcomes.rawvalue as depvar', 
 			paste(
@@ -168,7 +200,7 @@ runSynth <- function(predVars, depVar, treatment, controlIdentifiers, yearOfTrea
 		' FROM demographics
 		  INNER JOIN health_outcomes ON
 			demographics.year=health_outcomes.year AND
-			demographics.state_name=health_outcomes.county 
+			demographics.state=health_outcomes.county 
 		WHERE 
 			demographics.countycode=0 AND 
 			health_outcomes.measurename=\'', depVar , '\' AND
@@ -179,8 +211,8 @@ runSynth <- function(predVars, depVar, treatment, controlIdentifiers, yearOfTrea
 				}),
 				collapse=' AND '
 			), 
-			' AND demographics.state_name<>\'District of Columbia\' ',
-		'ORDER BY state_name',
+			' AND demographics.state<>\'District of Columbia\' ',
+		'ORDER BY state',
 		sep=''
 	)
 
@@ -210,7 +242,7 @@ runSynth <- function(predVars, depVar, treatment, controlIdentifiers, yearOfTrea
 			time.variable=c("year"),
 			treatment.identifier=stateCodes[[treatment]],
 			controls.identifier=controlIdentifiers,
-			unit.names.variable=c("state_name"),
+			unit.names.variable=c("state"),
 			time.predictors.prior = priorYears, 
 			time.optimize.ssr = priorYears      
 		)},
