@@ -9,6 +9,7 @@ import os
 import sys
 import re
 import argparse
+import json
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--file', type=str, help='process a particular file', default=None)
@@ -54,10 +55,20 @@ def match(enum):
 		return (temp[1], temp[0])
 	return None
 
+jsonFile = {}
+
 def parseEnumCol(desc, col, tableName):
 	def write(arg):
 		value=arg[0]
 		key=arg[1]
+		elt = {'desc' : key, 'value' : value, 'full' : desc.value}
+		if tableName in jsonFile:
+			if col.value in jsonFile[tableName]:
+				jsonFile[tableName][col.value].append(elt)
+			else:
+				jsonFile[tableName][col.value] = [elt]
+		else:
+			jsonFile[tableName] = {col.value : [elt]}
 		mdStream.write((u'|%s|%s|%s|%s|%s|\n' % (tableName, col.value, value, key, desc.value)).encode('utf-8'))
 	parens = re.search('\([^\(]*\)', desc.value)
 	if parens is not None:
@@ -102,6 +113,6 @@ for file in files:
 
 scriptStream.write('\\.\n')
 
-
+json.dump(jsonFile, open('./docs.json', 'w'))
 
 
