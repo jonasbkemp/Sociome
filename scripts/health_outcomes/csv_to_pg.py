@@ -1,71 +1,70 @@
 #!/usr/bin/env python
 
-import csv, pdb, re, glob
-import download_file
-import pandas, sys
+import csv, pdb, re, glob, pandas, sys, os
+from subprocess import check_output
+from sqlalchemy import create_engine
 
-if len(glob.glob('data/*.csv')) == 0:
-	download_file.downloadAll()
+engine = create_engine('postgresql://localhost:5432/sociome', encoding='latin1')
 
+if not(os.path.exists('2016CHR_CSV_Trend_Data.csv')):
+    url = 'https://github.com/ArnholdInstitute/Sociome-Data/raw/master/health_outcomes/2016CHR_CSV_Trend_Data.csv'
+    check_output(['wget', '-O', '2016CHR_CSV_Trend_Data.csv', url])
 
-schema = [
-	'text', #yearspan
-	'text', #measurename
-    'int', #statecode
-    'int', #countycode
-	'text', #county
-    'text', #state
-	'real', #numerator
-	'real', #denominator
-	'real', #rawvalue
-	'real', #cilow
-	'real', #cihigh
-	'int', #measureid
-	'bool', #differflag
-	'bool',#trendbreak
-    'int'  #year column
-]
-
-scriptStream = open('script.txt', 'w')
-
-
-def castToInt(v, field):
-    v[field] = v[field] if pandas.isnull(v[field]) else int(v[field])
-
-def formatVal(v):
-    v['measureid'] = v['measureid'] if pandas.isnull(v['measureid']) else int(v['measureid']) 
-    castToInt(v, 'measureid')
-    castToInt(v, 'differflag')
-    castToInt(v, 'trendbreak')
-    scriptStream.write('\t'.join([str(v) for v in v.values]) + '\n')
-
-data = pandas.read_csv('data/2016CHR_CSV_Trend_Data.csv')
-
-def midYear(ystr):
-    if type(ystr) is str:
-        rangeY = ystr.split('-')
-        return str((int(rangeY[0]) + int(rangeY[1])) / 2) if len(rangeY) > 1 else ystr
+def processYear(y):
+    if type(y) == unicode and '-' in y:
+        years = y.split('-')
+        year = (int(years[0]) + int(years[1])) / 2
+        return int(year)
+    elif type(y) == float:
+        return y
     else:
-        return ystr
+        return int(y)
 
-data['year'] = data['yearspan'].apply(midYear)
-data['rawvalue'] = data['rawvalue'].apply(lambda x: x.replace(',', '') if type(x) is str else x)
-data['cilow'] = data['cilow'].apply(lambda x: x.replace(',', '') if type(x) is str else x)
-data['cihigh'] = data['cihigh'].apply(lambda x: x.replace(',', '') if type(x) is str else x)
+data = pandas.read_csv('2016CHR_CSV_Trend_Data.csv', encoding='latin1')
 
+data['yearspan'] = data['yearspan'].apply(processYear)
 
-schema = ','.join('%s %s' % (x[0], x[1]) for x in zip(data.columns, schema))
+data = data.rename(index=str, columns={'yearspan' : 'year'})
 
-scriptStream.write('SET CLIENT_ENCODING TO LATIN1;\n')
-scriptStream.write('DROP TABLE IF EXISTS health_outcomes;\n')
-scriptStream.write('CREATE TABLE health_outcomes (%s);\n' % schema)
-scriptStream.write('COPY health_outcomes (%s) FROM stdin WITH NULL AS \'nan\';\n' % (','.join(data.columns)))
+data.to_sql('health_outcomes_temp', engine, index=False, if_exists='replace')
 
-data.apply(formatVal, axis=1)
+engine.execute('DROP TABLE IF EXISTS health_outcomes')
+engine.execute('CREATE TABLE health_outcomes(year int, statecode int, countycode int, county text, state text);')
+res = engine.execute('SELECT DISTINCT (lower(measurename)) FROM health_outcomes_temp WHERE measurename IS NOT NULL;')
+for measure, in res:
+    print('Processing %s' % measure)
+    engine.execute("""
+        CREATE TABLE temp AS (
+            SELECT * FROM health_outcomes
+            FULL OUTER JOIN (
+                SELECT year, statecode, countycode, json_build_object(
+                    'rawvalue', replace(rawvalue, ',', '')::float,
+                    'cilow', replace(cilow, ',', '')::float,
+                    'cihigh', replace(cihigh, ',', '')::float,
+                    'measureid', measureid,
+                    'differflag', differflag,
+                    'trendbreak', trendbreak
+                ) AS %(col_name)s FROM health_outcomes_temp
+                    WHERE lower(measurename)='%(measurename)s'
+            )s USING (year, statecode, countycode)
+        )
+    """ % {
+        'measurename' : measure,
+        'col_name' : re.sub('( |-)+', '_', measure)
+    })
+    engine.execute('DROP TABLE health_outcomes;')
+    engine.execute('ALTER TABLE temp RENAME TO health_outcomes;')
 
-scriptStream.write('\\.\n')
-scriptStream.write('UPDATE health_outcomes SET measurename=initcap(lower(measurename));')
-scriptStream.write('CREATE INDEX measurename ON health_outcomes (measurename);\n')
+engine.execute('DROP TABLE health_outcomes_temp;')
 
+engine.execute("""
+    UPDATE health_outcomes SET county=statecodes.county 
+    FROM statecodes 
+    WHERE health_outcomes.countycode=statecodes.countycode;
+""")
 
-
+engine.execute("""
+    UPDATE health_outcomes SET state=statecodes.state 
+    FROM statecodes 
+    WHERE health_outcomes.statecode=statecodes.statecode;
+""")
