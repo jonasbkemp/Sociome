@@ -137,11 +137,11 @@ router.get('/HealthOutcomes', function(req, res){
     SELECT 
       year, 
       county as state, 
-      rawvalue as value, 
+      ${measure_name}->'rawvalue' as value,
       countycode, 
       statecode 
     FROM health_outcomes 
-    WHERE measurename='${measure_name}' AND rawvalue IS NOT NULL ${yearClause};`;
+    WHERE ${measure_name} IS NOT NULL ${yearClause};`;
   db.query(query).then(data => {
     res.json(data.rows)
   }).catch(err => {
