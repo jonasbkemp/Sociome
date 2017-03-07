@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-import download_xls
 import glob, pdb, os, sys, argparse, re
 import pandas as pd
 from sqlalchemy import create_engine
+from subprocess import check_output
 
 engine = create_engine('postgresql://localhost:5432/sociome')
 
@@ -12,10 +12,10 @@ parser.add_argument('--file', type=str, help='process a particular file', defaul
 args = parser.parse_args()
 
 # If no data, then download it...
-if len(glob.glob('data/*.xls')) == 0:
-	download_xls.downloadAll()
+if len(glob.glob('policy/*.xls')) == 0:
+	check_output(['svn', 'co', 'https://github.com/ArnholdInstitute/Sociome-Data/trunk/policy'])
 
-files = glob.glob('data/*.xls') if args.file is None else [args.file]
+files = glob.glob('policy/*.xls') if args.file is None else [args.file]
 
 for file in files:
 	print('Processing %s' % file)
@@ -27,7 +27,8 @@ for file in files:
 	for c in data.columns:
 		if c == 'state':
 			continue
-		data[c] = data[c].convert_objects(convert_numeric='force') 
+		data[c] = pd.to_numeric(data[c], errors='coerce')
+
 
 	metadata = pd.read_excel(file, sheetname=1)
 	metadata.columns = map(lambda c: re.sub('( |\(|\))+', '_', c.strip().lower()), metadata.columns)
