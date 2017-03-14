@@ -56,6 +56,7 @@ function shutdown(err){
   if(err) console.log(err)
   rio.shutdown({
     callback : function(err, res){
+      console.log('exiting...')
       process.exit();
     },
     path : socket,

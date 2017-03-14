@@ -267,7 +267,7 @@ function nameToTable(field){
     case 'Demographics':
       return 'demographics'
     case 'Health Outcomes':
-      return 'health_outcomes_pivot'
+      return 'health_outcomes'
   }
 }
 
@@ -278,8 +278,13 @@ router.post('/CSV', (req, res) => {
   var tableSet = {}
   var containsPolicy = false
   for(var field of fields){
-    tableSet[nameToTable(field)] = nameToTable(field)
-    cols.push(`"${nameToTable(field)}"."${field.value}"`)
+    var table = nameToTable(field)
+    tableSet[table] = table
+    if(table === 'health_outcomes'){
+      cols.push({col : `"${table}".${`${field.value}->'rawvalue'`}`, name : field.value})
+    }else{
+      cols.push({col : `"${table}"."${field.value}"`, name : field.value})
+    }
     if(field.dataset === 'Policy'){
       containsPolicy = true;
     }
@@ -319,8 +324,8 @@ router.post('/CSV', (req, res) => {
     switch(table){
       case 'demographics':
         return containsPolicy ? '(SELECT * FROM demographics WHERE countycode=0)demographics' : 'demographics'
-      case 'health_outcomes_pivot':
-        return containsPolicy ? '(SELECT * FROM health_outcomes_pivot WHERE countycode=0)health_outcomes_pivot' : 'health_outcomes_pivot'
+      case 'health_outcomes':
+        return containsPolicy ? '(SELECT * FROM health_outcomes WHERE countycode=0)health_outcomes' : 'health_outcomes'
       default:
         return table
     }
@@ -336,9 +341,9 @@ router.post('/CSV', (req, res) => {
     SELECT * FROM(
       SELECT 
         ${yearAndStateCols},
-        ${cols.join(',')}
+        ${cols.map(c => `${c.col} as ${c.name}`).join(',')}
       FROM ${selectFrom}
-      WHERE ${cols.map(c => `${c} IS NOT NULL`).join(' OR ')}
+      WHERE ${cols.map(c => `${c.col} IS NOT NULL`).join(' OR ')}
     ) subQuery
     ORDER BY subQuery.year, subQuery.statecode ${containsPolicy ? '' : ', subQuery.countycode'}
   `
