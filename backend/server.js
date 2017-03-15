@@ -67,17 +67,22 @@ process.on('exit', shutdown);
 process.on('SIGINT', shutdown);
 process.on('uncaughtException', shutdown);
 
+var R = process.env.R_PATH ? process.env.R_PATH + '/R' : 'R'
+
 // Setup the communication socket for Rserve:
 
 // Delete the old socket file if it exists.  Otherwise this gives
 // us an EADDRINUSE error
+
 rimraf.sync(socket)
 
 var rserveSocket = net.createServer(function(c) {
     console.log('Rserve socket connected!');
-});
 
-var R = process.env.R_PATH ? process.env.R_PATH + '/R' : 'R'
+    c.on('end', () => {
+      console.log('Rserve disconnected')
+    })
+});
 
 rserveSocket.listen(socket, function() { //'listening' listener
     console.log('R server bound');
@@ -93,12 +98,6 @@ rserveSocket.listen(socket, function() { //'listening' listener
       console.log(`stderr: ${data}`);      
     });
 });
-
-
-
-setTimeout(function(){request(ip + ':' + port + '/Wakeup', function(err, res){
-  console.log('Wakeup result = ' + res)
-})}, 3600000)
 
 
 

@@ -23,24 +23,37 @@ stateCodes = hash('Alabama'=1 ,'Alaska'=2 ,'Arizona'=4 ,'Arkansas'=5 ,'Californi
 				  'Tennessee'= 47 ,'Texas'= 48 ,'Utah'= 49 ,'Vermont'= 50 ,'Virginia'= 51 ,'Washington'= 53 ,'West Virginia'= 54 ,
 				  'Wisconsin'= 55 ,'Wyoming'= 56)
 
-if(Sys.getenv('OPENSHIFT_POSTGRESQL_DB_USERNAME') ==''){
-	if(file.exists('../../.env')){
-		dotenv::load_dot_env('../../.env')	
-		# Get database credentials from environment variables
-		user <- Sys.getenv('OPENSHIFT_POSTGRESQL_DB_USERNAME')
-		pwd <- Sys.getenv('OPENSHIFT_POSTGRESQL_DB_PASSWORD')
-		db_name <- 'sociome'
-		host <- Sys.getenv('OPENSHIFT_POSTGRESQL_DB_HOST')
-		port <- Sys.getenv('OPENSHIFT_POSTGRESQL_DB_PORT')	
+if(file.exists('../../.env')){
+	dotenv::load_dot_env('../../.env')	
+}
+
+getEnv <- function(var, default){
+	if(Sys.getenv(var) != ""){
+		return(Sys.getenv(var));
 	}else{
-		# Use the local database
-		user <- ''
-		pwd <- ''
-		db_name <- 'sociome'
-		host <- 'localhost'
-		port <- ''
+		return(default);
 	}
 }
+
+user <- getEnv('DB_USER', '')
+pwd <- getEnv('DB_USER', '')
+db_name <- getEnv('DB_NAME', 'sociome')
+host <- getEnv('DB_HOST', 'localhost')
+port <- getEnv('DB_PORT', 5432)
+
+
+print(user)
+print(pwd)
+print(db_name)
+print(host)
+print(port)
+
+# - control group is inferred to be rest of the states
+# - User should be able to specify a specific control group.  
+#   - Require a specific control group
+
+# - year of treatment should be within the range of years of the data (exclusive of bounds)
+
 
 # Intercept - not really important
 # treated - difference between states that had a treatment and did (on average there is 1.21 units of )
@@ -271,16 +284,18 @@ testSynth2 <- function(){
 	runSynth(predVars, depVar, treatment, controlIdentifiers, yearOfTreatment);
 }
 
-mkQuery <- function(name, args){
+getData <- function(name, args, conn){
 	if(args['dataset'] == 'Health Outcomes'){
-		print('health_outcomes')
-		return(paste('SELECT rawvalue as ', name, ' FROM health_outcomes WHERE measurename=\'', args['label'], '\' AND year=', args['year'], 'AND countycode=0 AND statecode >0 AND statecode <= 56 AND statecode != 11 ORDER BY statecode', sep=''));
+		query <- paste('SELECT ', args['value'], '->\'rawvalue\' as ', name, ' FROM health_outcomes WHERE year=', args['year'], ' AND countycode=0 AND statecode>0 AND statecode <= 56 AND statecode != 11 ORDER BY statecode', sep='');
+		data <- dbGetQuery(conn, query)
+		data[, name] <- as.numeric(data[,name])
+		return(data);
 	}else if(args['dataset'] == 'Demographics'){
-		print('demographics')
-		return(paste('SELECT ', args['value'], ' as ', name, ' FROM demographics WHERE year=', args['year'], ' AND countycode=0 AND statecode <= 56 AND statecode != 11 ORDER BY statecode', sep=''))
+		query <- paste('SELECT ', args['value'], ' as ', name, ' FROM demographics WHERE year=', args['year'], ' AND countycode=0 AND statecode <= 56 AND statecode != 11 ORDER BY statecode', sep='');
+		return(dbGetQuery(conn, query))
 	}else if(args['dataset'] == 'Policy'){
-		print('policy')
-		return(paste('SELECT ', args['value'], ' as ', name, ' FROM ', args['table'], ' WHERE year=', args['year'], ' ORDER BY state', sep=''))
+		query <- paste('SELECT ', args['value'], ' as ', name, ' FROM ', args['table'], ' WHERE year=', args['year'], ' ORDER BY state', sep='');
+		return(dbGetQuery(conn, query))
 	}
 	print('Error')
 }
@@ -288,21 +303,19 @@ mkQuery <- function(name, args){
 runRegression <- function(dependent, independent, controls){
 	conn <- dbConnect(PostgreSQL(), host=host, dbname=db_name, user=user,password=pwd, port=port);
 
-	data <- dbGetQuery(conn, mkQuery('dependent', dependent))
+	data <- getData('dependent', dependent, conn)
 
-	temp <- dbGetQuery(conn, mkQuery('independent', independent))
-
-	data['independent'] <- dbGetQuery(conn, mkQuery('independent', independent))
+	data['independent'] <- getData('independent', independent, conn)
 
 	model = 'dependent ~ independent'
 
-	i <- 0
-	for(control in controls){
-		name <- paste('control', toString(i), sep='')
-		data[name] <- dbGetQuery(conn, mkQuery(name, control))
-		model <- paste(model, ' + control', toString(i), sep='')
-		i <- i+1
-	}
+	# i <- 0
+	# for(control in controls){
+	# 	name <- paste('control', toString(i), sep='')
+	# 	data[name] <- dbGetQuery(conn, mkQuery(name, control))
+	# 	model <- paste(model, ' + control', toString(i), sep='')
+	# 	i <- i+1
+	# }
 
 	fit <- lm(model, data=data)
 
@@ -317,42 +330,63 @@ runRegression <- function(dependent, independent, controls){
 		adjustedRSquared=summary(fit)$adj.r.squared,
 		fstatistic=summary(fit)$fstatistic
 	)
-
 	return(toJSON(result))
 }
 
 
 testRegression <- function(){
+	# dependent <- list(
+	# 	type = 'field',
+	# 	table = 'a_fiscal_11',
+	# 	value = 'anrspt',
+	# 	label = 'natural resources expenditures',
+	# 	year = '1957',
+	# 	dataset = 'Policy'
+ # #  	)
+ # 	dependent <- list(
+ # 		type='field',
+ # 		dataset='Health Outcomes',
+ # 		label='Uninsured',
+ # 		value='uninsured',
+ # 		year='2006'
+ # 	)
+	# independent <- list(
+	# 	type = 'field',
+ #  		value = 'population_female',
+ #  		label = 'Population Female',
+ #  		year = '2001',
+ #  		dataset = 'Demographics'
+	# )
+	# controls <- list(
+	# 	list(
+	# 		type = 'field',
+	# 	    value = 'preventable_hospital_stays',
+	# 	    label = 'Preventable Hospital Stays',
+	# 	    year = '2004',
+	# 	    dataset = 'Health Outcomes'
+	# 	),
+	# 	list(
+	# 		type = 'field',
+	#        	value = 'adult_obesity',
+	#        	label = 'Adult Obesity',
+	#        	year = '2004',
+	#        	dataset = 'Health Outcomes'
+	# 	)
+	# )
+	controls = list()
 	dependent <- list(
 		type = 'field',
-		table = 'a_fiscal_11',
-		value = 'anrspt',
-		label = 'natural resources expenditures',
-		year = '1957',
-		dataset = 'Policy'
-  	)
+       	value = 'adult_obesity',
+       	label = 'Adult Obesity',
+       	year = '2004',
+       	dataset = 'Health Outcomes'
+	)
 	independent <- list(
 		type = 'field',
-  		value = 'population_female',
-  		label = 'Population Female',
-  		year = '2001',
-  		dataset = 'Demographics'
-	)
-	controls <- list(
-		list(
-			type = 'field',
-		    value = 'Preventable Hospital Stays',
-		    label = 'Preventable Hospital Stays',
-		    year = '2004',
-		    dataset = 'Health Outcomes'
-		),
-		list(
-			type = 'field',
-	       	value = 'Adult Obesity',
-	       	label = 'Adult Obesity',
-	       	year = '2004',
-	       	dataset = 'Health Outcomes'
-		)
+		label = "Sexually Transmitted Infections",
+		value = 'sexually_transmitted_infections',
+		year = 2007,
+		dataset = 'Health Outcomes'
 	)
 
 	runRegression(dependent, independent, controls)
