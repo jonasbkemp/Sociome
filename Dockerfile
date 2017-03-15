@@ -6,14 +6,6 @@ RUN apt-get update -y
 
 RUN apt-get install -y postgresql postgresql-contrib libpq-dev ed curl libcurl3-dev wget
 
-# Create the root database
-USER postgres
-RUN /etc/init.d/postgresql start &&\
-    psql --command "CREATE USER root WITH SUPERUSER CREATEDB CREATEROLE REPLICATION BYPASSRLS PASSWORD 'root';" &&\
-    createdb root
-
-USER root
-
 # Install dependencies
 RUN apt-get install -y software-properties-common apt-transport-https && \
  	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 && \
@@ -26,14 +18,16 @@ RUN apt-get install -y software-properties-common apt-transport-https && \
 ADD backend/R-scripts/InstallPackages.r /
 RUN Rscript /InstallPackages.r
 
-# Add the working directory
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-COPY . /usr/src/app
+# Create the root database
+USER postgres
+RUN /etc/init.d/postgresql start &&\
+    psql --command "CREATE USER root WITH SUPERUSER CREATEDB CREATEROLE REPLICATION BYPASSRLS PASSWORD 'root';" &&\
+    createdb root
 
-# Install Node.js dependencies
-RUN npm install && npm run build
+USER root
+
+RUN mkdir /app && printf "SOCK_LOCK=/rserve.sock\nDB_USER=root\nDB_PASSWORD=root" > /app/.env
 
 EXPOSE 80
 
-CMD /etc/init.d/postgresql start && ./create_db.sh && PORT=80 npm start
+CMD PORT=80 npm start
