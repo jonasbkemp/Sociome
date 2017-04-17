@@ -6,7 +6,7 @@ var path = require('path');
 module.exports = {
   context: path.resolve(__dirname + '/'),
   devtool: debug ? "inline-sourcemap" : false,
-  entry: "./static/js/client.jsx",
+  entry: path.join(__dirname, "./static/js/client.jsx"),
   resolveLoader: {
     modules : ['node_modules']
   },
@@ -39,7 +39,7 @@ module.exports = {
     ]
   },
   output: {
-    path: __dirname + '/static/',
+    path: path.join(__dirname, '/static/'),
     filename: 'client.min.js',
     publicPath: '/',
   },

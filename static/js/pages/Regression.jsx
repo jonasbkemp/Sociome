@@ -1,10 +1,10 @@
 import React from 'react';
 import ExploreBar from '../components/ExploreBar';
-import DndFieldMenu from '../components/DndFieldMenu';
+import DndFieldMenu from '../components/DnDFieldMenu';
 import update from 'react/lib/update';
 import RegressionResults from '../components/RegressionResults';
-import dispatcher from '../Dispatcher'
 import * as AnalysisActions from '../actions/AnalysisActions'
+import {Button} from 'react-bootstrap'
 
 class Regression extends React.Component{
 	constructor(props){
@@ -69,6 +69,17 @@ class Regression extends React.Component{
 				    			generateModel={this.generateModel}
 				    			bins={this.state.bins}
 				    		/>
+				    		<div class='row'>
+				    			<div class='col-xs-8 col-xs-offset-2'>
+				    				<Button 
+				    					bsStyle='primary' 
+				    					disabled={!this.state.bins.slice(0, 2).every(b => b.items.length > 0)}
+				    					onClick={this.generateModel}
+				    				>
+				    					Generate Model
+				    				</Button>
+				    			</div>
+				    		</div>
 				    	</div>
 				    	<div style={{display : 'table-cell', width : '75%'}}>
 				    		<div style={{width : '100%'}}>

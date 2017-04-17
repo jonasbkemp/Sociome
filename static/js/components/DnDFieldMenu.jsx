@@ -28,6 +28,7 @@ class DnDFieldMenu extends React.Component{
 							<DraggableLabel
 								type="field"
 								key={f.value}
+								noYears={this.props.noYears}
 								{...f}
 							/>
 						)
@@ -45,17 +46,6 @@ class DnDFieldMenu extends React.Component{
 							/>
 						)
 					}
-					</div>
-				</div>
-				<div class='row'>
-					<div class="col-xs-11 col-xs-offset-1">
-						<Button
-							bsStyle="primary"
-							disabled={!this.props.bins.slice(0, 2).every(b => b.items.length > 0)}
-							onClick={this.props.generateModel}
-						>
-							Generate Model
-						</Button>
 					</div>
 				</div>
 			</div>
