@@ -15,7 +15,7 @@ args = parser.parse_args()
 if len(glob.glob('policy/*.xls')) == 0:
 	check_output(['svn', 'co', 'https://github.com/ArnholdInstitute/Sociome-Data/trunk/policy'])
 
-files = glob.glob('policy/*.xls') if args.file is None else [args.file]
+files = glob.glob('policy/*.xls*') if args.file is None else [args.file]
 
 for file in files:
 	print('Processing %s' % file)
