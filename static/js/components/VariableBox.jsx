@@ -1,7 +1,7 @@
 import React from 'react';
 import {DropTarget} from 'react-dnd';
 
-class RegressionVaraibleBox extends React.Component{
+class VariableBox extends React.Component{
 	render(){
 		return this.props.connectDropTarget(
 			<div 
@@ -55,5 +55,5 @@ const collect = (connect, monitor) => ({
   	canDrop: monitor.canDrop()
 })
 
-export default DropTarget(types, spec, collect)(RegressionVaraibleBox);
+export default DropTarget(types, spec, collect)(VariableBox);
 

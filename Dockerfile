@@ -28,6 +28,14 @@ USER root
 
 RUN mkdir /app && printf "SOCK_LOCK=/rserve.sock\nDB_USER=root\nDB_PASSWORD=root" > /app/.env
 
-EXPOSE 80
+COPY . .
 
-CMD PORT=80 npm start
+
+RUN /etc/init.d/postgresql start && \
+	./create_db.sh
+
+RUN npm install --production
+
+EXPOSE 8080
+
+CMD service postgresql start && PORT=8080 npm start

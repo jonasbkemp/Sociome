@@ -2,11 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import {Router, Route, IndexRoute, browserHistory, IndexRedirect} from 'react-router';
 require('react-select/dist/react-select.css');
-
-import Layout from './Layout';
-import Explore from './pages/Explore';
-import Regression from './pages/Regression';
-import Download from './pages/Download'
+import {Explore, Regression, Download} from './pages'
+import Layout from './Layout'
 
 const app = document.getElementById('app');
 

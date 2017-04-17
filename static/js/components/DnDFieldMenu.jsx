@@ -4,12 +4,12 @@ import DataStore from '../stores/DataStore';
 import * as _ from 'lodash';
 import * as DataActions from '../actions/DataActions';
 import Select from 'react-select';
-import RegressionVariableBox from '../components/RegressionVariableBox';
+import VariableBox from '../components/VariableBox';
 import {Button} from 'react-bootstrap';
 import {Container} from 'flux/utils'
 import DraggableLabel from '../components/DraggableLabel'
 
-class RegressionFieldMenu extends React.Component{
+class DnDFieldMenu extends React.Component{
 	static getStores(){
 		return [DataStore]
 	}
@@ -38,7 +38,7 @@ class RegressionFieldMenu extends React.Component{
 					<div class="col-xs-11 col-xs-offset-1">
 					{
 						this.props.bins.map((b, i) => 
-							<RegressionVariableBox
+							<VariableBox
 								key={i}
 								{...b}
 								style={{marginBottom : 10}}
@@ -63,4 +63,4 @@ class RegressionFieldMenu extends React.Component{
 	}
 }
 
-export default Container.create(RegressionFieldMenu)
+export default Container.create(DnDFieldMenu)

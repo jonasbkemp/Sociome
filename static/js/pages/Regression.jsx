@@ -1,6 +1,6 @@
 import React from 'react';
 import ExploreBar from '../components/ExploreBar';
-import RegressionFieldMenu from '../components/RegressionFieldMenu';
+import DndFieldMenu from '../components/DndFieldMenu';
 import update from 'react/lib/update';
 import RegressionResults from '../components/RegressionResults';
 import dispatcher from '../Dispatcher'
@@ -65,7 +65,7 @@ class Regression extends React.Component{
 				<div style={{width : '100%', display : 'table', height : '100%'}}>
 				    <div style={{display : 'table-row'}}>
 				    	<div style={{display : 'table-cell', width : '25%', height : '100%', position : 'absolute'}}>
-				    		<RegressionFieldMenu 
+				    		<DndFieldMenu 
 				    			generateModel={this.generateModel}
 				    			bins={this.state.bins}
 				    		/>

@@ -4,7 +4,6 @@ import DataStore from '../stores/DataStore';
 import * as _ from 'lodash';
 import * as DataActions from '../actions/DataActions';
 import Select from 'react-select';
-import RegressionVariableBox from '../components/RegressionVariableBox';
 import {Button} from 'react-bootstrap';
 import {Container} from 'flux/utils'
 

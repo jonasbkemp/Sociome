@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import ExploreBar from '../components/ExploreBar';
 import ZoomMap from '../components/ZoomMap';
 import * as _ from 'lodash';
-import RegressionFieldMenu from '../components/RegressionFieldMenu';
 import DataStore from '../stores/DataStore';
 import {Container} from 'flux/utils'
 import HTML5Backend from 'react-dnd-html5-backend';
