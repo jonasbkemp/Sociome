@@ -62,54 +62,34 @@ print(port)
 # 	- Pr(>|t|) summarizes noise
 # 	- one astericks is the convention for a "good result"
 # 	- 
-runDiffInDiff <- function(predVars, depVar, treatmentGroup, yearOfTreatment){
+runDiffInDiff <- function(query, predVars, depVar, controlGroup, treatmentGroup, yearOfTreatment){
 	conn <- dbConnect(PostgreSQL(), host=host, dbname=db_name, user=user,password=pwd, port=port);
 
-	# Only select the non-NULL predictive variables
-	nullCond <- paste(
-		sapply(predVars, function(p){
-			return(paste('demographics.', p, ' IS NOT NULL', sep=''));
-		}), 
-		collapse=' AND '
-	)
+	df <- dbGetQuery(conn, query)
 
-	query = paste('
-		SELECT 
-			demographics.year,
-			demographics.state_name,
-			health_outcomes.statecode ',
-			paste(
-				sapply(predVars, function(p){
-					return(paste(',demographics.', p, sep=''));
-				}),
-			collapse = ''), ',',
-			' health_outcomes.rawvalue as depvar ', 
-		'FROM demographics ',
-		'INNER JOIN health_outcomes ON ', 
-			'demographics.year=health_outcomes.year AND ',
-			'demographics.state_name=health_outcomes.county ',
-		'WHERE ',
-			'health_outcomes.measurename=\'', depVar, '\' AND ',
-			'demographics.countycode=0 AND ',
-			nullCond, ' AND ',
-			'health_outcomes.rawvalue IS NOT NULL AND ',
-			'demographics.state_name <> \'District of Columbia\' ',
-		'ORDER BY state'
-	, sep='')
+	getCode <- function(c){
+		return(stateCodes[[c]]);
+	}
 
-	dataframe <- dbGetQuery(conn, query)
+	controlGroup = sapply(controlGroup, getCode)
+	treatmentGroup = sapply(treatmentGroup, getCode)
 
-	dataframe$time = ifelse(dataframe$year >= yearOfTreatment, 1, 0)
+	df$time = ifelse(df$year >= yearOfTreatment, 1, 0)
 
-	dataframe$treated = ifelse(Vectorize(function(country){
-		return(country %in% treatmentGroup)
-	})(dataframe$state_name), 1, 0);
+	df$treated = ifelse(Vectorize(function(state){
+		return(state %in% treatmentGroup)
+	})(df$statecode), 1, 0);
 
-	dataframe$did <- dataframe$time * dataframe$treated
+	df = subset(df, statecode %in% treatmentGroup | statecode %in% controlGroup)
 
-	formula <- as.formula('depvar ~ treated + time + did')
+	df$did <- df$time * df$treated
 
-	didreg <- lm(formula, data=dataframe)
+	df.treat = df[df$treated == 1,]
+	df.treat = df.treat[order(df.treat$year),]
+	df.control = df[df$treated == 0,]
+	df.control = df.control[order(df.control$year),]
+
+	didreg = lm(paste(depVar, ' ~ .', sep=''), data=subset(df, select=-c(year, statecode)))
 
 	intercept = didreg$coefficients['(Intercept)']
 	time = didreg$coefficients['time']
@@ -131,11 +111,14 @@ runDiffInDiff <- function(predVars, depVar, treatmentGroup, yearOfTreatment){
 
 
 testDiffInDiff <- function(){
-	predVars <- c("population_white", "population_wh_hisp_latino")
-	depVar <- "Air Pollution - Particulate Matter"
-	treatmentGroup <- c("Arizona", "California", "Delaware", "Georgia")
-	yearOfTreatment <- 2007
-	return(runDiffInDiff(predVars, depVar, treatmentGroup, yearOfTreatment))
+	runDiffInDiff(
+	    "SELECT year,statecode,rincarc,rpolice FROM policy WHERE  ( rincarc IS NOT NULL  AND rpolice IS NOT NULL ) AND countycode=0 ",
+	    c("rincarc","rpolice"),
+	    "rpolice",
+	    c("Alaska","California","Delaware","Florida"),
+	    c("Alaska","Arkansas","Connecticut","Delaware"),
+	    2006
+  	)
 }
 
 runMultilevelModeling <- function(depVar, predVar){

@@ -70,6 +70,10 @@ function mkQuery(params, inner=true){
 
   var vars = joinVars.concat(params.map(p => p.value))
 
+  if(tables.length === 1){
+    return selectTable(tables[0], grouped[tables[0]], inner, includeCounties);
+  }
+
   var subQuery = `(${selectTable(tables[0], grouped[tables[0]], inner, includeCounties)}) table_0`
   for(var i = 1; i < tables.length; i++){
     subQuery += `
@@ -80,38 +84,6 @@ function mkQuery(params, inner=true){
   }
   return `SELECT ${vars.join(',')} FROM (${subQuery}) subQ`
 }
-
-/**
- * Get the available years for Synthetic Control.  The user should
- * only be allowed so select years where dependent and predictive
- * variables line up.
- * 
- * @param  {String} depVar - Dependent variable
- * @param  {Array<String>} predVars - predictive variables
- * @return {Array<Integer>} - Array of years
- */
-router.get('/SynthGetYears', function(req, res){
-  var depVar = req.query.depVar
-  var predVars = !req.query.predVars || typeof(req.query.predVars) === 'string' ? [req.query.predVars] : req.query.predVars
-  var notNullCond = predVars.map(function(pv){return `demographics.${pv} IS NOT NULL`}).join(' AND ')
-
-  var q = `
-    SELECT DISTINCT demographics.year 
-    FROM demographics 
-    INNER JOIN ${depVar} ON 
-      demographics.year=${depVar}.start_year AND 
-      demographics.state_name=${depVar}.county
-    WHERE 
-      demographics.countycode=0 AND 
-      ${notNullCond} AND 
-      ${depVar}.rawvalue IS NOT NULL 
-    ORDER BY year;`
-  db.query(q).then(function(data){
-    res.json(data.rows.map(function(d){return d.year}));
-  }).catch(function(err){
-    res.status(500).send(err)
-  })
-})
 
 /**
  * Get the policy data for a specific field.  The year
@@ -188,23 +160,6 @@ router.get('/HealthOutcomes', function(req, res){
     res.json(data.rows)
   }).catch(err => {
     res.status(500).send(err)
-  })
-})
-
-router.get('/Multilevel', function(req, res){
-  var depVar = req.query.depVar;
-  var predVar = req.query.predVar;
-  var command = `runMultilevelModeling(${depVar}, ${predVar})`;
-  rio.e({
-    command : command,
-    path : socket,
-    callback : function(err, result){
-      if(err){
-        throw err;
-      }else{
-        res.json(result);
-      }
-    }
   })
 })
 
@@ -289,70 +244,36 @@ Sample input:
 router.post('/DiffInDiff', function(req, res){
   var params = req.body
 
-  // var depVar = req.query.depVar
-  // var predVars = typeof(req.query.predVars) === 'string' ? [req.query.predVars] : req.query.predVars
-  // predVars = predVars.join(',')
-  // var treatmentGroup =  typeof(req.query.treatmentGroup) === 'string' ? 
-  //                       [req.query.treatmentGroup] : 
-  //                       req.query.treatmentGroup;
-  // treatmentGroup = treatmentGroup.join(',')
-  // var yearOfTreatment = req.query.yearOfTreatment;
-  // var command = `runDiffInDiff(c(${predVars}), ${depVar}, c(${treatmentGroup}), ${yearOfTreatment})`
-  // console.log(command)
-  // rio.e({
-  //   command : command,
-  //   path : socket,
-  //   callback : function(err, result){
-  //     if(err){
-  //       console.log(err)
-  //       res.status(500).json(err)
-  //     }else{
-  //       res.json(result)
-  //     }
-  //   }
-  // })
-})
+  var queryArgs = params.predVars;
+  queryArgs.push(params.depVar)
 
-router.get('/Synth', function(req, res){
-  var depVar = req.query.depVar
-  var predVars = typeof(req.query.predVars) === 'string' ? [req.query.predVars] : req.query.predVars
-  var treatment = req.query.treatment
-  var controlIdentifiers = typeof(req.query.controlIdentifiers) === 'string' ? 
-                          [req.query.controlIdentifiers] : req.query.controlIdentifiers
-  var yearOfTreatment = req.query.yearOfTreatment
+  var query = mkQuery(queryArgs, true) // Inner join
 
-  var command = `runSynth(c(${predVars.join(',')}), ${depVar}, ${treatment}, c(${controlIdentifiers.join(',')}), ${yearOfTreatment})`
+  var command = `runDiffInDiff(
+    "${query}",
+    c(${params.predVars.map(p => `"${p.value}"`).join(',')}),
+    "${params.depVar.value}",
+    c(${params.controlGroup.map(c => `"${c}"`).join(',')}),
+    c(${params.treatmentGroup.map(t => `"${t}"`).join(',')}),
+    ${params.yearOfTreatment}
+  )`
+
   console.log(command)
+
   rio.e({
     command : command,
     path : socket,
-    callback : function(err, result){
+    callback : (err, result) => {
       if(err){
         console.log(err)
-        res.status(500).json({responseText : err});
+        res.status(500).json(err)
       }else{
-        result = JSON.parse(result);
-        if(!result.success){
-          console.log(result)
-          res.status(500).json({responseText : result.msg})
-        }else{
-          res.status(200).json(result);
-        }
+        res.send(result)
+        console.log(result)
       }
     }
   })
 })
-
-function nameToTable(field){
-  switch(field.dataset){
-    case 'Policy':
-      return field.table
-    case 'Demographics':
-      return 'demographics'
-    case 'Health Outcomes':
-      return 'health_outcomes'
-  }
-}
 
 router.post('/CSV', (req, res) => {
   var fields = req.body.fields

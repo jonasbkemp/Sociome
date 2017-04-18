@@ -2,7 +2,7 @@ import React from 'react';
 import ExploreBar from '../components/ExploreBar';
 import DnDFieldMenu from '../components/DnDFieldMenu';
 import update from 'react/lib/update';
-import RegressionResults from '../components/RegressionResults';
+import DiffInDiffResults from '../components/DiffInDiffResults';
 import dispatcher from '../Dispatcher'
 import * as AnalysisActions from '../actions/AnalysisActions'
 import Select from 'react-select'
@@ -87,8 +87,8 @@ class DiffInDiff extends React.Component{
 			yearOfTreatment : this.state.yearOfTreatment.value
 		}
 		
-		AnalysisActions.diffInDiff(args, result => {
-			this.setState({...this.state, result : result})
+		AnalysisActions.diffInDiff(args, results => {
+			this.setState({...this.state, results : results})
 		})
 	}
 
@@ -153,11 +153,9 @@ class DiffInDiff extends React.Component{
 				    		</div>
 				    	</div>
 				    	<div style={{display : 'table-cell', width : '75%'}}>
-				    		<div style={{width : '100%'}}>
-					    		<RegressionResults 
+				    		<div style={{width : '100%', height : 400}}>
+					    		<DiffInDiffResults 
 					    			results={this.state.results}
-					    			dependent={this.state.bins[0].items[0]}
-					    			independent={this.state.bins[1].items[0]}
 					    		/>
 				    		</div>
 				    	</div>
