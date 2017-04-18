@@ -19,7 +19,7 @@ class DiffInDiff extends React.Component{
 					accepts : ['field'], 
 					items : [], 
 					multi : true,
-					onDrop : (item) => this.handleDrop(0, item, false),
+					onDrop : (item) => this.handleDrop(0, item, true),
 					label : 'Predictor Variables',
 				},
 				{
@@ -49,6 +49,12 @@ class DiffInDiff extends React.Component{
 	}
 
 	handleDrop = (index, value, multi) => {
+		for(let item of this.state.bins[index].items){
+			if(value.value === item.value && value.label === item.label){
+				//This item already exists in this bin, do nothing...
+				return 
+			}
+		}
 		var newState = update(this.state, {
 			bins : {
 				[index] : {
@@ -64,7 +70,6 @@ class DiffInDiff extends React.Component{
 				maxYear = Math.max(maxYear || Number.MIN_SAFE_INTEGER, item.years[item.years.length-1]);
 			}
 		}
-		var r = _.range
 
 		this.setState(update(newState, {
 			maxYear : {$set : maxYear},
@@ -73,14 +78,29 @@ class DiffInDiff extends React.Component{
 	}
 
 	generateModel = () => {
-		AnalysisActions.linearRegression({
-			dependent : this.state.bins[0].items[0],
-			independent : this.state.bins[1].items[0],
-			controls : this.state.bins[2].items		
-		}, result => {
-			this.setState({...this.state, results : result})
+		const selector = ({value, label, dataset}) => ({value, label, dataset})
+		const args = {
+			predVars : this.state.bins[0].items.map(selector),
+			depVar : selector(this.state.bins[1].items[0]),
+			controlGroup : this.state.controlGroup.map(({label}) => label),
+			treatmentGroup : this.state.treatmentGroup.map(({label}) => label),
+			yearOfTreatment : this.state.yearOfTreatment.value
+		}
+		
+		AnalysisActions.diffInDiff(args, result => {
+			this.setState({...this.state, result : result})
 		})
 	}
+
+	buttonDisabled = () => {
+		return(
+			this.state.bins[0].items.length === 0 ||
+			this.state.bins[1].items.length === 0 ||
+			this.state.controlGroup.length === 0 ||
+			this.state.treatmentGroup.length === 0 || 
+			this.state.yearOfTreatment == null
+		)
+	}	
 
 	render(){
 		return(
@@ -126,7 +146,7 @@ class DiffInDiff extends React.Component{
 				    		</div>
 				    		<div class='row'>
 				    			<div class='col-xs-8 col-xs-offset-2'>
-				    				<Button bsStyle='primary'>
+				    				<Button bsStyle='primary' onClick={this.generateModel} disabled={this.buttonDisabled()}>
 				    					Generate Model
 				    				</Button>
 				    			</div>

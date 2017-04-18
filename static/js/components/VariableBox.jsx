@@ -28,11 +28,11 @@ class VariableBox extends React.Component{
 				this.props.items.length == 0 ? 
 				<div 
 					style={{
-						position : 'absolute', 
-						top: '50%', 
-						left : '50%', 
-						transform : 'translate(-50%, -50%)',
-						color : 'white'
+						display : 'flex',
+						justifyContent : 'center',
+						alignItems : 'center',
+						color : 'white',
+						height : '100%'
 					}}
 				>
 					{this.props.label}
