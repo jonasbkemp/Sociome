@@ -90,10 +90,9 @@ class DiffInDiff extends React.Component{
 				    	<div style={{display : 'table-cell', width : '25%', height : '100%', position : 'absolute'}}>
 				    		<DnDFieldMenu 
 				    			noYears={true}
-				    			generateModel={this.generateModel}
 				    			bins={this.state.bins}
 				    		/>
-				    		<div class='row'>
+				    		<div class='row' style={{marginBottom : 10}}>
 				    			<div class='col-xs-10 col-xs-offset-1'>
 						    		<Select
 						    			multi
@@ -105,7 +104,7 @@ class DiffInDiff extends React.Component{
 						    		/>
 					    		</div>
 				    		</div>
-				    		<div class='row'>
+				    		<div class='row' style={{marginBottom : 10}}>
 				    			<div class='col-xs-10 col-xs-offset-1'>
 						    		<Select
 						    			style={{width : '90%'}}
@@ -117,7 +116,7 @@ class DiffInDiff extends React.Component{
 						    		/>
 					    		</div>
 				    		</div>
-				    		<div class='row'>
+				    		<div class='row' style={{marginBottom : 10}}>
 				    			<div class='col-xs-10 col-xs-offset-1'>
 						    		<Select
 						    			placeholder='Year of Treatement'

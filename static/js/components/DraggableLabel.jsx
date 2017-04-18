@@ -39,7 +39,7 @@ class DraggableLabel extends React.Component{
       <div class="container-fluid">
         <div style={styles.fieldContainer} class="row">
           <div class={`col-xs-${this.props.noYears ? 12 : 7} text-center`}>
-            <p>{this.props.label}</p>
+            <p style={{margin : 5}}>{this.props.label}</p>
           </div>
           { 
             this.props.noYears ? null : 
@@ -66,7 +66,6 @@ class DraggableLabel extends React.Component{
 const styles = {
   fieldContainer : {
     display : 'flex',
-    justifyContent : 'center',
     alignItems : 'center',
     borderRadius : 5,
     backgroundColor : 'rgb(121,192,183)',
