@@ -35,12 +35,12 @@ class ExploreBar extends React.Component{
 						<BS.NavDropdown id='dataset-dropdown' onSelect={this.selectDS} title="Dataset">
 						{
 							this.state.datasets.map(ds => 
-								<BS.MenuItem key={ds} eventKey={ds} >{ds}</BS.MenuItem>
+								<BS.MenuItem key={ds.value} eventKey={ds} >{ds.label}</BS.MenuItem>
 							)
 						}
 						</BS.NavDropdown>
 						{
-							this.state.currentDataset === 'Policy' ? 
+							this.state.currentDataset && this.state.currentDataset.value === 'policy' ? 
 								Object.keys(this.state.categories).map(category => 
 									<BS.NavDropdown 
 										style={{fontSize : 11}}

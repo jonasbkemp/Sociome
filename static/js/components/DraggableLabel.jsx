@@ -9,9 +9,10 @@ import {Container} from 'flux/utils'
 
 const fieldSource = {
   beginDrag(props, monitor, component){
+    var ds = DataStore.getState().currentDataset
     return _.extend({}, props, {
       year : component.state.year,
-      dataset : DataStore.getState().currentDataset,
+      dataset : ds && ds.value,
     });
   }
 };

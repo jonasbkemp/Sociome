@@ -12,7 +12,11 @@ class DataStore extends ReduceStore{
 
 	getInitialState(){
 		return {
-			datasets : ['Policy', 'Demographics', 'Health Outcomes'],
+			datasets : [
+				{value : 'policy', label : 'Policy'}, 
+				{value : 'demographics', label : 'Demographics'}, 
+				{value : 'health_outcomes', label : 'Health Outcomes'}
+			],
 			policies : policyCategories,
 			healthOutcomes : healthOutcomesCategories,
 			demographics : demographicCategories,
@@ -33,22 +37,22 @@ class DataStore extends ReduceStore{
 			currentSubCategory : null,
 			fields : []
 		}
-		switch(dataset){
-			case 'Policy':
+		switch(dataset.value){
+			case 'policy':
 				return {
 					...state, 
 					currentDataset : dataset,
 					categories : state.policies,
 					...nulls
 				}
-			case 'Health Outcomes':
+			case 'health_outcomes':
 				return {
 					...state, 
 					currentDataset : dataset,
 					categories : state.healthOutcomes,
 					...nulls
 				}
-			case 'Demographics':
+			case 'demographics':
 				return {
 					...state, 
 					currentDataset : dataset,
@@ -59,21 +63,21 @@ class DataStore extends ReduceStore{
 	}
 
 	setCategory = (state, category) => {
-		switch(state.currentDataset){
-			case 'Policy':
+		switch(state.currentDataset.value){
+			case 'policy':
 				return {
 					...state,
 					currentCategory : category,
 					subCategories : Object.keys(state.policies[category]).map(c => ({value : c, label : c}))
 				}
-			case 'Health Outcomes':
+			case 'health_outcomes':
 				return {
 					...state, 
 					currentCategory : category,
 					subCategories : state.healthOutcomes[category],
 					fields : state.healthOutcomes[category]
 				}
-			case 'Demographics':
+			case 'demographics':
 				return {
 					...state,
 					currentCategory : category,
@@ -84,7 +88,7 @@ class DataStore extends ReduceStore{
 	}
  
  	setSubCategory = (state, category, subCategory) => {
- 		if(state.currentDataset === 'Policy'){
+ 		if(state.currentDataset.value === 'policy'){
  			return {
  				...state, 
  				currentSubCategory : subCategory,
