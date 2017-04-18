@@ -23,20 +23,62 @@ const socket = process.env.SOCK_LOC || path.join(__dirname, 'rserve.sock')
 var db = new pg.Client(config);
 db.connect();
 
-var health_outcomes = {
-  'children_in_poverty' : true
- ,'adult_obesity' : true
- ,'physical_inactivity' : true
- ,'air_pollution_particulate_matter' : true
- ,'unemployment_rate' : true
- ,'sexually_transmitted_infections' : true
- ,'preventable_hospital_stays' : true
- ,'violent_crime_rate' : true
- ,'alcohol_impaired_driving_deaths' : true
- ,'uninsured' : true
- ,'mammography_screening' : true
- ,'premature_death' : true
- ,'diabetic_monitoring' : true
+/**
+ * selectTable - Returns a query that selects `args` from `table`.
+ * This functin is capable of returning functions for both inner
+ * and outer joins.
+ * @param  {string}  table           Which table to select from
+ * @param  {Array}  args             The columns to select
+ * @param  {Boolean} inner           Should this be an inner join? (false for outer join)
+ * @param  {Boolean} includeCounties Should we include counties? (false for no)
+ * @return {String}                  Returns an SQL query
+ */
+function selectTable(table, args, inner = true, includeCounties=true){
+  var cols = ['year', 'statecode']
+  if(table === 'health_outcomes'){
+    cols.push('countycode')
+    cols = cols.concat(args.map(a => `${a.value}->'rawvalue' as ${a.value}`))
+  }else if(table === 'policy'){
+    cols = cols.concat(args.map(a => a.value))
+  }else{
+    cols = cols.concat(['countycode']).concat(args.map(a => a.value))
+  }
+  var whereClause = ` ${(args.map(a => `${a.value} IS NOT NULL `)).join(inner ? ' AND ' : ' OR ')}`
+  if(!includeCounties){
+    whereClause = ` (${whereClause}) AND countycode=0 ` 
+  }
+  return `SELECT ${cols.join(',')} FROM ${table} WHERE ${whereClause}`
+}
+
+/**
+ * mkQuery - Join together a bunch of variables from different
+ * tables
+ * @param  {Array}  params  Which columns to select along with the tables they come from
+ * @param  {Boolean} inner  Inner or outer join?
+ * @return {String}         PostgreSQL query
+ */
+function mkQuery(params, inner=true){
+  var grouped = _.groupBy(params, p => p.dataset)
+  tables = Object.keys(grouped)
+
+  var includeCounties = grouped.policy == null;
+
+  var joinVars = ['year', 'statecode']
+  if(!grouped['policy']){
+    joinVars.push('countycode')
+  }
+
+  var vars = joinVars.concat(params.map(p => p.value))
+
+  var subQuery = `(${selectTable(tables[0], grouped[tables[0]], inner, includeCounties)}) table_0`
+  for(var i = 1; i < tables.length; i++){
+    subQuery += `
+      ${inner ? 'INNER JOIN ' : 'FULL OUTER JOIN'} 
+      (${selectTable(tables[i], grouped[tables[i]], inner, includeCounties)}) table_${i} 
+      USING (${joinVars.join(',')})
+    `
+  }
+  return `SELECT ${vars.join(',')} FROM (${subQuery}) subQ`
 }
 
 /**
@@ -168,7 +210,6 @@ router.get('/Multilevel', function(req, res){
 
 router.post('/LinRegression', function(req, res){
   var params = req.body;
-  params.controls = params.controls ? params.controls : [];
 
   var mkArg = (arg) => {
     var fields = [];
@@ -205,29 +246,71 @@ router.post('/LinRegression', function(req, res){
   })
 })
 
-router.get('/DiffInDiff', function(req, res){
-  var depVar = req.query.depVar
-  var predVars = typeof(req.query.predVars) === 'string' ? [req.query.predVars] : req.query.predVars
-  predVars = predVars.join(',')
-  var treatmentGroup =  typeof(req.query.treatmentGroup) === 'string' ? 
-                        [req.query.treatmentGroup] : 
-                        req.query.treatmentGroup;
-  treatmentGroup = treatmentGroup.join(',')
-  var yearOfTreatment = req.query.yearOfTreatment;
-  var command = `runDiffInDiff(c(${predVars}), ${depVar}, c(${treatmentGroup}), ${yearOfTreatment})`
-  console.log(command)
-  rio.e({
-    command : command,
-    path : socket,
-    callback : function(err, result){
-      if(err){
-        console.log(err)
-        res.status(500).json(err)
-      }else{
-        res.json(result)
-      }
+/*
+Sample input:
+{
+  "predVars": [
+    {
+      "value": "aedspt",
+      "label": "Corrections Expenditures",
+      "dataset": "policy"
+    },
+    {
+      "value": "rpolice",
+      "label": "Police Ratio",
+      "dataset": "policy"
+    },
+    {
+      "value": "percent_persons_25_plus_w_4_plus_yrs_college",
+      "label": "Percent 25+ Years with 4+ Years College",
+      "dataset": "demographics"
     }
-  })
+  ],
+  "depVar": {
+    "value": "air_pollution_particulate_matter",
+    "label": "Air Pollution - Particulate Matter",
+    "dataset": "health_outcomes"
+  },
+  "controlGroup": [
+    "Arkansas",
+    "Delaware",
+    "Florida",
+    "Illinois",
+    "Indiana"
+  ],
+  "treatmentGroup": [
+    "Arizona",
+    "Colorado"
+  ],
+  "yearOfTreatment": 1961
+}
+ */
+
+router.post('/DiffInDiff', function(req, res){
+  var params = req.body
+
+  // var depVar = req.query.depVar
+  // var predVars = typeof(req.query.predVars) === 'string' ? [req.query.predVars] : req.query.predVars
+  // predVars = predVars.join(',')
+  // var treatmentGroup =  typeof(req.query.treatmentGroup) === 'string' ? 
+  //                       [req.query.treatmentGroup] : 
+  //                       req.query.treatmentGroup;
+  // treatmentGroup = treatmentGroup.join(',')
+  // var yearOfTreatment = req.query.yearOfTreatment;
+  // var command = `runDiffInDiff(c(${predVars}), ${depVar}, c(${treatmentGroup}), ${yearOfTreatment})`
+  // console.log(command)
+  // rio.e({
+  //   command : command,
+  //   path : socket,
+  //   callback : function(err, result){
+  //     if(err){
+  //       console.log(err)
+  //       res.status(500).json(err)
+  //     }else{
+  //       res.json(result)
+  //     }
+  //   }
+  // })
 })
 
 router.get('/Synth', function(req, res){
@@ -274,79 +357,7 @@ function nameToTable(field){
 router.post('/CSV', (req, res) => {
   var fields = req.body.fields
 
-  var cols = []
-  var tableSet = {}
-  var containsPolicy = false
-  for(var field of fields){
-    var table = nameToTable(field)
-    tableSet[table] = table
-    if(table === 'health_outcomes'){
-      cols.push({col : `"${table}".${`${field.value}->'rawvalue'`}`, name : field.value})
-    }else{
-      cols.push({col : `"${table}"."${field.value}"`, name : field.value})
-    }
-    if(field.dataset === 'Policy'){
-      containsPolicy = true;
-    }
-  }
-
-  if(_.isEmpty(tableSet)){
-    res.status(500).send('No fields were selected!')
-  }
-
-
-  var yearAndStateCols = {
-    state : [],
-    county : [],
-    statecode : [],
-    countycode : [],
-    year : []
-  }
-
-  for(table in tableSet){
-    yearAndStateCols.state.push(`${table}.state`)
-    yearAndStateCols.county.push(`${table}.county`)
-    yearAndStateCols.statecode.push(`${table}.statecode`)
-    yearAndStateCols.countycode.push(`${table}.countycode`)
-    yearAndStateCols.year.push(`${table}.year`)
-  }
-
-  if(containsPolicy){
-    delete yearAndStateCols.county
-    delete yearAndStateCols.countycode
-  }
-
-  yearAndStateCols = Object.keys(yearAndStateCols).map(key => 
-    `COALESCE(${yearAndStateCols[key].join(',')}, NULL) as ${key}`
-  ).join(',')
-
-  function mkSelectFrom(table){
-    switch(table){
-      case 'demographics':
-        return containsPolicy ? '(SELECT * FROM demographics WHERE countycode=0)demographics' : 'demographics'
-      case 'health_outcomes':
-        return containsPolicy ? '(SELECT * FROM health_outcomes WHERE countycode=0)health_outcomes' : 'health_outcomes'
-      default:
-        return table
-    }
-  }
-
-  var tables = Object.keys(tableSet)
-  var selectFrom = mkSelectFrom(tables[0])
-  for(var i = 1; i < tables.length; i++){
-    selectFrom += ` FULL OUTER JOIN ${mkSelectFrom(tables[i])} USING (year,statecode,countycode) `
-  } 
-
-  var query = `
-    SELECT * FROM(
-      SELECT 
-        ${yearAndStateCols},
-        ${cols.map(c => `${c.col} as ${c.name}`).join(',')}
-      FROM ${selectFrom}
-      WHERE ${cols.map(c => `${c.col} IS NOT NULL`).join(' OR ')}
-    ) subQuery
-    ORDER BY subQuery.year, subQuery.statecode ${containsPolicy ? '' : ', subQuery.countycode'}
-  `
+  var query = mkQuery(fields, false)
 
   console.log(query)
 
@@ -365,12 +376,6 @@ router.post('/CSV', (req, res) => {
     }
   })
 
-})
-
-// Openshift puts the app to sleep after 24 hours of innactivity.
-// Continually ping the server to keep it awake...
-router.get('/Wakeup', function(req, res){
-  res.json({success : true})
 })
 
 module.exports = router
