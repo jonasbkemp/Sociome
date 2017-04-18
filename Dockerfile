@@ -12,30 +12,20 @@ RUN apt-get install -y software-properties-common apt-transport-https && \
 	add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/' && \
 	curl -sL https://deb.nodesource.com/setup_7.x | bash - && \
 	apt-get update && \
-	apt-get install -y r-base nodejs
+	apt-get install -y r-base nodejs sudo
 
 # Install necessary R packages
 ADD backend/R-scripts/InstallPackages.r /
 RUN Rscript /InstallPackages.r
 
-# Create the root database
-USER postgres
-RUN /etc/init.d/postgresql start &&\
-    psql --command "CREATE USER root WITH SUPERUSER CREATEDB CREATEROLE REPLICATION BYPASSRLS PASSWORD 'root';" &&\
-    createdb root
-
-USER root
-
 RUN mkdir /app && printf "SOCK_LOCK=/rserve.sock\nDB_USER=root\nDB_PASSWORD=root" > /app/.env
 
-COPY . .
+COPY . /src
 
+WORKDIR /src
 
-RUN /etc/init.d/postgresql start && \
-	./create_db.sh
-
-RUN npm install --production
+RUN npm install
 
 EXPOSE 8080
 
-CMD service postgresql start && PORT=8080 npm start
+CMD ./start.sh
