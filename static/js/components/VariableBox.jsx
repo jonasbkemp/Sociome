@@ -7,7 +7,7 @@ class VariableBox extends React.Component{
 			<div 
 				style={_.extend(this.props.style, {
 					height : '12rem',
-					width : '18rem',
+					width : '100%',
 					backgroundColor : 'rgb(204,204,204)',
 					overflow : 'scroll',
 					borderRadius : 20,
@@ -19,7 +19,7 @@ class VariableBox extends React.Component{
 				this.props.items.map(i => 
 					<div key={i.value} style={{marginLeft : 5}}>
 						<p>
-							{i.label} ({i.year})
+							{i.label} {this.props.noYears ? '' : `(${i.year})`}
 						</p>
 					</div>
 				)

@@ -20,9 +20,9 @@ class DnDFieldMenu extends React.Component{
 
 	render(){
 		return(
-			<div class='container-fluid' style={{marginTop : 50}}>
+			<div style={{marginTop : 50}}>
 				<div class='row'>
-					<div class="col-xs-11 col-xs-offset-1">
+					<div class="col-xs-10 col-xs-offset-1">
 					{
 						this.state.fields.map((f, i) => 
 							<DraggableLabel
@@ -36,12 +36,13 @@ class DnDFieldMenu extends React.Component{
 					</div>
 				</div>
 				<div class='row'>
-					<div class="col-xs-11 col-xs-offset-1">
+					<div class="col-xs-10 col-xs-offset-1">
 					{
 						this.props.bins.map((b, i) => 
 							<VariableBox
 								key={i}
 								{...b}
+								noYears={this.props.noYears}
 								style={{marginBottom : 10}}
 							/>
 						)

@@ -84,7 +84,7 @@ class DiffInDiff extends React.Component{
 
 	render(){
 		return(
-			<div style={{width : "100%", height : '100%', overflow: "hidden"}}>
+			<div style={{width : "100%", height : '100%', overflow: "hidden"}} class='container-fluid'>
 				<div style={{width : '100%', display : 'table', height : '100%'}}>
 				    <div style={{display : 'table-row'}}>
 				    	<div style={{display : 'table-cell', width : '25%', height : '100%', position : 'absolute'}}>
@@ -99,7 +99,6 @@ class DiffInDiff extends React.Component{
 						    			placeholder='Treatment Group'
 						    			value={this.state.treatmentGroup}
 						    			onChange={states => this.setState({...this.state, treatmentGroup : states})}
-						    			style={{width : '90%'}}
 						    			options={this.states}
 						    		/>
 					    		</div>
@@ -107,7 +106,6 @@ class DiffInDiff extends React.Component{
 				    		<div class='row' style={{marginBottom : 10}}>
 				    			<div class='col-xs-10 col-xs-offset-1'>
 						    		<Select
-						    			style={{width : '90%'}}
 						    			options={this.states}
 						    			multi
 						    			placeholder='Control Group'
@@ -120,7 +118,6 @@ class DiffInDiff extends React.Component{
 				    			<div class='col-xs-10 col-xs-offset-1'>
 						    		<Select
 						    			placeholder='Year of Treatement'
-						    			style={{width : '90%'}}
 						    			options={this.state.minYear && _.range(this.state.minYear, this.state.maxYear).map(y => ({label : y, value:  y}))}
 						    			value={this.state.yearOfTreatment}
 						    			onChange={item => this.setState({...this.state, yearOfTreatment : item})}
