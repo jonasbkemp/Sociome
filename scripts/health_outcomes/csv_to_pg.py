@@ -45,7 +45,9 @@ for measure, in res:
                     'differflag', differflag,
                     'trendbreak', trendbreak
                 ) AS %(col_name)s FROM health_outcomes_temp
-                    WHERE lower(measurename)='%(measurename)s'
+                    WHERE 
+                        lower(measurename)='%(measurename)s' AND
+                        rawvalue IS NOT NULL
             )s USING (year, statecode, countycode)
         )
     """ % {
