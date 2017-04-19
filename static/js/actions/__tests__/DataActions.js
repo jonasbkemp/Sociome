@@ -40,11 +40,11 @@ describe('DataStore', () => {
   it('Goes through Policy hierarchy', () => {
     server.respondWith(
       'GET',
-      /\/PolicyData.*/,
+      /\/Data.*/,
       [200, {'Content-Type' : 'application/json'}, '[]']
     )
 
-    var stub = sinon.stub(DataStore, 'setNewData', state => state)
+    var stub = sinon.stub(DataStore, 'setNewData').callsFake(state => state)
     expect(DataStore.getState().currentDataset).toBeNull()
     DataActions.setDataset({label : 'Policy', value : 'policy'})
     expect(DataStore.getState().currentDataset.label).toBe('Policy')
@@ -59,10 +59,10 @@ describe('DataStore', () => {
   it('Goes through Health Outcomes hierarchy', () => {
     server.respondWith(
       'GET',
-      /\/HealthOutcomes*/,
+      /\/Data*/,
       [200, {'Content-Type' : 'application/json'}, '[]']
     )
-    var stub = sinon.stub(DataStore, 'setNewData', state => state)
+    var stub = sinon.stub(DataStore, 'setNewData').callsFake(state => state)
 
     expect(DataStore.getState().currentDataset).toBeNull()
     DataActions.setDataset({value : 'health_outcomes', label : 'Health Outcomes'})
@@ -76,10 +76,10 @@ describe('DataStore', () => {
   it('Goes through Demographics hierarchy', () => {
     server.respondWith(
       'GET',
-      /\/Demographics*/,
+      /\/Data*/,
       [200, {'Content-Type' : 'application/json'}, '[]']
     )
-    var stub = sinon.stub(DataStore, 'setNewData', state => state)
+    var stub = sinon.stub(DataStore, 'setNewData').callsFake(state => state)
 
     expect(DataStore.getState().currentDataset).toBeNull()
     DataActions.setDataset({label : 'Demographics', value : 'demographics'})
@@ -93,7 +93,7 @@ describe('DataStore', () => {
   it('Changes years', () => {
     server.respondWith(
       'GET',
-      /\/Demographics*/,
+      /\/Data*/,
       [200, {'Content-Type' : 'application/json'}, JSON.stringify(
         [{year : 2000}, {year : 2001}]
       )]
@@ -112,7 +112,7 @@ describe('DataStore', () => {
   it('(setLastCategory) responds to errors', () => {
     server.respondWith(
       'GET',
-      /\/Demographics*/,
+      /\/Data*/,
       [400, {'Content-Type' : 'application/json'}, '400 error']
     )
 
