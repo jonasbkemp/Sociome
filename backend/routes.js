@@ -128,7 +128,7 @@ router.post('/LinRegression', function(req, res){
     return `list(${fields.join(',')})`;
   }
 
-  var controls = params.controls.map(mkArg)
+  var controls = params.controls ? params.controls.map(mkArg) : []
 
   var cmd = `
     runRegression(

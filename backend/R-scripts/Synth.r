@@ -268,15 +268,15 @@ testSynth2 <- function(){
 }
 
 getData <- function(name, args, conn){
-	if(args['dataset'] == 'Health Outcomes'){
+	if(args['dataset'] == 'health_outcomes'){
 		query <- paste('SELECT ', args['value'], '->\'rawvalue\' as ', name, ' FROM health_outcomes WHERE year=', args['year'], ' AND countycode=0 AND statecode>0 AND statecode <= 56 AND statecode != 11 ORDER BY statecode', sep='');
 		data <- dbGetQuery(conn, query)
 		data[, name] <- as.numeric(data[,name])
 		return(data);
-	}else if(args['dataset'] == 'Demographics'){
+	}else if(args['dataset'] == 'demographics'){
 		query <- paste('SELECT ', args['value'], ' as ', name, ' FROM demographics WHERE year=', args['year'], ' AND countycode=0 AND statecode <= 56 AND statecode != 11 ORDER BY statecode', sep='');
 		return(dbGetQuery(conn, query))
-	}else if(args['dataset'] == 'Policy'){
+	}else if(args['dataset'] == 'policy'){
 		query <- paste('SELECT ', args['value'], ' as ', name, ' FROM ', args['table'], ' WHERE year=', args['year'], ' ORDER BY state', sep='');
 		return(dbGetQuery(conn, query))
 	}
@@ -318,61 +318,30 @@ runRegression <- function(dependent, independent, controls){
 
 
 testRegression <- function(){
+
+	runRegression(
+       list(type='field',table='a_fiscal_11',value='agpbspt',label='Public Buildings Expenditures',year='1957',dataset='policy'), 
+       list(type='field',table='a_fiscal_11',value='asanspt',label='Sanitation Expenditures',year='1957',dataset='policy'), 
+       list()
+    )
+
+	# controls = list()
 	# dependent <- list(
 	# 	type = 'field',
-	# 	table = 'a_fiscal_11',
-	# 	value = 'anrspt',
-	# 	label = 'natural resources expenditures',
-	# 	year = '1957',
-	# 	dataset = 'Policy'
- # #  	)
- # 	dependent <- list(
- # 		type='field',
- # 		dataset='Health Outcomes',
- # 		label='Uninsured',
- # 		value='uninsured',
- # 		year='2006'
- # 	)
+ #       	value = 'adult_obesity',
+ #       	label = 'Adult Obesity',
+ #       	year = '2004',
+ #       	dataset = 'Health Outcomes'
+	# )
 	# independent <- list(
 	# 	type = 'field',
- #  		value = 'population_female',
- #  		label = 'Population Female',
- #  		year = '2001',
- #  		dataset = 'Demographics'
+	# 	label = "Sexually Transmitted Infections",
+	# 	value = 'sexually_transmitted_infections',
+	# 	year = 2007,
+	# 	dataset = 'Health Outcomes'
 	# )
-	# controls <- list(
-	# 	list(
-	# 		type = 'field',
-	# 	    value = 'preventable_hospital_stays',
-	# 	    label = 'Preventable Hospital Stays',
-	# 	    year = '2004',
-	# 	    dataset = 'Health Outcomes'
-	# 	),
-	# 	list(
-	# 		type = 'field',
-	#        	value = 'adult_obesity',
-	#        	label = 'Adult Obesity',
-	#        	year = '2004',
-	#        	dataset = 'Health Outcomes'
-	# 	)
-	# )
-	controls = list()
-	dependent <- list(
-		type = 'field',
-       	value = 'adult_obesity',
-       	label = 'Adult Obesity',
-       	year = '2004',
-       	dataset = 'Health Outcomes'
-	)
-	independent <- list(
-		type = 'field',
-		label = "Sexually Transmitted Infections",
-		value = 'sexually_transmitted_infections',
-		year = 2007,
-		dataset = 'Health Outcomes'
-	)
 
-	runRegression(dependent, independent, controls)
+	# runRegression(dependent, independent, controls)
 }
 
 
