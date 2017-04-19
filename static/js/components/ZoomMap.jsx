@@ -69,67 +69,68 @@ export class ZoomMap extends Component{
     		return res;
     	}, {data : {}, min : Number.MAX_VALUE, max : Number.MIN_VALUE});
 
-    	console.log([min, max])
-
     	var heatmap = d3.scaleLinear()
 			    	.domain([min, max])
 				    .interpolate(d3.interpolateRgb)
 				    .range(["#EFEFFF","#02386F"])
 
-		this.counties.style('fill', function(d){
-			var county = d.id % 1000
-			var state = Math.floor(d.id / 1000)
-			if(data[state] && data[state][county]){
-				return heatmap(data[state][county].value)
-			}
-		}).on('mousemove', (d, i, children) => {
-            var mouse = d3.mouse(document.body);
-            var county = d.id % 1000
-			var state = Math.floor(d.id / 1000)
-			if(data[state] && data[state][county]){
-				var value = data[state][county].value
-	            this.tooltip.classed('hidden', false)
-	                .attr('style', 'left:' + (mouse[0] + 15) +
-	                        'px; top:' + (mouse[1] - 35) + 'px')
-	                .html(`<b>${getStateInfo(state).state}</b><br/><b>${data[state][county].state}</b><br/>Value: ${value}`)
-			}
-        })
-        .on('mouseout', () => {
-        	this.tooltip.classed('hidden', true)
-        })
+  		this.counties.style('fill', function(d){
+  			var county = d.id % 1000
+  			var state = Math.floor(d.id / 1000)
+  			if(data[state] && data[state][county]){
+  				return heatmap(data[state][county].value)
+  			}
+  		}).on('mousemove', (d, i, children) => {
+        var mouse = d3.mouse(document.body);
+        var county = d.id % 1000
+  			var state = Math.floor(d.id / 1000)
+  			if(data[state] && data[state][county]){
+  				var value = data[state][county].value
+          this.tooltip.classed('hidden', false)
+            .attr('style', 'left:' + (mouse[0] + 15) +
+                    'px; top:' + (mouse[1] - 35) + 'px')
+            .html(`
+              <b>${getStateInfo(state).state}</b><br/>
+              <b>${data[state][county].county}</b><br/>
+              Value: ${value}`)
+  			}
+      })
+      .on('mouseout', () => {
+      	this.tooltip.classed('hidden', true)
+      })
     }
 
     updateStates = () => {
     	var {stateData, min, max} = _.reduce(this.props.data, (res, d) => {
-    		res.stateData[d.state] = d;
+    		res.stateData[d.statecode] = d;
     		res.min = Math.min(res.min, d.value);
     		res.max = Math.max(res.max, d.value);
     		return res;
     	}, {stateData : {}, min : Number.MAX_VALUE, max : Number.MIN_VALUE});
 
-		var heatmap = d3.scaleLinear()
-	    	.domain([min, max])
-		    .interpolate(d3.interpolateRgb)
-		    .range(["#EFEFFF","#02386F"])
+  		var heatmap = d3.scaleLinear()
+  	    	.domain([min, max])
+  		    .interpolate(d3.interpolateRgb)
+  		    .range(["#EFEFFF","#02386F"])
 
-		this.states.style('fill', (d) => {
-			if(d.id > 56)
-				return
-			var currentState = stateData[getStateInfo(d.id).state]
-			if(currentState){
-				return heatmap(currentState.value)
-			}
-		}).on('mousemove', (d) => {
-            var mouse = d3.mouse(document.body);
-            var currentState = stateData[getStateInfo(d.id).state];
-            var value = currentState ? currentState.value : 'Missing Data';
-            this.tooltip.classed('hidden', false)
-                .attr('style', 'left:' + (mouse[0] + 15) +
-                        'px; top:' + (mouse[1] - 35) + 'px')
-                .html(getStateInfo(d.id).state + '<br/>Value: ' + value);
-        }).on('mouseout', () => {
-        	this.tooltip.classed('hidden', true)
-        })
+  		this.states.style('fill', (d) => {
+  			if(d.id > 56)
+  				return
+  			var currentState = stateData[d.id]
+  			if(currentState){
+  				return heatmap(currentState.value)
+  			}
+  		}).on('mousemove', (d) => {
+        var mouse = d3.mouse(document.body);
+        var currentState = stateData[d.id];
+        var value = currentState ? currentState.value : 'Missing Data';
+        this.tooltip.classed('hidden', false)
+            .attr('style', 'left:' + (mouse[0] + 15) +
+                    'px; top:' + (mouse[1] - 35) + 'px')
+            .html(getStateInfo(d.id).state + '<br/>Value: ' + value);
+      }).on('mouseout', () => {
+      	this.tooltip.classed('hidden', true)
+      })
     }
 
 	drawMap = () => {

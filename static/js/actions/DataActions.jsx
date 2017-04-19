@@ -25,20 +25,7 @@ export function setSubCategory(category, subCategory){
 }
 
 export function setLastCategory(category){
-	var url;
-	switch(DataStore.getState().currentDataset.value){
-		case 'policy':
-			url = `/PolicyData?policy=${category.table}&field=${category.value}`
-			break;
-		case 'health_outcomes':
-			url = `/HealthOutcomes?measure_name=${category.value}`
-			break;
-		case 'demographics':
-			url = `/Demographics?col=${category.value}`
-			break;
-		default:
-			throw new Error('Unrecognized dataset!')
-	}
+	const url = `/Data/${DataStore.getState().currentDataset.value}/${category.value}`
 	dispatcher.dispatch({
 		type : 'FETCH_DATA_START'
 	})

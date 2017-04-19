@@ -86,81 +86,33 @@ function mkQuery(params, inner=true){
 }
 
 /**
- * Get the policy data for a specific field.  The year
- * parameter is optional.  If it is not provided, then all 
- * data points will be returned ordered by year
- * @param  {String} policy - The policy to select (table)
- * @param  {String} field - The policy field (column)
- * @param  {Integer} year - Which year to select for
- * @return {Array<{state : String, year : Integer, value : Float}>}
+ * Fetch a datapoint from the DB
+ * @param  {String}   table - The table to select from
+ * @param {String} col - The column to select
+ * @param {Number} year - The year to select (optional).  If this is
+ *                      not specified, then we select all years ordered chronologically
+ * @return {Array} - The selected column along with the state and year
  */
-router.get('/PolicyData', function(req, res){
-  var table = req.query.policy
-  var field = req.query.field
-  var yearClause = req.query.year ? `AND year=${req.query.year}` : `ORDER BY year`
+router.get('/Data/:table/:col/:year?', function(req, res){
+  var col;
+  var yearClause = req.params.year ? `AND year=${req.params.year}` : `ORDER BY year`
+  if(req.params.table === 'health_outcomes'){
+    col = `${req.params.col}->'rawvalue' as value`
+  }else{
+    col = `${req.params.col} as value`
+  }
   var query = `
-    SELECT state, year, ${field} as value 
-    FROM ${table} 
-    WHERE ${field} IS NOT NULL ${yearClause};`
-
-  db.query(query).then(data => {
-    res.json(data.rows)
-  }).catch(err => {
-    res.status(500).send(err)
-  })
-})
-
-/**
-/* Get a column out of the demographics table.  `year` is 
- * optional.  If not provided, all years are returned ordered by year
- * @param  {String} col - Which demographics column to select
- * @param  {Integer} year - Which year to select for
- * @return {Array<Object>}
- */
-router.get('/Demographics', function(req, res){
-  var col = req.query.col;
-  var yearClause = req.query.year ? `AND year=${req.query.year}` : `ORDER BY year`;
-
-  var query = `
-    SELECT 
-      year, 
-      state, 
-      ${col} as value, 
-      statecode as statecode, 
-      countycode as countycode 
-    FROM demographics 
-    WHERE ${col} IS NOT NULL ${yearClause};`;
-  db.query(query).then(data => {
-    res.json(data.rows)
-  }).catch(err => {
-    res.status(500).send(err)
-  })
-})
-
-/**
- * Get a column out of the Health Outcomes table.
- * 
- * @param  {String} measure_name - Which measure to select
- * @param  {Integer} year - Which year to select for
- * @return {Array<Object>}
- */
-router.get('/HealthOutcomes', function(req, res){
-  var measure_name = req.query.measure_name;
-  var yearClause = req.query.year ? `AND year=${req.query.year}` : `ORDER BY year`;
-  var query = `
-    SELECT 
-      year, 
-      county as state, 
-      ${measure_name}->'rawvalue' as value,
-      countycode, 
-      statecode 
-    FROM health_outcomes 
-    WHERE ${measure_name} IS NOT NULL ${yearClause};`;
-  db.query(query).then(data => {
-    res.json(data.rows)
-  }).catch(err => {
-    res.status(500).send(err)
-  })
+    SELECT year, statecode, countycode, ${col}, statecodes.county
+    FROM ${req.params.table}
+    LEFT JOIN statecodes USING (statecode, countycode)
+    WHERE ${req.params.col} IS NOT NULL ${yearClause};
+  `
+  db.query(query)
+    .then(data => res.json(data.rows))
+    .catch(err => {
+      console.log(err);
+      res.status(500).send(err)
+    })
 })
 
 router.post('/LinRegression', function(req, res){
@@ -200,46 +152,6 @@ router.post('/LinRegression', function(req, res){
     }
   })
 })
-
-/*
-Sample input:
-{
-  "predVars": [
-    {
-      "value": "aedspt",
-      "label": "Corrections Expenditures",
-      "dataset": "policy"
-    },
-    {
-      "value": "rpolice",
-      "label": "Police Ratio",
-      "dataset": "policy"
-    },
-    {
-      "value": "percent_persons_25_plus_w_4_plus_yrs_college",
-      "label": "Percent 25+ Years with 4+ Years College",
-      "dataset": "demographics"
-    }
-  ],
-  "depVar": {
-    "value": "air_pollution_particulate_matter",
-    "label": "Air Pollution - Particulate Matter",
-    "dataset": "health_outcomes"
-  },
-  "controlGroup": [
-    "Arkansas",
-    "Delaware",
-    "Florida",
-    "Illinois",
-    "Indiana"
-  ],
-  "treatmentGroup": [
-    "Arizona",
-    "Colorado"
-  ],
-  "yearOfTreatment": 1961
-}
- */
 
 router.post('/DiffInDiff', function(req, res){
   var params = req.body
