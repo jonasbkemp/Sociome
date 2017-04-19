@@ -1,7 +1,6 @@
 import React from "react";
-import {Link} from 'react-router';
+import {Link} from 'react-router-dom';
 import * as BS from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
 
 export default class Nav extends React.Component {
     render() {
@@ -23,7 +22,7 @@ export default class Nav extends React.Component {
                 <span style={{display: 'table', position : 'absolute', right : 10, top : 0, height : '100%'}}>
                     <div style={{display : 'table-cell', verticalAlign : 'middle', paddingRight : 10}}>
                         <p style={{...styles.font, fontSize : 16}}>
-                            <Link to="explore">
+                            <Link to="/">
                                 Explore
                             </Link>
                         </p>
@@ -31,7 +30,7 @@ export default class Nav extends React.Component {
 
                     <div style={{display : 'table-cell', verticalAlign : 'middle', paddingRight : 10}}>
                         <p style={{...styles.font, fontSize : 16}}>
-                            <Link to="regression">
+                            <Link to="/regression">
                                 Regression
                             </Link>
                         </p>
@@ -39,7 +38,7 @@ export default class Nav extends React.Component {
 
                     <div style={{display : 'table-cell', verticalAlign : 'middle', paddingRight : 10}}>
                         <p style={{...styles.font, fontSize : 16}}>
-                            <Link to="diff-in-diff">
+                            <Link to="/diff-in-diff">
                                 Diff in Diff
                             </Link>
                         </p>
@@ -47,7 +46,7 @@ export default class Nav extends React.Component {
 
                     <div style={{display : 'table-cell', verticalAlign : 'middle', paddingRight : 10}}>
                         <p style={{...styles.font, fontSize : 16}}>
-                            <Link to="download">
+                            <Link to="/download">
                                 Download
                             </Link>
                         </p>
