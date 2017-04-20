@@ -24,7 +24,8 @@ const initialState = {
   subSubCategories : [],                      // Third level of categories
   fields : [],                                // Last level of categories
   yearIndex : 0,                              //index into the `years array`
-  years : []                                  // years for which `data` is available
+  years : [],                                 // years for which `data` is available
+  yearlyData : []
 }
   
 const setDataset = (state, dataset) => {
@@ -175,7 +176,6 @@ const updateYear = (state, yearIndex) => {
 }
 
 export default (state=initialState, action) => {
-  console.log(action.type)
   switch(action.type){
     case SET_DATASET:
       return setDataset(state, action.payload);

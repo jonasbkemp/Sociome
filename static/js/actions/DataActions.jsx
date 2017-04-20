@@ -1,6 +1,4 @@
 import dispatcher from '../Dispatcher';
-import * as $ from 'jquery'
-import DataStore from '../stores/DataStore'
 import Store from '../Store'
 import {SET_DATASET, SET_CATEGORY, SET_SUB_CATEGORY, FETCH_DATA, CHANGE_YEAR, DOWNLOAD_DATA} from './Types'
 

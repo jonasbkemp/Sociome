@@ -1,5 +1,4 @@
 import React from 'react';
-import DataStore from '../stores/DataStore';
 import * as DataActions from '../actions/DataActions';
 import Select from 'react-select';
 import {Container} from 'flux/utils'

@@ -1,6 +1,5 @@
 import React from 'react';
 import * as BS from 'react-bootstrap';
-import DataStore from '../stores/DataStore';
 import * as DataActions from '../actions/DataActions';
 import {connect} from 'react-redux'
 
