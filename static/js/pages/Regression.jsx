@@ -5,6 +5,7 @@ import update from 'react/lib/update';
 import RegressionResults from '../components/RegressionResults';
 import * as AnalysisActions from '../actions/AnalysisActions'
 import {Button} from 'react-bootstrap'
+import {connect} from 'react-redux'
 
 class Regression extends React.Component{
 	constructor(props){
@@ -50,11 +51,11 @@ class Regression extends React.Component{
 	}
 
 	generateModel = () => {
-		AnalysisActions.linearRegression({
+		this.props.linearRegression({
 			dependent : this.state.bins[0].items[0],
 			independent : this.state.bins[1].items[0],
 			controls : this.state.bins[2].items		
-		}, result => {
+		}).then(result => {
 			this.setState({...this.state, results : result})
 		})
 	}
@@ -98,4 +99,11 @@ class Regression extends React.Component{
 	}
 }
 
-export default Regression;
+const mapStateToProps = state => ({})
+const mapDispatchToProps = dispatch => ({
+	linearRegression : args => dispatch(AnalysisActions.linearRegression(args))
+})
+
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Regression);

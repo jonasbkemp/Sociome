@@ -1,0 +1,12 @@
+export const SET_ERROR = 'SET_ERROR';
+export const CLEAR_ERROR = 'CLEAR_ERROR';
+export const SET_COMPONENT = 'SET_COMPONENT';
+export const CLEAR_COMPONENT = 'CLEAR_COMPONENT';
+export const SET_DATASET = 'SET_DATASET';
+export const SET_SUB_CATEGORY = 'SET_SUB_CATEGORY';
+export const SET_CATEGORY = 'SET_CATEGORY';
+export const FETCH_DATA = 'FETCH_DATA'
+export const CHANGE_YEAR = 'CHANGE_YEAR';
+export const DOWNLOAD_DATA = 'DOWNLOAD_DATA'
+export const LINEAR_REGRESSION = 'LINEAR_REGRESSION'
+export const DIFF_IN_DIFF = 'DIFF_IN_DIFF'

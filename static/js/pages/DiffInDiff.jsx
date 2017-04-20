@@ -3,12 +3,12 @@ import ExploreBar from '../components/ExploreBar';
 import DnDFieldMenu from '../components/DnDFieldMenu';
 import update from 'react/lib/update';
 import DiffInDiffResults from '../components/DiffInDiffResults';
-import dispatcher from '../Dispatcher'
 import * as AnalysisActions from '../actions/AnalysisActions'
 import Select from 'react-select'
 import {states as States} from '../data/StateCodes';
 import {Button} from 'react-bootstrap'
 import * as _ from 'lodash'
+import {connect} from 'react-redux'
 
 class DiffInDiff extends React.Component{
 	constructor(props){
@@ -87,9 +87,10 @@ class DiffInDiff extends React.Component{
 			yearOfTreatment : this.state.yearOfTreatment.value
 		}
 		
-		AnalysisActions.diffInDiff(args, results => {
-			this.setState({...this.state, results : results})
-		})
+		this.props.diffInDiff(args)
+			.then(results => {
+				this.setState({...this.state, results : results})
+			})
 	}
 
 	buttonDisabled = () => {
@@ -166,4 +167,9 @@ class DiffInDiff extends React.Component{
 	}
 }
 
-export default DiffInDiff;
+const mapStateToProps = state => ({})
+const mapDispatchToProps = dispatch => ({
+	diffInDiff : args => dispatch(AnalysisActions.diffInDiff(args))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(DiffInDiff);

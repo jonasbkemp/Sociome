@@ -1,12 +1,11 @@
 import React from 'react';
 import {DropTarget} from 'react-dnd';
-import * as _ from 'lodash'
 
 class Dropbox extends React.Component{
   render(){
     return this.props.connectDropTarget(
       <div 
-        style={_.extend({}, styles.container, this.props.style)}
+        style={{...styles.container, ...this.props.style}}
       >
       {
         this.props.items.map(i => 

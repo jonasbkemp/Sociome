@@ -1,9 +1,6 @@
 import React, {Component} from 'react';
 import ExploreBar from '../components/ExploreBar';
 import ZoomMap from '../components/ZoomMap';
-import * as _ from 'lodash';
-import DataStore from '../stores/DataStore';
-import {Container} from 'flux/utils'
 import HTML5Backend from 'react-dnd-html5-backend';
 import {DropTarget, DragDropContext} from 'react-dnd';
 import DraggableLabel from '../components/DraggableLabel'
@@ -11,16 +8,9 @@ import Dropbox from '../components/Dropbox'
 import update from 'immutability-helper'
 import {Button} from 'react-bootstrap'
 import * as DataActions from '../actions/DataActions'
+import {connect} from 'react-redux'
 
 class Download extends Component{
-  static getStores(){
-    return [DataStore]
-  }
-
-  static calculateState(){
-    return {...this.state, ...DataStore.getState()}
-  }
-
   constructor(){
     super();
     this.state = {
@@ -41,7 +31,6 @@ class Download extends Component{
   }
 
   handleDrop = (item) => {
-    console.log(item)
     this.setState(update(this.state, {
       items : {
         $push : [{
@@ -61,11 +50,21 @@ class Download extends Component{
   }
 
   fetchData = () => {
-    DataActions.downloadData(this.state.items)
+    this.props.downloadData(this.state.items)
+      .then(result => {
+        var a = document.createElement('a')
+        a.setAttribute('download', 'data.csv')
+        a.setAttribute('target', '_blank')
+        a.download = 'data.csv'
+        var blob = new Blob([result], {type : 'text/csv'})
+        a.href = window.URL.createObjectURL(blob)
+        a.click()
+      })
+
   }
 
   render(){
-    var fields = this.state.fields.filter(field => this.state.dropped[field.value] == null)
+    var fields = this.props.fields.filter(field => this.state.dropped[field.value] == null)
     return(
       <div class="row" style={{marginTop : 50}}>
         <div class="col-xs-3">
@@ -102,5 +101,12 @@ class Download extends Component{
   }
 }
 
+const mapStateToProps = state => state.data
 
-export default Container.create(Download)
+const mapDispatchToProps = dispatch => ({
+  downloadData : fields => dispatch(DataActions.downloadData(fields))
+})
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Download)
+

@@ -1,30 +1,21 @@
 import React from 'react';
-import * as _ from 'lodash';
 import * as BS from 'react-bootstrap';
 import DataStore from '../stores/DataStore';
 import * as DataActions from '../actions/DataActions';
-import {Container} from 'flux/utils'
+import {connect} from 'react-redux'
 
 class ExploreBar extends React.Component{
-	static getStores(){
-		return [DataStore]
-	}
-
-	static calculateState(){
-		return DataStore.getState()
-	}
-
 	selectDS = dataset => {
-		DataActions.setDataset(dataset);
+		this.props.setDataset(dataset);
 	}
 
 	selectCategory = (event) => {
 		event.target.blur()
-		DataActions.setCategory(event.target.id);
+		this.props.setCategory(event.target.id);
 	}
 
 	selectSubCategory = category => subCategory => {
-		DataActions.setSubCategory(category, subCategory);
+		this.props.setSubCategory(category, subCategory);
 	}
 
 	render(){
@@ -34,14 +25,14 @@ class ExploreBar extends React.Component{
 					<ul class="nav navbar-nav">
 						<BS.NavDropdown id='dataset-dropdown' onSelect={this.selectDS} title="Dataset">
 						{
-							this.state.datasets.map(ds => 
+							this.props.data.datasets.map(ds => 
 								<BS.MenuItem key={ds.value} eventKey={ds} >{ds.label}</BS.MenuItem>
 							)
 						}
 						</BS.NavDropdown>
 						{
-							this.state.currentDataset && this.state.currentDataset.value === 'policy' ? 
-								Object.keys(this.state.categories).map(category => 
+							this.props.data.currentDataset && this.props.data.currentDataset.value === 'policy' ? 
+								Object.keys(this.props.data.categories).map(category => 
 									<BS.NavDropdown 
 										style={{fontSize : 11}}
 										id='policy-dropdown' 
@@ -50,7 +41,7 @@ class ExploreBar extends React.Component{
 										title={category}
 									>
 									{
-										Object.keys(this.state.categories[category]).map(v => 
+										Object.keys(this.props.data.categories[category]).map(v => 
 											<BS.MenuItem key={v} eventKey={v} style={{fontSize : 11}}>
 												{v}
 											</BS.MenuItem>
@@ -58,7 +49,7 @@ class ExploreBar extends React.Component{
 									}
 									</BS.NavDropdown>									
 								) : 
-								Object.keys(this.state.categories).map(category => 
+								Object.keys(this.props.data.categories).map(category => 
 									<BS.MenuItem 
 										style={{fontSize : 11}}
 										key={category}
@@ -76,4 +67,11 @@ class ExploreBar extends React.Component{
 	}
 }
 
-export default Container.create(ExploreBar)
+const mapDispatchToProps = dispatch => ({
+	setDataset : dataset => dispatch(DataActions.setDataset(dataset)),
+	setCategory : category => dispatch(DataActions.setCategory(category)),
+	setSubCategory : (category, subCategory) => dispatch(DataActions.setSubCategory(category, subCategory))
+})
+
+const mapStateToProps = state => ({})
+export default connect(mapStateToProps, mapDispatchToProps)(ExploreBar)

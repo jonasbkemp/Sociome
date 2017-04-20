@@ -1,17 +1,16 @@
 import React from 'react';
 import DataStore from '../stores/DataStore';
-import * as _ from 'lodash';
 import * as DataActions from '../actions/DataActions';
 import Select from 'react-select';
 import {Container} from 'flux/utils'
+import {connect} from 'react-redux'
 
 class FieldMenu extends React.Component{
-	static getStores(){
-		return [DataStore]
-	}
-
-	static calculateState(){
-		return DataStore.getState()
+	constructor(){
+		super();
+		this.state = {
+			highlighted : null
+		}
 	}
 
 	mouseEnter = event => {
@@ -19,31 +18,27 @@ class FieldMenu extends React.Component{
 		while(target.id === ''){
 			target = target.parentNode;
 		}
-		this.setState(_.extend({}, this.state, {highlighted : target.id}));
+		this.setState({...this.state, highlighted : target.id});
 	}
 
 	mouseLeave = event => {
-		this.setState(_.extend({}, this.state, {highlighted : undefined}));
-	}
-
-	click = obj => event => {
-		DataActions.setLastCategory(obj);
+		this.setState({...this.state, highlighted : undefined});
 	}
 
 	changeYear = event => {
 		event.target.blur();
-		DataActions.changeYear(event.target.value);
+		this.props.changeYear(event.target.value);
 	}
 
 	render(){
 		return(
 			<div style={{position : 'relative', top : '20%', width : '100%', marginLeft : 10}}>
 				{
-					this.state.fields.map((f) => {return(
+					this.props.fields.map((f) => {return(
 						<div 
 							onMouseEnter={this.mouseEnter}
 							onMouseLeave={this.mouseLeave}
-							onClick={() => DataActions.setLastCategory(f)}
+							onClick={() => this.props.setLastCategory(f)}
 							key={f.value}
 							id={f.value}
 							style={{width : '100%', display : 'table', paddingBottom : 5, cursor : 'pointer'}}
@@ -67,20 +62,20 @@ class FieldMenu extends React.Component{
 					)
 				}
 				{
-					this.state.fields.length > 0 ? 
+					this.props.fields.length > 0 ? 
 					<div>
 						<div style={{width : '70%', margin : '0 auto', marginTop : 20}}>
 			    			<input
 			    				type="range"
 			    				min={0}
 			    				onChange={this.changeYear}
-			    				max={this.state.years.length - 1}
-			    				value={this.state.yearIndex}
+			    				max={this.props.years.length - 1}
+			    				value={this.props.yearIndex}
 			    			/>
 			    		</div> 
 			    		<div>
 			    			<p style={{fontSize : 18}} class='text-center'>
-			    				Year: {this.state.years[this.state.yearIndex]}
+			    				Year: {this.props.years[this.props.yearIndex]}
 			    			</p>
 			    		</div>
 			    	</div> : null
@@ -90,7 +85,13 @@ class FieldMenu extends React.Component{
 	}
 }
 
-export default Container.create(FieldMenu)
+const mapStateToProps = state => state.data
+const mapDispatchToProps = dispatch => ({
+	setLastCategory : field => dispatch(DataActions.setLastCategory(field)),
+	changeYear : year => dispatch(DataActions.changeYear(year))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(FieldMenu)
 
 const styles = {
 	text : {

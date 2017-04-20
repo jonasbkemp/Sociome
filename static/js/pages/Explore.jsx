@@ -1,22 +1,9 @@
 import React, {Component} from 'react';
-import ExploreBar from '../components/ExploreBar';
 import ZoomMap from '../components/ZoomMap';
-import * as _ from 'lodash';
 import FieldMenu from '../components/FieldMenu';
-import DataStore from '../stores/DataStore';
-import {Container} from 'flux/utils'
+import {connect} from 'react-redux'
 
 class Explore extends Component{
-	static getStores(){
-		return [DataStore]
-	}
-
-	static calculateState(){
-		return {
-			data : DataStore.getState().yearlyData
-		}
-	}
-
 	render(){
 		return(
 			<div style={{width : "100%", height : '100%', overflow: "hidden"}}>
@@ -29,8 +16,8 @@ class Explore extends Component{
 				    		<div style={{width : '100%'}}>
 					    		<ZoomMap 
 					    			style={{width : '100%'}}
-					    			data={this.state.data} 
-					    			dataset={this.state.data && this.state.data.length > 100 ? 'health-outcomes' : 'policy'}
+					    			data={this.props.data} 
+					    			dataset={this.props.data && this.props.data.length > 100 ? 'health-outcomes' : 'policy'}
 					    		/>
 				    		</div>
 				    	</div>
@@ -41,4 +28,10 @@ class Explore extends Component{
 	}
 }
 
-export default Container.create(Explore)
+const mapStateToProps = state => ({
+	data : state.data.yearlyData
+})
+
+const mapDispatchToProps = dispatch => ({})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Explore)

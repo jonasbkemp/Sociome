@@ -1,19 +1,16 @@
 import React from 'react';
 import {DragSource} from 'react-dnd';
-import DataStore from '../stores/DataStore';
-import * as _ from 'lodash';
-import * as DataActions from '../actions/DataActions';
 import Select from 'react-select';
-import {Button} from 'react-bootstrap';
-import {Container} from 'flux/utils'
+import Store from '../Store'
 
 const fieldSource = {
   beginDrag(props, monitor, component){
-    var ds = DataStore.getState().currentDataset
-    return _.extend({}, props, {
+    var ds = Store.getState().data.currentDataset
+    return {
+      ...props,
       year : component.state.year,
       dataset : ds && ds.value,
-    });
+    };
   }
 };
 
@@ -32,7 +29,7 @@ class DraggableLabel extends React.Component{
   }
 
   changeYear = (option) => {
-    this.setState(_.extend({}, this.state, {year : option.value}))
+    this.setState({...this.state, year : option.value})
   }
 
   render(){

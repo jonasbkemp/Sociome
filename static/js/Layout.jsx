@@ -8,18 +8,9 @@ import {Alert} from 'react-bootstrap'
 import HTML5Backend from 'react-dnd-html5-backend';
 import {DragDropContext} from 'react-dnd';
 import PagesStore from './stores/PagesStore'
+import {connect} from 'react-redux'
 
 class Layout extends React.Component {
-  static getStores(){
-    return [ErrorStore, PagesStore]
-  }
-  static calculateState(){
-    return{
-      msg : ErrorStore.getState().msg,
-      popup : PagesStore.getState().popup
-    }
-  }
-
   handleAlertDismiss(){
     ErrorActions.clearError()
   }
@@ -29,19 +20,19 @@ class Layout extends React.Component {
       <div style={{height : '100%', width : '100%'}}>
         <Nav style={{height : '88px'}}/>
         <div style={{position : 'absolute', top : '88px', bottom : 0, width : '100%'}}>
-          <ExploreBar style={{height : '60px'}}/>
-          {this.state.msg ?
+          <ExploreBar data={this.props.data} style={{height : '60px'}}/>
+          {this.props.msg ?
             <Alert bsStyle='danger' onDismiss={this.handleAlertDismiss} style={{marginBottom: 0}}>
-              <strong><p class='text-center'> {this.state.msg} </p></strong>
+              <strong><p class='text-center'> {this.props.msg} </p></strong>
             </Alert> : null
           }
           {
-            this.state.popup ? 
+            this.props.popup ? 
               <div style={{position : 'absolute', top : 0, bottom : 0, left : 0, right : 0}}>
                 <div style={styles.background}>
                 </div>
                 <div style={{zIndex : 40, height : '100%', width : '100%', display : 'flex', alignItems : 'center', justifyContent : 'center'}}>
-                  {this.state.popup.component}
+                  {this.props.popup.component}
                 </div>
               </div> : null
           }
@@ -64,4 +55,21 @@ const styles = {
   }
 }
 
-export default DragDropContext(HTML5Backend)(Container.create(Layout));
+const mapStateToProps = state => ({
+  msg : state.error.msg,
+  popup : state.pages.popup,
+  data : state.data
+})
+
+const mapDispatchToProps = dispatch => ({})
+
+const connected = connect(mapStateToProps, mapDispatchToProps)(Layout)
+
+export default DragDropContext(HTML5Backend)(connected);
+
+
+
+
+
+
+

@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import Select from 'react-select';
 import {topoJsonStore} from '../stores/TopoJsonStore';
 import {getStateInfo} from '../data/StateCodes';
 import Dimensions from 'react-dimensions';

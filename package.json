@@ -48,18 +48,22 @@
     "react-dnd": "^2.2.4",
     "react-dnd-html5-backend": "^2.2.4",
     "react-dom": "^15.4.2",
+    "react-redux": "^5.0.4",
     "react-router": "^4.1.1",
     "react-router-dom": "^4.1.1",
     "react-select": "^1.0.0-rc.3",
     "react-spinkit": "^2.1.1",
     "recharts": "^0.22.2",
+    "redux": "^3.6.0",
+    "redux-logger": "^3.0.1",
     "request": "^2.80.0",
     "rimraf": "^2.6.1",
     "rio": "^2.4.1",
     "style-loader": "^0.16.1",
     "topojson": "^3.0.0",
     "transform-loader": "^0.2.4",
-    "webpack": "^2.2.1"
+    "webpack": "^2.2.1",
+    "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {
     "babel-jest": "^19.0.0",

@@ -1,85 +1,49 @@
 import dispatcher from '../Dispatcher';
 import * as $ from 'jquery'
 import DataStore from '../stores/DataStore'
+import Store from '../Store'
+import {SET_DATASET, SET_CATEGORY, SET_SUB_CATEGORY, FETCH_DATA, CHANGE_YEAR, DOWNLOAD_DATA} from './Types'
 
-export function setDataset(dataset){
-	dispatcher.dispatch({
-		type: 'SET_DATASET',
-		dataset : dataset
-	})
-}
+export const setDataset = dataset => ({
+	type : SET_DATASET,
+	payload : dataset
+})
 
-export function setCategory(category){
-	dispatcher.dispatch({
-		type : 'SET_CATEGORY',
-		category : category
-	})
-}
+export const setCategory = category => ({
+	type : SET_CATEGORY,
+	payload : category
+})
 
-export function setSubCategory(category, subCategory){
-	dispatcher.dispatch({
-		type : 'SET_SUB_CATEGORY',
-		subCategory : subCategory,
-		category : category
-	})
-}
+export const setSubCategory = (category, subCategory) => ({
+	type : SET_SUB_CATEGORY,
+	payload : {
+		category,
+		subCategory
+	}
+})
 
-export function setLastCategory(category){
-	const url = `/Data/${DataStore.getState().currentDataset.value}/${category.value}`
-	dispatcher.dispatch({
-		type : 'FETCH_DATA_START'
-	})
-	$.get(url).done(data => {
-		dispatcher.dispatch({
-			type : 'FETCH_DATA_DONE',
-			data : data
-		})
-	}).fail(err => {
-		dispatcher.dispatch({
-			type : 'SET_ERROR',
-			msg : err.responseText
-		})
-	})
-}
+export const setLastCategory = category => ({
+	type : FETCH_DATA,
+	payload : {
+		method : 'GET',
+		url : `/Data/${Store.getState().data.currentDataset.value}/${category.value}`
+	},
+	meta : 'API'
+})
 
-export function changeYear(year){
-	dispatcher.dispatch({
-		type : 'CHANGE_YEAR',
-		year : year
-	})
-}
+export const changeYear = year => ({
+	type : CHANGE_YEAR,
+	payload : year
+})
 
-/**
- * Submit a POST request to the server.  Should respond with a .csv file with 
- * the appropriate data fields in it
- * 
- * @param  {Array<Object>} fields - Array of fields to be included in the CSV
- * @return null        
- */
-export function downloadData(fields){
-	dispatcher.dispatch({
-		type : 'DOWNLOAD_DATA_START'
-	})
-	$.post(`/CSV`, {fields : fields})
-		.done((result, textStatus, request) => {
-			var a = document.createElement('a')
-			a.setAttribute('download', 'data.csv')
-			a.setAttribute('target', '_blank')
-			a.download = 'data.csv'
-			var blob = new Blob([result], {type : 'text/csv'})
-			a.href = window.URL.createObjectURL(blob)
-			dispatcher.dispatch({
-				type : 'DOWNLOAD_DATA_DONE'
-			})
-			a.click()
-		})
-		.fail(err => {
-			dispatcher.dispatch({
-				type : 'SET_ERROR',
-				msg : err.responseText
-			})
-		})
-}
-
-
-
+export const downloadData = fields => ({
+	type : DOWNLOAD_DATA,
+	payload : {
+		method : 'POST',
+		url : '/CSV',
+		body : {
+			fields : fields
+		}
+	},
+	meta : 'API'
+})
