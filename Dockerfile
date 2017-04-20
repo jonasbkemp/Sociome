@@ -1,24 +1,9 @@
-FROM ubuntu:16.04
+FROM ml9951/sociome-base:latest
 
-MAINTAINER matthew.le@mssm.edu
-
-RUN apt-get update -y
-
-RUN apt-get install -y postgresql postgresql-contrib libpq-dev ed curl libcurl3-dev wget
-
-# Install dependencies
-RUN apt-get install -y software-properties-common apt-transport-https && \
- 	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 && \
-	add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/' && \
-	curl -sL https://deb.nodesource.com/setup_7.x | bash - && \
-	apt-get update && \
-	apt-get install -y r-base nodejs sudo
-
-# Install necessary R packages
-ADD backend/R-scripts/InstallPackages.r /
-RUN Rscript /InstallPackages.r
-
-RUN mkdir /app && printf "SOCK_LOCK=/rserve.sock\nDB_USER=root\nDB_PASSWORD=root" > /app/.env
+# This uses the ml9951/sociome-base image.  That stuff 
+# rarely changes, so this speeds up the `now` deployment
+# time dramatically by just pulling it instead of rebuilding it
+# each time
 
 COPY . /src
 
