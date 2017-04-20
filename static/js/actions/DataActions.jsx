@@ -26,7 +26,8 @@ export const setLastCategory = category => ({
 	type : FETCH_DATA,
 	payload : {
 		method : 'GET',
-		url : `/Data/${Store.getState().data.currentDataset.value}/${category.value}`
+		url : `/Data/${Store.getState().data.currentDataset.value}/${category.value}`,
+		json : true
 	},
 	meta : 'API'
 })
