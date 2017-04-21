@@ -2,12 +2,10 @@ import React, {Component} from 'react';
 import Nav from './components/Nav';
 import ExploreBar from './components/ExploreBar';
 import {Container} from 'flux/utils'
-import ErrorStore from './stores/ErrorStore'
 import * as ErrorActions from './actions/ErrorActions'
 import {Alert} from 'react-bootstrap'
 import HTML5Backend from 'react-dnd-html5-backend';
 import {DragDropContext} from 'react-dnd';
-import PagesStore from './stores/PagesStore'
 import {connect} from 'react-redux'
 
 class Layout extends React.Component {

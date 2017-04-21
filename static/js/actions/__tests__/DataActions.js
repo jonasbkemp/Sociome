@@ -24,7 +24,7 @@ const fakeData = [
   {value : 2, year : 1958}
 ]
 
-describe('DataStore', () => {
+describe('DataActions', () => {
   var server;
   var store;
   var DataActions;
