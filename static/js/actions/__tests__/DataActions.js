@@ -64,7 +64,7 @@ describe('DataStore', () => {
       })
   })
 
-  it('Goes through Health Outcomes hierarchy', () => {
+  it('Goes through Health Outcomes hierarchy', done => {
     server.respondWith(
       'GET',
       /\/Data*/,
@@ -86,7 +86,7 @@ describe('DataStore', () => {
       })
   })
 
-  it('Goes through Demographics hierarchy', () => {
+  it('Goes through Demographics hierarchy', done => {
     server.respondWith(
       'GET',
       /\/Data*/,
@@ -108,7 +108,7 @@ describe('DataStore', () => {
       })
   })
 
-  it('Changes years', () => {
+  it('Changes years', done => {
     server.respondWith(
       'GET',
       /\/Data*/,
@@ -154,20 +154,21 @@ describe('DataStore', () => {
       .catch(e => done)
   })
 
-  // it('Downloads Data', () => {
-  //   server.respondWith(
-  //     'POST',
-  //     /\/CSV*/,
-  //     [200, {'Content-Type' : 'text/csv'}, 'c1,c2\n0,1']
-  //   )
+  it('Downloads Data', done => {
+    server.respondWith(
+      'POST',
+      /\/CSV*/,
+      [200, {'Content-Type' : 'text/csv'}, 'c1,c2\n0,1']
+    )
 
-  //   var old = global.window.URL
-  //   global.window.URL = {createObjectURL : jest.fn(() => 'fake-url')}
-  //   store.dispatch(DataActions.downloadData([{table:"a_fiscal_11", value:"anrspt",dataset : 'Policy'}]))
-  //   global.window.URL = old;
-  //   expect(spy.getCall(0).args[0].type).toBe('DOWNLOAD_DATA_START')
-  //   expect(spy.getCall(1).args[0].type).toBe('DOWNLOAD_DATA_DONE')
-  // })
+    var old = global.window.URL
+    global.window.URL = {createObjectURL : jest.fn(() => 'fake-url')}
+    store.dispatch(DataActions.downloadData([{table:"a_fiscal_11", value:"anrspt",dataset : 'Policy'}]))
+      .then(() => {  
+        done() 
+      })
+
+  })
 
   // it('Reports errors', () => {
   //   server.respondWith(
