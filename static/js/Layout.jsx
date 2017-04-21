@@ -9,8 +9,8 @@ import {DragDropContext} from 'react-dnd';
 import {connect} from 'react-redux'
 
 class Layout extends React.Component {
-  handleAlertDismiss(){
-    ErrorActions.clearError()
+  handleAlertDismiss = () => {
+    this.props.clearError()
   }
 
   render() {
@@ -60,7 +60,9 @@ const mapStateToProps = state => ({
   data : state.data
 })
 
-const mapDispatchToProps = dispatch => ({})
+const mapDispatchToProps = dispatch => ({
+  clearError : () => dispatch(ErrorActions.clearError)
+})
 
 const connected = connect(mapStateToProps, mapDispatchToProps)(Layout)
 

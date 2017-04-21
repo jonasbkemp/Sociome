@@ -1,6 +1,5 @@
+import {CLEAR_ERROR} from './Types'
 
-export function clearError(){
-  dispatcher.dispatch({
-    type : 'CLEAR_ERROR'
-  })
+export const clearError = {
+  type : CLEAR_ERROR
 }

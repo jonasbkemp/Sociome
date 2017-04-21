@@ -5,6 +5,9 @@ const initialState = {
 }
 
 export default (state=initialState, action) => {
+  if(action.meta && action.meta.error){
+    return {...state, msg : action.payload}
+  }
   switch(action.type){
     case SET_ERROR:
       return {...state, msg : action.payload};

@@ -1,4 +1,4 @@
-import 'whatwg-fetch'
+import axios from 'axios'
 
 export default store => next => action => {
   if(action.meta === 'API'){
@@ -13,39 +13,25 @@ export default store => next => action => {
     })
     const {method, body, url, json} = action.payload
 
-    var options = {method}
-    if(body){
-      options.body = JSON.stringify(body)
-      options.headers = {'Content-Type' : 'application/json'}
-    }
-
-    return fetch(url, options)
-    .then(response => {
-      if(json)
-        return response.json()
-      else
-        return response.text()
+    return axios.request({
+      url : url,
+      method : method,
+      data : body
     })
-    .catch(err => {
-      next({
-        type : `${action.type}_ERROR`,
-        payload : err,
-        meta : {
-          error : true
-        }
+      .then(response => {
+        next({
+          type : `${action.type}_SUCCESS`,
+          payload : response.data,
+          meta : {hideLoader : true}
+        })
       })
-    })
-    .then(data => {
-      next({
-        type : `${action.type}_SUCCESS`,
-        payload : data,
-        meta : {
-          hideLoader : true
-        }
+      .catch(err => {
+        next({
+          type : `${action.type}_ERROR`,
+          payload : err.response.data,
+          meta : {error : true, hideLoader : true}
+        })
       })
-      return data
-    })
-
   }else{
     next(action)
   }
