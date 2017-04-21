@@ -30,36 +30,40 @@ class FieldMenu extends React.Component{
 	}
 
 	render(){
+
 		return(
-			<div style={{position : 'relative', top : '20%', width : '100%', marginLeft : 10}}>
-				{
-					this.props.fields.map((f) => {return(
-						<div 
-							onMouseEnter={this.mouseEnter}
-							onMouseLeave={this.mouseLeave}
-							onClick={() => this.props.setLastCategory(f)}
-							key={f.value}
-							id={f.value}
-							style={{width : '100%', display : 'table', paddingBottom : 5, cursor : 'pointer'}}
-						>
-							<div style={{
-								display : 'table-cell',
-								backgroundColor : this.state.highlighted === f.value ? 'gray' : 'lightgray',
-								borderRadius : '50%',
-								width : '13px',
-								height : '13px',
-								marginLeft : 5
-							}}>
-							</div>
-							<p 
-								key={f.value} 
-								style={{display : 'table-cell'}}
+			<div style={{marginTop : 100, width : '100%', marginLeft : 20}}>
+					<div style={{display : 'table', borderSpacing : 10}}>
+					{
+						this.props.fields.map((f) => (
+							<div 
+								onMouseEnter={this.mouseEnter}
+								onMouseLeave={this.mouseLeave}
+								onClick={() => this.props.setLastCategory(f)}
+								key={f.value}
+								id={f.value}
+								style={{width : '100%', display : 'table-row', paddingBottom : 5, cursor : 'pointer'}}
 							>
-								{f.label}
-							</p>
-						</div>)}
+								<div style={{height : '100%', display : 'table-cell', verticalAlign : 'middle'}}>
+									<div style={{
+										backgroundColor : this.state.highlighted === f.value ? 'gray' : 'lightgray',
+										borderRadius : '50%',
+										width : '13px',
+										height : '13px'
+									}}>
+									</div>
+								</div>
+								<p 
+									key={f.value} 
+									style={{display : 'table-cell', textAlign : 'left', verticalAlign : 'middle', lineHeight : 1}}
+								>
+									{f.label}
+								</p>
+							</div>
+						)
 					)
 				}
+				</div>
 				{
 					this.props.fields.length > 0 ? 
 					<div>
@@ -91,18 +95,3 @@ const mapDispatchToProps = dispatch => ({
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(FieldMenu)
-
-const styles = {
-	text : {
-		fontFamily : 'Avenir-Light, Avenir Light, Avenir Book, Avenir'
-	},
-	circle : {
-		display : 'table-cell',
-		backgroundColor : 'lightgray',
-		borderRadius : '50%',
-		width : '13px',
-		height : '13px',
-		lineHeight : 1,
-		marginLeft : 5,
-	}
-}
