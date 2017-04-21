@@ -36,14 +36,13 @@ export default store => next => action => {
       })
     })
     .then(data => {
-      setTimeout(() => 
       next({
         type : `${action.type}_SUCCESS`,
         payload : data,
         meta : {
           hideLoader : true
         }
-      }), 2000)
+      })
       return data
     })
 
