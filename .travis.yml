@@ -11,4 +11,4 @@ env:
 script:
 - npm run test
 after_success:
-- "./node_modules/.bin/coveralls --token=$CODECOV_TOKEN"
+- "./node_modules/.bin/codecov --token=$CODECOV_TOKEN"
