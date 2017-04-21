@@ -57,11 +57,6 @@ export default class Nav extends React.Component {
                             about
                         </p>
                     </div>
-                    <div style={{paddingLeft : 10, display : 'table-cell', verticalAlign : 'middle'}}>
-                        <p style={{...styles.font, fontSize : 10}}>
-                            contact
-                        </p>
-                    </div>
                 </span>
             </div>
         )
