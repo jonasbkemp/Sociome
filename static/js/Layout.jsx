@@ -51,7 +51,8 @@ const styles = {
     right : 0, left : 0,
     backgroundColor : 'rgb(93,97,100)',
     opacity : 0.7,
-    zIndex : 10
+    zIndex : 10,
+    overflow : 'scroll'
   }
 }
 

@@ -6,6 +6,9 @@ export default store => next => action => {
       type : `${action.type}_PENDING`,
       payload : {
         loader : true
+      },
+      meta : {
+        issueLoader : true
       }
     })
     const {method, body, url, json} = action.payload
@@ -16,8 +19,6 @@ export default store => next => action => {
       options.headers = {'Content-Type' : 'application/json'}
     }
 
-    console.log(options)
-
     return fetch(url, options)
     .then(response => {
       if(json)
@@ -26,17 +27,23 @@ export default store => next => action => {
         return response.text()
     })
     .catch(err => {
-      console.log(err)
       next({
         type : `${action.type}_ERROR`,
-        payload : err
+        payload : err,
+        meta : {
+          error : true
+        }
       })
     })
     .then(data => {
+      setTimeout(() => 
       next({
         type : `${action.type}_SUCCESS`,
-        payload : data
-      })
+        payload : data,
+        meta : {
+          hideLoader : true
+        }
+      }), 2000)
       return data
     })
 
