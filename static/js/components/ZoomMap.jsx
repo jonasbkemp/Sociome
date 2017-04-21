@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import {topoJsonStore} from '../stores/TopoJsonStore';
 import {getStateInfo} from '../data/StateCodes';
 import Dimensions from 'react-dimensions';
 import * as _ from 'lodash';
@@ -28,34 +27,34 @@ export class ZoomMap extends Component{
 	// to allow mouse over events at the county level.  Without this, the state layer covers it up. 
 	// This will take a mouse event at the state layer and pass it through to the county layer.
 	passThru(d) {
-        var e = d3.event;
-        var prev = this.style.pointerEvents;
-        this.style.pointerEvents = 'none';
-        var el = document.elementFromPoint(d3.event.x, d3.event.y);
-        var e2 = document.createEvent('MouseEvent');
-        e2.initMouseEvent(e.type,e.bubbles,e.cancelable,e.view, e.detail,e.screenX,e.screenY,e.clientX,e.clientY,e.ctrlKey,e.altKey,e.shiftKey,e.metaKey,e.button,e.relatedTarget);
-        el.dispatchEvent(e2);
-        this.style.pointerEvents = prev;
-    }
+    var e = d3.event;
+    var prev = this.style.pointerEvents;
+    this.style.pointerEvents = 'none';
+    var el = document.elementFromPoint(d3.event.x, d3.event.y);
+    var e2 = document.createEvent('MouseEvent');
+    e2.initMouseEvent(e.type,e.bubbles,e.cancelable,e.view, e.detail,e.screenX,e.screenY,e.clientX,e.clientY,e.ctrlKey,e.altKey,e.shiftKey,e.metaKey,e.button,e.relatedTarget);
+    el.dispatchEvent(e2);
+    this.style.pointerEvents = prev;
+  }
 
-    addStateHover = (options) => {
-    	this.states.on('mousemove', (d, i, children) => {
-            var mouse = d3.mouse(document.body)
-            this.tooltip.classed('hidden', false)
-                .attr('style', 'left:' + (mouse[0] + 15) +
-                        'px; top:' + (mouse[1] - 35) + 'px')
-                .html(getStateInfo(d.id).state);
-            if(options.withColor){
-	            this.states.style('fill', (state) => d.id === state.id ? '#0C4999' : '#ccc')
-	      	}
-        })
-        .on('mouseout', () => {
-        	this.tooltip.classed('hidden', true)
-        	if(options.withColor){
-        		this.states.style('fill', '#ccc')
-        	}
-    	})
-    }
+  addStateHover = (options) => {
+  	this.states.on('mousemove', (d, i, children) => {
+      var mouse = d3.mouse(document.body)
+      this.tooltip.classed('hidden', false)
+        .attr('style', 'left:' + (mouse[0] + 15) +
+              'px; top:' + (mouse[1] - 35) + 'px')
+        .html(getStateInfo(d.id).state);
+      if(options.withColor){
+        this.states.style('fill', (state) => d.id === state.id ? '#0C4999' : '#ccc')
+     	}
+    })
+    .on('mouseout', () => {
+    	this.tooltip.classed('hidden', true)
+    	if(options.withColor){
+    		this.states.style('fill', '#ccc')
+    	}
+  	})
+  } 
 
     updateCounties = () => {
     	var {data, min, max} = _.reduce(this.props.data, (res, d) => {
@@ -133,61 +132,62 @@ export class ZoomMap extends Component{
     }
 
 	drawMap = () => {
+    if(this.props.statesGeom == null){
+      return
+    }
 		var path = d3.geoPath().projection(this.state.projection)
 
 		this.svg = d3.select(this.refs.container).append('svg')
-					.attr('id', 'my-svg')
-					.attr('width', this.width).attr('height', this.height)
+			.attr('id', 'my-svg')
+			.attr('width', this.width).attr('height', this.height)
 
-		topoJsonStore.getJSON((GEO_JSON) => {
-			this.tooltip = d3.select(this.refs.container).append('div')
-            	.attr('class', 'hidden tooltip');
+		this.tooltip = d3.select(this.refs.container).append('div')
+    	.attr('class', 'hidden tooltip');
 
-			this.g = this.svg.append('g')
-			
-			// draw county lines if we are plotting the Health Outcomes data
-			if(this.props.dataset === 'health-outcomes' && this.props.data){
+		this.g = this.svg.append('g')
+		const geom = this.props.statesGeom
+		// draw county lines if we are plotting the Health Outcomes data
+		if(this.props.dataset === 'health-outcomes' && this.props.data){
 
-				this.counties = this.g.append('g').attr('id', 'county-lines').selectAll('path')
-					.data(topojson.feature(GEO_JSON, GEO_JSON.objects.counties).features)
-					.enter().append('path').attr('d', path)
+			this.counties = this.g.append('g').attr('id', 'county-lines').selectAll('path')
+				.data(topojson.feature(geom, geom.objects.counties).features)
+				.enter().append('path').attr('d', path)
 
-	            // Draw the state lines.  
-	            this.states = this.g.append('g').attr('id', 'state-lines').selectAll('path')
-	              	.data(topojson.feature(GEO_JSON, GEO_JSON.objects.states).features)
-	              	.enter().append('path')
-			      	.attr("d", path)		
-			      	.on('click', this._stateClicked())
-	                .style('stroke', '#fff')
-	                .style('fill-opacity', '0.0')
-	                .style('cursor', 'pointer')
-	               	.on('mouseout', () => this.tooltip.classed('hidden', true))
+      // Draw the state lines.  
+      this.states = this.g.append('g').attr('id', 'state-lines').selectAll('path')
+      	.data(topojson.feature(geom, geom.objects.states).features)
+      	.enter().append('path')
+      	.attr("d", path)		
+      	.on('click', this._stateClicked())
+          .style('stroke', '#fff')
+          .style('fill-opacity', '0.0')
+          .style('cursor', 'pointer')
+         	.on('mouseout', () => this.tooltip.classed('hidden', true))
 
-				this.updateCounties();
-				this.states.on('mousemove', this.passThru);
-			}else{
-				// Draw the state lines.  
-	            this.states = this.g.append('g').selectAll('path')
-	              	.data(topojson.feature(GEO_JSON, GEO_JSON.objects.states).features)
-	              	.enter().append('path')
-			      	.attr("d", path)		
-			      	.on('click', this._stateClicked())
-	                .style('stroke', '#fff')
-	                .style('cursor', 'pointer')
-	                .style('fill', '#ccc')
-	            if(this.props.data){
-	            	this.updateStates();
-	            }
-			}
-		})
+			this.updateCounties();
+			this.states.on('mousemove', this.passThru);
+		}else{
+			// Draw the state lines.  
+      this.states = this.g.append('g').selectAll('path')
+        	.data(topojson.feature(geom, geom.objects.states).features)
+        	.enter().append('path')
+    	.attr("d", path)		
+    	.on('click', this._stateClicked())
+      .style('stroke', '#fff')
+      .style('cursor', 'pointer')
+      .style('fill', '#ccc')
+      if(this.props.data.length > 0){
+      	this.updateStates();
+      }
+		}
 	}
 
 	reset = (component) => {
-		//this.addStateHover({withColor : this.props.data == undefined})
-	  	this.g.transition()
-	     	.duration(750)
-	      	.style("stroke-width", "1.5px")
-	      	.attr("transform", "");
+		this.addStateHover({withColor : this.props.data == undefined})
+  	this.g.transition()
+     	.duration(750)
+      	.style("stroke-width", "1.5px")
+      	.attr("transform", "");
 	}
 
 	_stateClicked = () => {
@@ -239,7 +239,9 @@ export class ZoomMap extends Component{
 
 	// Only update the map if the data changed...
 	shouldComponentUpdate(nextProps){
-		if(this.props.dataset === nextProps.dataset && this.props.data){
+    if(this.props.statesGeom == null && nextProps.statesGeom != null){
+      return true
+    }else if(this.props.dataset === nextProps.dataset && this.props.data){
 			this.props = nextProps;
 			if(this.props.dataset === 'health-outcomes'){
 				this.updateCounties()

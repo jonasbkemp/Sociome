@@ -10,3 +10,4 @@ export const CHANGE_YEAR = 'CHANGE_YEAR';
 export const DOWNLOAD_DATA = 'DOWNLOAD_DATA'
 export const LINEAR_REGRESSION = 'LINEAR_REGRESSION'
 export const DIFF_IN_DIFF = 'DIFF_IN_DIFF'
+export const FETCH_STATES = 'FETCH_STATES'

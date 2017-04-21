@@ -15,6 +15,7 @@ class Explore extends Component{
 				    	<div style={{display : 'table-cell', width : '75%'}}>
 				    		<div style={{width : '100%'}}>
 					    		<ZoomMap 
+					    			statesGeom={this.props.statesGeom}
 					    			style={{width : '100%'}}
 					    			data={this.props.data} 
 					    			dataset={this.props.data && this.props.data.length > 100 ? 'health-outcomes' : 'policy'}
@@ -29,7 +30,8 @@ class Explore extends Component{
 }
 
 const mapStateToProps = state => ({
-	data : state.data.yearlyData
+	data : state.data.yearlyData,
+	statesGeom : state.geo.states
 })
 
 const mapDispatchToProps = dispatch => ({})
