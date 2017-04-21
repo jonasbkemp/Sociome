@@ -5,11 +5,12 @@ import Store from '../Store'
 
 const fieldSource = {
   beginDrag(props, monitor, component){
-    var ds = Store.getState().data.currentDataset
+    const [currentDS, ...rest] = Store.getState().data.selected;
+
     return {
       ...props,
       year : component.state.year,
-      dataset : ds && ds.value,
+      dataset : currentDS && currentDS.value,
     };
   }
 };
