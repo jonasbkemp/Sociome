@@ -1,4 +1,3 @@
-import dispatcher from '../Dispatcher';
 import Store from '../Store'
 import {SET_DATASET, SET_CATEGORY, SET_SUB_CATEGORY, FETCH_DATA, CHANGE_YEAR, DOWNLOAD_DATA} from './Types'
 

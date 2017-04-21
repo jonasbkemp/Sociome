@@ -1,6 +1,5 @@
 import {FETCH_STATES} from './Types'
 
-
 export const fetchStates = {
   type : FETCH_STATES,
   payload : {

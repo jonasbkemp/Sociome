@@ -22,10 +22,7 @@ export default (state=initialState, action) => {
     case SHOW_COMPONENT:
       return {
         ...state, 
-        popup : {
-          component : action.component,
-          style : action.style
-        }
+        popup : action.payload
       };
     case CLEAR_COMPONENT:
       return {...state, popup : null, loading : false};

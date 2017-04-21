@@ -1,4 +1,3 @@
-import Dispatcher from '../Dispatcher'
 import {LINEAR_REGRESSION, DIFF_IN_DIFF} from './Types'
 
 export const linearRegression = args => ({

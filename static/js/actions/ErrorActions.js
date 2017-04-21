@@ -1,4 +1,3 @@
-import dispatcher from '../Dispatcher'
 
 export function clearError(){
   dispatcher.dispatch({

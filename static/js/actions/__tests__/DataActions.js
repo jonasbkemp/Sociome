@@ -175,8 +175,6 @@ describe('DataActions', () => {
   //     /\/CSV*/,
   //     [401, {'Content-Type' : 'text/csv'}, 'c1,c2\n0,1']
   //   )
-  //   var Dispatcher = require('../../Dispatcher').default
-  //   var spy = sinon.spy(Dispatcher, 'dispatch')
   //   var old = global.window.URL
   //   global.window.URL = {createObjectURL : jest.fn(() => 'fake-url')}
   //   DataActions.downloadData([{table:"a_fiscal_11", value:"anrspt",dataset : 'Policy'}])

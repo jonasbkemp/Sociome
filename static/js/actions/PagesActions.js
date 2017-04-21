@@ -3,30 +3,26 @@
  * components into different pages.  The primary
  * use case is to overlay a component on top of 
  * the layout (Ex: a loading/progress bar)
- * @flow
  */
-import Dispatcher from '../Dispatcher'
 
-import type React from 'react'
+import {SHOW_COMPONENT, HIDE_COMPONENT} from './Types'
 
 /**
  * Show `component` on top of whatever is rendered in `Layout`
  * @param  {React.Component} component : The component to be rendered
  */
-export function showComponent (component : React.Element<*>, style : Object, props : Object) : void {
-  Dispatcher.dispatch({
-    type : 'SHOW_COMPONENT',
+const showComponent = (component, style, props) => ({
+  type : 'SHOW_COMPONENT',
+  payload : {
     component : component,
     style : style,
     props : props
-  })
-}
+  }
+})
 
 /**
  * Hide the currently displayed component (if any)
  */
-export function hideCurrentComponent() : void {
-  Dispatcher.dispatch({
-    type : 'HIDE_COMPONENT'
-  })
+export const hideCurrentComponent = {
+  type : HIDE_COMPONENT
 }
