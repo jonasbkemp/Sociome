@@ -16,6 +16,16 @@ class Layout extends React.Component {
   render() {
     return (
       <div style={{height : '100%', width : '100%'}}>
+        {
+          this.props.popup ? 
+            <div style={{position : 'absolute', top : 0, bottom : 0, left : 0, right : 0}}>
+              <div style={styles.background}>
+              </div>
+              <div style={{zIndex : 40, height : '100%', width : '100%', display : 'flex', alignItems : 'center', justifyContent : 'center'}}>
+                {this.props.popup.component}
+              </div>
+            </div> : null
+        }
         <Nav style={{height : '88px'}}/>
         <div style={{position : 'absolute', top : '88px', bottom : 0, width : '100%'}}>
           <ExploreBar data={this.props.data} style={{height : '60px'}}/>
@@ -23,16 +33,6 @@ class Layout extends React.Component {
             <Alert bsStyle='danger' onDismiss={this.handleAlertDismiss} style={{marginBottom: 0}}>
               <strong><p class='text-center'> {this.props.msg} </p></strong>
             </Alert> : null
-          }
-          {
-            this.props.popup ? 
-              <div style={{position : 'absolute', top : 0, bottom : 0, left : 0, right : 0}}>
-                <div style={styles.background}>
-                </div>
-                <div style={{zIndex : 40, height : '100%', width : '100%', display : 'flex', alignItems : 'center', justifyContent : 'center'}}>
-                  {this.props.popup.component}
-                </div>
-              </div> : null
           }
         	{this.props.children}
         </div>
