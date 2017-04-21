@@ -8,57 +8,77 @@ class ExploreBar extends React.Component{
 		this.props.setDataset(dataset);
 	}
 
-	selectCategory = (event) => {
+	selectCategory = category => event => {
 		event.target.blur()
-		this.props.setCategory(event.target.id);
+		this.props.setCategory(category);
 	}
 
-	selectSubCategory = category => subCategory => {
-		this.props.setSubCategory(category, subCategory);
+	selectSubCategory = subCategory => {
+		this.props.setSubCategory(subCategory);
 	}
 
 	render(){
+		const [selectedDataset, selectedCategory, ...rest] = this.props.data.selected;
+		const datasets = this.props.data.datasets
+
+		var children;
+		if(selectedDataset){
+			if(selectedDataset.value === 'policy'){
+				var dropdownChildren;
+				if(selectedCategory){
+					dropdownChildren = Object.keys(selectedCategory.children).map(subCategory => 
+						<BS.MenuItem 
+							eventKey={{value : subCategory, label : subCategory}} 
+							key={subCategory}
+							style={{fontSize : 11}}
+						>
+							{subCategory}
+						</BS.MenuItem>
+					)
+				}
+				children = Object.keys(selectedDataset.children).map(category =>
+					<BS.NavDropdown
+						onSelect={this.selectSubCategory}
+						style={{fontSize : 11}}
+						id='policy-dropdown'
+						key={category}
+						onClick={this.selectCategory({value : category, label : category})}
+						title={category}
+					>
+						{dropdownChildren}
+					</BS.NavDropdown>
+				)
+			}else{
+				children = Object.keys(selectedDataset.children).map(category => 
+					<BS.MenuItem
+						style={{fontSize : 11}}
+						key={category}
+						id={category}
+						onClick={this.selectCategory({value : category, label : category})}
+					>
+						{category}
+					</BS.MenuItem>
+				)
+			}
+		}
+
 		return(
 			<nav class="navbar navbar-default" style={{marginBottom : 0}}>
 				<div class="container-fluid">
 					<ul class="nav navbar-nav">
 						<BS.NavDropdown id='dataset-dropdown' onSelect={this.selectDS} title="Dataset">
 						{
-							this.props.data.datasets.map(ds => 
-								<BS.MenuItem key={ds.value} eventKey={ds} >{ds.label}</BS.MenuItem>
+							Object.keys(datasets).map(dsKey => 
+								<BS.MenuItem 
+									key={dsKey} 
+									eventKey={{value : dsKey, label : datasets[dsKey].label}} 
+								>
+									{datasets[dsKey].label}
+								</BS.MenuItem>
 							)
 						}
 						</BS.NavDropdown>
-						{
-							this.props.data.currentDataset && this.props.data.currentDataset.value === 'policy' ? 
-								Object.keys(this.props.data.categories).map(category => 
-									<BS.NavDropdown 
-										style={{fontSize : 11}}
-										id='policy-dropdown' 
-										key={category}
-										onSelect={this.selectSubCategory(category)} 
-										title={category}
-									>
-									{
-										Object.keys(this.props.data.categories[category]).map(v => 
-											<BS.MenuItem key={v} eventKey={v} style={{fontSize : 11}}>
-												{v}
-											</BS.MenuItem>
-										)
-									}
-									</BS.NavDropdown>									
-								) : 
-								Object.keys(this.props.data.categories).map(category => 
-									<BS.MenuItem 
-										style={{fontSize : 11}}
-										key={category}
-										id={category}
-										onClick={this.selectCategory}
-									>
-										{category}
-									</BS.MenuItem>
-								)
-						}
+						{children}
 					</ul>
 				</div>
 			</nav>

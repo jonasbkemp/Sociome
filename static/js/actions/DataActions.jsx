@@ -12,23 +12,23 @@ export const setCategory = category => ({
 	payload : category
 })
 
-export const setSubCategory = (category, subCategory) => ({
+export const setSubCategory = subCategory => ({
 	type : SET_SUB_CATEGORY,
-	payload : {
-		category,
-		subCategory
-	}
-})
+	payload : subCategory
+}) 
 
-export const setLastCategory = category => ({
-	type : FETCH_DATA,
-	payload : {
-		method : 'GET',
-		url : `/Data/${Store.getState().data.currentDataset.value}/${category.value}`,
-		json : true
-	},
-	meta : 'API'
-})
+export const setLastCategory = category => {
+	const [currentDataset, ...rest] = Store.getState().data.selected;
+	return{
+		type : FETCH_DATA,
+		payload : {
+			method : 'GET',
+			url : `/Data/${currentDataset.value}/${category.value}`,
+			json : true
+		},
+		meta : 'API'
+	}
+}
 
 export const changeYear = year => ({
 	type : CHANGE_YEAR,

@@ -10,95 +10,55 @@ import {demographicCategories} from '../data/DemographicCategories';
 import {healthOutcomesCategories} from '../data/HealthOutcomesCategories';
 
 const initialState = {
-  datasets : [
-    {value : 'policy', label : 'Policy'}, 
-    {value : 'demographics', label : 'Demographics'}, 
-    {value : 'health_outcomes', label : 'Health Outcomes'}
-  ],
-  policies : policyCategories,
-  healthOutcomes : healthOutcomesCategories,
-  demographics : demographicCategories,
-  currentDataset : null,
-  categories : [],                            // First level of categories
-  subCateogires : [],                         // Second level of categories
-  subSubCategories : [],                      // Third level of categories
-  fields : [],                                // Last level of categories
+  datasets : {
+    policy : {
+      label : 'Policy',
+      categories : policyCategories
+    },
+    demographics : {
+      label : 'Demographics',
+      categories : demographicCategories
+    },
+    health_outcomes : {
+      label : 'Health Outcomes',
+      categories : healthOutcomesCategories
+    }
+  },
+  fields : [],
+  selected : [],
   yearIndex : 0,                              //index into the `years array`
   years : [],                                 // years for which `data` is available
   yearlyData : []
 }
-  
-const setDataset = (state, dataset) => {
-  const nulls = {
-    currentCategory : null,
-    subCategories : [],
-    currentSubCategory : null,
-    fields : []
-  }
-  switch(dataset.value){
-    case 'policy':
-      return {
-        ...state, 
-        currentDataset : dataset,
-        categories : state.policies,
-        ...nulls
-      }
-    case 'health_outcomes':
-      return {
-        ...state, 
-        currentDataset : dataset,
-        categories : state.healthOutcomes,
-        ...nulls
-      }
-    case 'demographics':
-      return {
-        ...state, 
-        currentDataset : dataset,
-        categories : state.demographics,
-        ...nulls
-      }
-  }
-}
 
-const setSubCategory = (state, {category, subCategory}) => {
-  if(state.currentDataset.value === 'policy'){
-    return {
-      ...state, 
-      currentSubCategory : subCategory,
-      currentCategory : category,
-      fields : state.policies[category][subCategory]
-    }
-  }else{
-    return {
-      ...state, 
-      currentSubCategory : subCategory
-    }
-  }
+const setDataset = (state, dataset) => {
+  const selected = [{...dataset, children : state.datasets[dataset.value].categories}];
+  return {...state, selected, fields : []}
 }
 
 const setCategory = (state, category) => {
-  switch(state.currentDataset.value){
-    case 'policy':
-      return {
-        ...state,
-        currentCategory : category,
-        subCategories : Object.keys(state.policies[category]).map(c => ({value : c, label : c}))
-      }
-    case 'health_outcomes':
-      return {
-        ...state, 
-        currentCategory : category,
-        subCategories : state.healthOutcomes[category],
-        fields : state.healthOutcomes[category]
-      }
-    case 'demographics':
-      return {
-        ...state,
-        currentCategory : category,
-        subCategories : state.demographics[category],
-        fields : state.demographics[category]
-      }
+  var selected = state.selected.slice(0, 1);
+  if(selected.length === 0){
+    throw new Error('Selected category without selecting a dataset!');
   }
+
+  selected.push({...category, children : selected[0].children[category.value]});
+
+  //Lowest level
+  if(Array.isArray(selected[1].children)){
+    return {...state, selected, fields : selected[1].children}
+  }else{
+    return {...state, selected, fields : []}
+  }
+}
+
+const setSubCategory = (state, subCategory) => {
+  var selected = state.selected.slice(0, 2);
+  if(selected.length !== 2){
+    throw new Error('Selected Sub Category without selecting Category!');
+  }
+  selected.push({...subCategory, children : selected[1].children[subCategory.value]})
+  return{...state, selected, fields : selected[2].children};
 }
 
 // Get a unique sorted array of years for which we have data available. 

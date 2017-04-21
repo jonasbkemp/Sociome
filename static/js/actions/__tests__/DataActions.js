@@ -49,13 +49,13 @@ describe('DataActions', () => {
     )
 
     store.dispatch(DataActions.setDataset({label : 'Policy', value : 'policy'}))
-    expect(store.getState().data.currentDataset.value).toBe('policy')
+    expect(store.getState().data.selected[0].value).toBe('policy')
 
-    store.dispatch(DataActions.setCategory('Land & Environment'))
-    expect(store.getState().data.currentCategory).toBe('Land & Environment')
+    store.dispatch(DataActions.setCategory({value : 'Land & Environment'}))
+    expect(store.getState().data.selected[1].value).toBe('Land & Environment')
 
-    store.dispatch(DataActions.setSubCategory('Land & Environment', 'Regulations'))
-    expect(store.getState().data.currentSubCategory).toBe('Regulations')
+    store.dispatch(DataActions.setSubCategory({value : 'Regulations'}))
+    expect(store.getState().data.selected[2].value).toBe('Regulations')
 
     store.dispatch(DataActions.setLastCategory({"table":"a_fiscal_11","value":"anrspt"}))
       .then(() => {
@@ -71,13 +71,13 @@ describe('DataActions', () => {
       [200, {'Content-Type' : 'application/json'}, JSON.stringify(fakeData)]
     )
 
-    expect(store.getState().data.currentDataset).toBeNull()
+    expect(store.getState().data.selected.length).toBe(0)
 
     store.dispatch(DataActions.setDataset({value : 'health_outcomes', label : 'Health Outcomes'}))
-    expect(store.getState().data.currentDataset.value).toBe('health_outcomes')
+    expect(store.getState().data.selected[0].value).toBe('health_outcomes')
 
-    store.dispatch(DataActions.setCategory('Health Behaviors'))
-    expect(store.getState().data.currentCategory).toBe("Health Behaviors")
+    store.dispatch(DataActions.setCategory({value : 'Health Behaviors'}))
+    expect(store.getState().data.selected[1].value).toBe("Health Behaviors")
 
     store.dispatch(DataActions.setLastCategory({value : 'Adult Obesity'}))
       .then(() => {
@@ -93,13 +93,13 @@ describe('DataActions', () => {
       [200, {'Content-Type' : 'application/json'}, JSON.stringify(fakeData)]
     )
 
-    expect(store.getState().data.currentDataset).toBeNull()
+    expect(store.getState().data.selected.length).toBe(0)
 
     store.dispatch(DataActions.setDataset({value : 'demographics', label : 'Demographics'}))
-    expect(store.getState().data.currentDataset.value).toBe('demographics')
+    expect(store.getState().data.selected[0].value).toBe('demographics')
 
-    store.dispatch(DataActions.setCategory('Race'))
-    expect(store.getState().data.currentCategory).toBe("Race")
+    store.dispatch(DataActions.setCategory({value : 'Race'}))
+    expect(store.getState().data.selected[1].value).toBe("Race")
 
     store.dispatch(DataActions.setLastCategory({value : 'population_white'}))
       .then(() => {
@@ -115,13 +115,13 @@ describe('DataActions', () => {
       [200, {'Content-Type' : 'application/json'}, JSON.stringify(fakeData)]
     )
 
-    expect(store.getState().data.currentDataset).toBeNull()
+    expect(store.getState().data.selected.length).toBe(0)
 
     store.dispatch(DataActions.setDataset({value : 'demographics', label : 'Demographics'}))
-    expect(store.getState().data.currentDataset.value).toBe('demographics')
+    expect(store.getState().data.selected[0].value).toBe('demographics')
 
-    store.dispatch(DataActions.setCategory('Race'))
-    expect(store.getState().data.currentCategory).toBe("Race")
+    store.dispatch(DataActions.setCategory({value : 'Race'}))
+    expect(store.getState().data.selected[1].value).toBe("Race")
 
     store.dispatch(DataActions.setLastCategory({value : 'population_white'}))
       .then(() => {
@@ -142,13 +142,13 @@ describe('DataActions', () => {
       [400, {'Content-Type' : 'application/json'}, '400 error']
     )
 
-    expect(store.getState().data.currentDataset).toBeNull()
+    expect(store.getState().data.selected.length).toBe(0)
 
     store.dispatch(DataActions.setDataset({value : 'demographics', label : 'Demographics'}))
-    expect(store.getState().data.currentDataset.value).toBe('demographics')
+    expect(store.getState().data.selected[0].value).toBe('demographics')
 
-    store.dispatch(DataActions.setCategory('Race'))
-    expect(store.getState().data.currentCategory).toBe("Race")
+    store.dispatch(DataActions.setCategory({value : 'Race'}))
+    expect(store.getState().data.selected[1].value).toBe("Race")
 
     store.dispatch(DataActions.setLastCategory({value : 'population_white'}))
       .catch(e => done)
@@ -167,7 +167,6 @@ describe('DataActions', () => {
       .then(() => {  
         done() 
       })
-
   })
 
   // it('Reports errors', () => {
