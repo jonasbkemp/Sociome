@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 require('react-select/dist/react-select.css');
 import {Explore, Regression, Download, DiffInDiff} from './pages'
 import Layout from './Layout'
-import {BrowserRouter as Router, Route, Link} from 'react-router-dom'
+import {BrowserRouter as Router, Route, Link, Switch} from 'react-router-dom'
 import Store from './Store'
 import {Provider} from 'react-redux'
 
@@ -34,21 +34,21 @@ const routes = [
 ReactDOM.render(
 	<Provider store={Store}>
 		<Router>
-			<div>
-			{
-				routes.map(({path, component : Comp, exact}) => 
-					<Route
-						key={path}
-						path={path}
-						exact={exact}
-						render={props => (
-							<Layout {...props}>
-								<Comp {...props} />
-							</Layout>
-						)}
-					/>
-				)
-			}
-			</div>
+			<Switch>
+				<Layout>
+				{
+					routes.map(({path, component : Comp, exact}) =>
+						<Route
+							key={path}
+							exact={exact}
+							path={path}
+							component={Comp}
+						/>
+					)
+				}
+				</Layout>
+			</Switch>
 		</Router>
-	</Provider>, app)
+	</Provider>,
+	app
+)
