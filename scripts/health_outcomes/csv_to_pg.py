@@ -31,13 +31,14 @@ data.to_sql('health_outcomes_temp', engine, index=False, if_exists='replace')
 engine.execute('DROP TABLE IF EXISTS health_outcomes')
 engine.execute('CREATE TABLE health_outcomes(year int, statecode int, countycode int, county text, state text);')
 res = engine.execute('SELECT DISTINCT (lower(measurename)) FROM health_outcomes_temp WHERE measurename IS NOT NULL;')
+
 for measure, in res:
     print('Processing %s' % measure)
     engine.execute("""
         CREATE TABLE temp AS (
             SELECT * FROM health_outcomes
             FULL OUTER JOIN (
-                SELECT year, statecode, countycode, json_build_object(
+                SELECT year, statecode, countycode, county, state, json_build_object(
                     'rawvalue', replace(rawvalue, ',', '')::float,
                     'cilow', replace(cilow, ',', '')::float,
                     'cihigh', replace(cihigh, ',', '')::float,
@@ -45,10 +46,10 @@ for measure, in res:
                     'differflag', differflag,
                     'trendbreak', trendbreak
                 ) AS %(col_name)s FROM health_outcomes_temp
-                    WHERE 
+                    WHERE
                         lower(measurename)='%(measurename)s' AND
                         rawvalue IS NOT NULL
-            )s USING (year, statecode, countycode)
+            )s USING (year, statecode, countycode, county, state)
         )
     """ % {
         'measurename' : measure,
@@ -58,15 +59,3 @@ for measure, in res:
     engine.execute('ALTER TABLE temp RENAME TO health_outcomes;')
 
 engine.execute('DROP TABLE health_outcomes_temp;')
-
-engine.execute("""
-    UPDATE health_outcomes SET county=statecodes.county 
-    FROM statecodes 
-    WHERE health_outcomes.countycode=statecodes.countycode;
-""")
-
-engine.execute("""
-    UPDATE health_outcomes SET state=statecodes.state 
-    FROM statecodes 
-    WHERE health_outcomes.statecode=statecodes.statecode;
-""")
