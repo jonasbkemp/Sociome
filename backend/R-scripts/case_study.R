@@ -67,16 +67,15 @@ getDF <- function(predVars, depVar, treatmentGroup, controlGroup, yearOfTreatmen
                     return(paste(',demographics.', p, sep=''));
                   }),
                   collapse = ''), ',',
-                ' health_outcomes.rawvalue as depvar ', 
+                ' health_outcomes.', depVar, '->\'rawvalue\' as depvar ', 
                 'FROM demographics ',
                 'INNER JOIN health_outcomes ON ', 
                 'demographics.year=health_outcomes.year AND ',
                 'demographics.state=health_outcomes.county ',
                 'WHERE ',
-                'health_outcomes.measurename=\'', depVar, '\' AND ',
                 'demographics.countycode=0 AND ',
                 nullCond, ' AND ',
-                'health_outcomes.rawvalue IS NOT NULL AND ',
+                'health_outcomes.', depVar, ' IS NOT NULL AND ',
                 'demographics.state <> \'District of Columbia\' ',
                 'ORDER BY state'
                 , sep='')
@@ -93,17 +92,21 @@ getDF <- function(predVars, depVar, treatmentGroup, controlGroup, yearOfTreatmen
   
   dataframe$did <- dataframe$time * dataframe$treated
   
+  # NOTE: query returns depvar as a string after DB update; must convert to numeric
+  dataframe$depvar = as.numeric(dataframe$depvar)
+  
   return(dataframe)
 }
 
 
 # Note: it seems the query does not work if there are no predVars
+# Treatment-control pairs: Maine-New Hampshire, New York-Pennsylvania, Arizona-(Nevada, New Mexico)
 predVars = c("population_wh_hisp_latino", "population_black_afr_am", "population_65_plus", 
              "population_female", "per_capita_income")
-depVar = "Premature Death"
+depVar = "premature_death"
 treatmentGroup = "Maine"
 controlGroup = "New Hampshire"
-yearOfTreatment = 2003
+yearOfTreatment = 2002
 
 # For some reason, it looks like the query does not return the full range of results?
 # Exploring the data, I can see that we have premature death statistics for more years
@@ -117,9 +120,9 @@ df.control = df.control[order(df.control$year),]
 # This is a simple plot to demonstrate, but could use ggplot or whatever other tools
 #   you like
 plot(df.treat$year, df.treat$depvar, type = 'l', col = 'blue', ylim = c(5000, 8000),
-     xlab = "Premature mortality", ylab = "Year")
+     xlab = "Year", ylab = "Premature mortality")
 lines(df.control$year, df.control$depvar, col = 'red')
-abline(v = 2003, lty = 2)
+abline(v = yearOfTreatment, lty = 2)
 legend("topright", c("Treatment", "Control"), lty = 1, col = c('blue', 'red'))
 
 # Regression object
