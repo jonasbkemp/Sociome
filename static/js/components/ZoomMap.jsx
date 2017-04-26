@@ -99,6 +99,8 @@ export class ZoomMap extends Component{
     }
 
     updateStates = () => {
+      if(this.props.data.length == 0)
+        return
     	var {stateData, min, max} = _.reduce(this.props.data, (res, d) => {
     		res.stateData[d.statecode] = d;
     		res.min = Math.min(res.min, d.value);
@@ -183,7 +185,7 @@ export class ZoomMap extends Component{
 	}
 
 	reset = (component) => {
-		this.addStateHover({withColor : this.props.data == undefined})
+		this.addStateHover({withColor : this.props.data.length == 0})
   	this.g.transition()
      	.duration(750)
       	.style("stroke-width", "1.5px")
