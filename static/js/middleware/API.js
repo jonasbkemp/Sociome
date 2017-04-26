@@ -26,9 +26,10 @@ export default store => next => action => {
         })
       })
       .catch(err => {
+        var response = err.response || {data : 'Something bad happened!'}
         next({
           type : `${action.type}_ERROR`,
-          payload : err.response.data,
+          payload : response.data,
           meta : {error : true, hideLoader : true}
         })
       })
