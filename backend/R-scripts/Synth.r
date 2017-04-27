@@ -283,22 +283,14 @@ getData <- function(name, args, conn){
 	print('Error')
 }
 
-runRegression <- function(dependent, independent, controls){
+runRegression <- function(query, dependent, independent, controls){
 	conn <- dbConnect(PostgreSQL(), host=host, dbname=db_name, user=user,password=pwd, port=port);
-
-	data <- getData('dependent', dependent, conn)
-
-	data['independent'] <- getData('independent', independent, conn)
+	data <- dbGetQuery(conn, query)
+	
+	names(data)[names(data) == dependent] <- 'dependent'
+	names(data)[names(data) == independent] <- 'independent'
 
 	model = 'dependent ~ independent'
-
-	# i <- 0
-	# for(control in controls){
-	# 	name <- paste('control', toString(i), sep='')
-	# 	data[name] <- dbGetQuery(conn, mkQuery(name, control))
-	# 	model <- paste(model, ' + control', toString(i), sep='')
-	# 	i <- i+1
-	# }
 
 	fit <- lm(model, data=data)
 
@@ -318,30 +310,12 @@ runRegression <- function(dependent, independent, controls){
 
 
 testRegression <- function(){
-
 	runRegression(
-       list(type='field',table='a_fiscal_11',value='agpbspt',label='Public Buildings Expenditures',year='1957',dataset='policy'), 
-       list(type='field',table='a_fiscal_11',value='asanspt',label='Sanitation Expenditures',year='1957',dataset='policy'), 
-       list()
-    )
-
-	# controls = list()
-	# dependent <- list(
-	# 	type = 'field',
- #       	value = 'adult_obesity',
- #       	label = 'Adult Obesity',
- #       	year = '2004',
- #       	dataset = 'Health Outcomes'
-	# )
-	# independent <- list(
-	# 	type = 'field',
-	# 	label = "Sexually Transmitted Infections",
-	# 	value = 'sexually_transmitted_infections',
-	# 	year = 2007,
-	# 	dataset = 'Health Outcomes'
-	# )
-
-	# runRegression(dependent, independent, controls)
+	    "SELECT year,statecode,countycode,median_family_income,per_capita_income FROM demographics WHERE  median_family_income IS NOT NULL  AND per_capita_income IS NOT NULL ", 
+	    "per_capita_income", 
+	    "median_family_income",
+	    list()
+   	)	
 }
 
 

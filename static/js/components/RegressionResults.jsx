@@ -2,12 +2,34 @@ import React from 'react';
 
 import {ScatterChart, Line, Legend, CartesianGrid, Scatter, XAxis, YAxis, ResponsiveContainer, Tooltip} from 'recharts';
 
+const SAMPLE_SIZE = 500;
+
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
 export default class RegressionResults extends React.Component{
 	constructor(props){
 		super(props);
 	}
 
+	scatterPlotDataSample = () => {
+		var data = [];
+		var values = this.props.results.values;
+		const N = values.independent.length;
+		for(var i = 0; i < SAMPLE_SIZE; i++){
+			const j = Math.floor(getRandomInt(0, N))
+			data.push({independent : values.independent[j], dependent : values.dependent[j]});
+		}
+		return(data);
+	}
+
 	scatterPlotData = () => {
+		if(this.props.results.values.independent.length > SAMPLE_SIZE){
+			return this.scatterPlotDataSample()
+		}
 		var data = [];
 		var values = this.props.results.values;
 		for(var i = 0; i < values.dependent.length; i++){
@@ -17,17 +39,25 @@ export default class RegressionResults extends React.Component{
 	}
 
 	regressionLine = () => {
-		var data = [];
 		var values = this.props.results.values;
 		var coefficients = this.props.results.coefficients;
-		console.log(this.props.results)
-		for(var i = 0; i < values.independent.length; i++){
-			data.push({
-				independent : values.independent[i],
-				dependent : coefficients.independent * values.independent[i] + coefficients['(Intercept)']
-			})
-		}
-		return data;
+
+		const MIN = values.independent.reduce((acc, val) => Math.min(acc, val), Number.MAX_SAFE_INTEGER);
+		const MAX = values.independent.reduce((acc, val) => Math.max(acc, val), Number.MIN_SAFE_INTEGER);
+
+		return [
+			{
+				independent : MIN,
+				dependent : coefficients.independent * MIN + coefficients['(Intercept)']
+			}, {
+				independent : MAX,
+				dependent : coefficients.independent * MAX + coefficients['(Intercept)']
+			}
+		]
+	}
+
+	shouldComponentUpdate(nextProps, nextState){
+		return this.props.results != nextProps.results;
 	}
 
 	render(){

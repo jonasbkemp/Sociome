@@ -118,25 +118,18 @@ router.get('/Data/:table/:col/:year?', function(req, res){
 router.post('/LinRegression', function(req, res){
   var params = req.body;
 
-  var mkArg = (arg) => {
-    var fields = [];
-    for(var field in arg){
-      if(field !== 'years'){
-        fields.push(`${field}='${arg[field]}'`)
-      }
-    }
-    return `list(${fields.join(',')})`;
-  }
+  var query = mkQuery([params.independent, params.dependent], true)
 
-  var controls = params.controls ? params.controls.map(mkArg) : []
+  var controls = params.controls ? params.controls.map(x => `"${x.value}"`) : []
 
-  var cmd = `
-    runRegression(
-      ${mkArg(params.dependent)}, 
-      ${mkArg(params.independent)}, 
-      list(${controls.join(',')})
-    )
-  `
+  var cmd = `runRegression(
+    "${query}", 
+    "${params.dependent.value}", 
+    "${params.independent.value}",
+    list(${controls.join(',')})
+  )`;
+
+  console.log(cmd)
 
   rio.e({
     command : cmd,
