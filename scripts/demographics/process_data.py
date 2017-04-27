@@ -3,6 +3,9 @@
 import pdb, os, re, sys, pandas
 from sqlalchemy import create_engine
 from subprocess import check_output
+from coalesce import coalesce
+
+pandas.options.mode.chained_assignment = None
 
 engine = create_engine('postgresql://localhost:5432/sociome')
 
@@ -41,7 +44,7 @@ def convertCol(c):
 
 def process_pop():
     data = pandas.read_csv('data/PopDemographicsData.csv')
-    data['Year'] = data['Year'].apply(processYear)
+
     cols = [
         'FIPS',
         'Year',
@@ -104,7 +107,16 @@ def process_pop():
 
     newDataset = newDataset.rename(index=str, columns={'state_name' : 'state', 'county_name' : 'county', 'fips_state_code': 'statecode', 'fips_county_code': 'countycode'})
 
-    newDataset.to_sql('demographics_pop', engine, index=False, if_exists='replace')
+
+    mask = newDataset['year'].str.contains('-')
+
+    withDash = newDataset[mask]
+    withDash['year'] = withDash['year'].apply(processYear)
+
+    withoutDash = newDataset[~mask]
+    withoutDash['year'] = withoutDash['year'].apply(processYear)
+
+    coalesce(withoutDash, withDash, engine, 'demographics_pop')
 
 def process_education():
     data = pandas.read_csv('./data/EducationData.csv')
