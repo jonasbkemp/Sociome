@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import Nav from './components/Nav';
 import ExploreBar from './components/ExploreBar';
-import {Container} from 'flux/utils'
 import * as ErrorActions from './actions/ErrorActions'
 import {Alert} from 'react-bootstrap'
 import HTML5Backend from 'react-dnd-html5-backend';

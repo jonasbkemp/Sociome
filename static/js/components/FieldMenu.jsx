@@ -1,7 +1,6 @@
 import React from 'react';
 import * as DataActions from '../actions/DataActions';
 import Select from 'react-select';
-import {Container} from 'flux/utils'
 import {connect} from 'react-redux'
 
 class FieldMenu extends React.Component{
