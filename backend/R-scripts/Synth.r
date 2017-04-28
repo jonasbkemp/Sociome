@@ -62,34 +62,47 @@ print(port)
 # 	- Pr(>|t|) summarizes noise
 # 	- one astericks is the convention for a "good result"
 # 	- 
-runDiffInDiff <- function(query, predVars, depVar, controlGroup, treatmentGroup, yearOfTreatment){
+runDiffInDiff <- function(query, policy, outcome){
 	conn <- dbConnect(PostgreSQL(), host=host, dbname=db_name, user=user,password=pwd, port=port);
 
 	df <- dbGetQuery(conn, query)
+	names(df)[names(df) == policy] <- 'policy'
+	names(df)[names(df) == outcome] <- 'outcome'
 
-	getCode <- function(c){
-		return(stateCodes[[c]]);
+	# Find a policy change
+
+	changeIdx = NULL
+	prev <- df[1,]
+	for(i in 2:nrow(df)) {
+	    row <- df[i,]
+	    if(row['policy'] != prev['policy'] && row['statecode'] == prev['statecode']){
+	    	changeIdx = i
+	    	break;
+	    }
+	    prev = row
 	}
 
-	controlGroup = sapply(controlGroup, getCode)
-	treatmentGroup = sapply(treatmentGroup, getCode)
+	if(is.null(changeIdx)){
+		msg = paste('No changes found in policy!  Years used: ', paste(unique(df$year), collapse=','), sep='')
+		return(toJSON(list(success = F, msg = msg)))
+	}
 
-	df$time = ifelse(df$year >= yearOfTreatment, 1, 0)
+	yearOfTreatment = df[changeIdx, 1]
+
+	# controlGroup didn't have same policy >= yearOfTreatment
+	# treatmentGroup did have that policy in that year
+
+	treatmentGroup = subset(df, policy==df[changeIdx,3] & year==yearOfTreatment)[,2]
 
 	df$treated = ifelse(Vectorize(function(state){
 		return(state %in% treatmentGroup)
-	})(df$statecode), 1, 0);
+	})(df$state), 1, 0)
 
-	df = subset(df, statecode %in% treatmentGroup | statecode %in% controlGroup)
+	df$time = ifelse(df$year >= yearOfTreatment, 1, 0)
 
 	df$did <- df$time * df$treated
 
-	df.treat = df[df$treated == 1,]
-	df.treat = df.treat[order(df.treat$year),]
-	df.control = df[df$treated == 0,]
-	df.control = df.control[order(df.control$year),]
-
-	didreg = lm(paste(depVar, ' ~ .', sep=''), data=subset(df, select=-c(year, statecode)))
+	didreg = lm(paste('outcome ~ treated + time + did', sep=''), data=df)
 
 	intercept = didreg$coefficients['(Intercept)']
 	time = didreg$coefficients['time']
@@ -112,13 +125,14 @@ runDiffInDiff <- function(query, predVars, depVar, controlGroup, treatmentGroup,
 
 testDiffInDiff <- function(){
 	runDiffInDiff(
-	    "SELECT year,statecode,rincarc,rpolice FROM policy WHERE  ( rincarc IS NOT NULL  AND rpolice IS NOT NULL ) AND countycode=0 ",
-	    c("rincarc","rpolice"),
-	    "rpolice",
-	    c("Alaska","California","Delaware","Florida"),
-	    c("Alaska","Arkansas","Connecticut","Delaware"),
-	    2006
-  	)
+     	"SELECT year,statecode,bplaces,uninsured FROM ((SELECT year,statecode,bplaces FROM policy WHERE  ( bplaces IS NOT NULL ) AND countycode=0 ) table_0
+		       INNER JOIN
+		       (SELECT year,statecode,countycode,uninsured->'rawvalue' as uninsured FROM health_outcomes WHERE  ( uninsured IS NOT NULL ) AND countycode=0 ) table_1
+		       USING (year,statecode)
+		     	) subQ ORDER BY statecode, countycode, year",
+     	"bplaces",
+     	"uninsured"
+   	)
 }
 
 runMultilevelModeling <- function(depVar, predVar){

@@ -4,6 +4,11 @@ import {BarChart, Bar, Line, ResponsiveContainer, CartesianGrid,
 import * as _ from 'lodash';
 
 export default class DiffInDiffResults extends React.Component{
+	//Recharts has an annoying flicker without this
+	shouldComponentUpdate(nextProps, nextState){
+		return this.props.results != nextProps.results;
+	}
+
 	render(){
 		var data = [];
 		if(this.props.results){
@@ -11,6 +16,8 @@ export default class DiffInDiffResults extends React.Component{
 			data.push({period : 'Year of Treatment'})
 			data.push({'Treatment Group' : this.props.results.D, 'Non-Treatment Group' : this.props.results.B, period : 'Post-exposure'})
 		}
+
+
 		return(
 			<div style={{width : '100%', height : '100%', paddingTop : '10%'}}>
 				<ResponsiveContainer  width='90%' height='100%'>

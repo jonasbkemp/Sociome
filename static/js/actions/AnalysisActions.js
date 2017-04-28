@@ -1,4 +1,4 @@
-import {LINEAR_REGRESSION, DIFF_IN_DIFF} from './Types'
+import {LINEAR_REGRESSION, DIFF_IN_DIFF, FETCH_DIFF_IN_DIFF_VARS} from './Types'
 
 export const linearRegression = args => ({
   type : LINEAR_REGRESSION,
@@ -21,3 +21,13 @@ export const diffInDiff = args => ({
   },
   meta : 'API'
 })
+
+export const fetchDiffInDiffVars = {
+  type : FETCH_DIFF_IN_DIFF_VARS,
+  payload : {
+    method : 'GET',
+    url : '/DiffInDiff',
+    json : true
+  },
+  meta : 'API'
+}

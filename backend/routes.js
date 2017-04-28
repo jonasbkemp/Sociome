@@ -5,6 +5,7 @@ var pg = require('pg');
 var rio = require('rio');
 var path = require('path')
 var _ = require('lodash')
+var fs = require('fs')
 
 var config = process.env.OPENSHIFT_POSTGRESQL_DB_URL ? 
             process.env.OPENSHIFT_POSTGRESQL_DB_URL : 
@@ -146,22 +147,28 @@ router.post('/LinRegression', function(req, res){
   })
 })
 
+
+const DIFF_IN_DIFF_VARS = {
+  policy : JSON.parse(fs.readFileSync(path.join(__dirname, './variables/policy.json'))),
+  outcomes : JSON.parse(fs.readFileSync(path.join(__dirname, './variables/health-outcomes.json')))
+}
+
+// Returns the options for DiffInDiff
+router.get('/DiffInDiff', function(req, res){
+  res.json(DIFF_IN_DIFF_VARS)
+})
+
 router.post('/DiffInDiff', function(req, res){
   var params = req.body
 
-  var queryArgs = params.predVars;
-  queryArgs.push(params.depVar)
-
-  var query = mkQuery(queryArgs, true) // Inner join
+  var query = mkQuery([params.policy, params.outcome], true)// Inner join
+  query += ' ORDER BY statecode, countycode, year'
 
   var command = `runDiffInDiff(
     "${query}",
-    c(${params.predVars.map(p => `"${p.value}"`).join(',')}),
-    "${params.depVar.value}",
-    c(${params.controlGroup.map(c => `"${c}"`).join(',')}),
-    c(${params.treatmentGroup.map(t => `"${t}"`).join(',')}),
-    ${params.yearOfTreatment}
-  )`
+    "${params.policy.value}",
+    "${params.outcome.value}"
+  )`;
 
   console.log(command)
 
@@ -173,8 +180,13 @@ router.post('/DiffInDiff', function(req, res){
         console.log(err)
         res.status(500).json(err)
       }else{
-        res.send(result)
         console.log(result)
+        result = JSON.parse(result)
+        if(result.success === false){
+          res.status(500).send(result.msg)
+        }else{
+          res.send(result)
+        }
       }
     }
   })

@@ -24,6 +24,7 @@ export default store => next => action => {
           payload : response.data,
           meta : {hideLoader : true}
         })
+        return response.data
       })
       .catch(err => {
         var response = err.response || {data : 'Something bad happened!'}
