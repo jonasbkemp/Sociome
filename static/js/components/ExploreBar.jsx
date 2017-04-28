@@ -63,25 +63,27 @@ class ExploreBar extends React.Component{
 		}
 
 		return(
-			<nav class="navbar navbar-default" style={{marginBottom : 0}}>
-				<div class="container-fluid">
-					<ul class="nav navbar-nav">
-						<BS.NavDropdown id='dataset-dropdown' onSelect={this.selectDS} title="Dataset">
-						{
-							Object.keys(datasets).map(dsKey => 
-								<BS.MenuItem 
-									key={dsKey} 
-									eventKey={{value : dsKey, label : datasets[dsKey].label}} 
-								>
-									{datasets[dsKey].label}
-								</BS.MenuItem>
-							)
-						}
-						</BS.NavDropdown>
-						{children}
-					</ul>
-				</div>
-			</nav>
+			<div style={this.props.style}>
+				<nav class="navbar navbar-default" style={{...this.props.style, marginBottom : 0}}>
+					<div class="container-fluid">
+						<ul class="nav navbar-nav">
+							<BS.NavDropdown id='dataset-dropdown' onSelect={this.selectDS} title="Dataset">
+							{
+								Object.keys(datasets).map(dsKey => 
+									<BS.MenuItem 
+										key={dsKey} 
+										eventKey={{value : dsKey, label : datasets[dsKey].label}} 
+									>
+										{datasets[dsKey].label}
+									</BS.MenuItem>
+								)
+							}
+							</BS.NavDropdown>
+							{children}
+						</ul>
+					</div>
+				</nav>
+			</div>
 		)
 	}
 }

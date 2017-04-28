@@ -8,7 +8,7 @@ const initialState = {
 }
 
 const loader = {
-  component : <Loader color="#26A65B" size="16px" margin="4px"/>,
+  component : <Loader color="#26A65B" size="16px" margin="4px" style={{zIndex : 5000}}/>,
   style : {}  
 }
 

@@ -8,6 +8,28 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import {DragDropContext} from 'react-dnd';
 import {connect} from 'react-redux'
 
+const styles = {
+  cover : {
+    position : 'absolute',
+    top : 0,
+    bottom : 0,
+    right : 0, 
+    left : 0,
+  },
+  shade : {
+    backgroundColor : 'rgb(93,97,100)',
+    opacity : 0.7,
+    zIndex : 10,
+    overflow : 'scroll'
+  },
+  loader : {
+    display : 'flex',
+    justifyContent : 'center',
+    alignItems : 'center',
+    zIndex : 40
+  }
+}
+
 class Layout extends React.Component {
   handleAlertDismiss = () => {
     this.props.clearError()
@@ -15,42 +37,27 @@ class Layout extends React.Component {
 
   render() {
     return (
-      <div style={{height : '100%', width : '100%'}}>
+      <div style={styles.cover}>
         {
           this.props.popup ? 
-            <div style={{position : 'absolute', top : 0, bottom : 0, left : 0, right : 0}}>
-              <div style={styles.background}>
-              </div>
-              <div style={{zIndex : 40, height : '100%', width : '100%', display : 'flex', alignItems : 'center', justifyContent : 'center'}}>
-                {this.props.popup.component}
-              </div>
+            <div style={{...styles.cover, ...styles.shade, ...styles.loader}}>
+              {this.props.popup.component}
             </div> : null
         }
-        <Nav style={{height : '88px'}}/>
-        <div style={{position : 'absolute', top : '88px', bottom : 0, width : '100%'}}>
-          <ExploreBar data={this.props.data} style={{height : '60px'}}/>
+        <div style={styles.cover}>
+          <Nav style={{height : '88px'}} />
+          <ExploreBar data={this.props.data} style={{height : '60px', marginTop : '88px'}}/>
           {this.props.msg ?
             <Alert bsStyle='danger' onDismiss={this.handleAlertDismiss} style={{marginBottom: 0}}>
               <strong><p class='text-center'> {this.props.msg} </p></strong>
             </Alert> : null
           }
-        	{this.props.children}
+          <div style={{...styles.cover, top : '148px'}}>
+            {this.props.children}
+          </div>
         </div>
       </div>
     );
-  }
-}
-
-const styles = {
-  background : {
-    position : 'absolute',
-    top : 0,
-    bottom : 0,
-    right : 0, left : 0,
-    backgroundColor : 'rgb(93,97,100)',
-    opacity : 0.7,
-    zIndex : 10,
-    overflow : 'scroll'
   }
 }
 
