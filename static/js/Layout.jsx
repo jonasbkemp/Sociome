@@ -1,3 +1,7 @@
+/**
+ * Common layout for all Pages
+ * @flow
+ */
 import React, {Component} from 'react';
 import Nav from './components/Nav';
 import ExploreBar from './components/ExploreBar';
@@ -6,15 +10,15 @@ import {Alert} from 'react-bootstrap'
 import HTML5Backend from 'react-dnd-html5-backend';
 import {DragDropContext} from 'react-dnd';
 import {connect} from 'react-redux'
+import {cover} from './Styles'
+
+import type {MapDispatchToProps, MapStateToProps} from 'react-redux'
+import type {State} from './Store'
+import type {Action} from './actions/Types'
+import type {Dispatch} from 'redux'
 
 const styles = {
-  cover : {
-    position : 'absolute',
-    top : 0,
-    bottom : 0,
-    right : 0, 
-    left : 0,
-  },
+  cover,
   shade : {
     backgroundColor : 'rgb(93,97,100)',
     opacity : 0.7,
@@ -38,7 +42,7 @@ class Layout extends React.Component {
     return (
       <div style={styles.cover}>
         {
-          this.props.popup ? 
+          this.props.popup ?
             <div style={{...styles.cover, ...styles.shade, ...styles.loader}}>
               {this.props.popup.component}
             </div> : null
@@ -60,23 +64,16 @@ class Layout extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps : MapStateToProps<State,*,*> = state => ({
   msg : state.error.msg,
   popup : state.pages.popup,
   data : state.data
 })
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps : MapDispatchToProps<State,*,*> = (dispatch : Dispatch<Action>) => ({
   clearError : () => dispatch(ErrorActions.clearError)
 })
 
 const connected = connect(mapStateToProps, mapDispatchToProps)(Layout)
 
 export default DragDropContext(HTML5Backend)(connected);
-
-
-
-
-
-
-
