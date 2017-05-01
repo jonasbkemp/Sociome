@@ -1,6 +1,12 @@
-import {LINEAR_REGRESSION, DIFF_IN_DIFF, FETCH_DIFF_IN_DIFF_VARS} from './Types'
+/**
+ * Analysis actions
+ * @flow
+ */
 
-export const linearRegression = args => ({
+import {LINEAR_REGRESSION, DIFF_IN_DIFF, FETCH_DIFF_IN_DIFF_VARS} from './Types'
+import type {Action, LinearRegression_t, DiffInDiff_t} from './Types'
+
+export const linearRegression = (args : LinearRegression_t) : Action => ({
   type : LINEAR_REGRESSION,
   payload : {
     method : 'POST',
@@ -11,8 +17,8 @@ export const linearRegression = args => ({
   meta : 'API'
 })
 
-export const diffInDiff = args => ({
-  type : DIFF_IN_DIFF,
+export const diffInDiff = (args : DiffInDiff_t) : Action => ({
+  type : 'asdf',
   payload : {
     method : 'POST',
     url : '/DiffInDiff',
@@ -22,7 +28,7 @@ export const diffInDiff = args => ({
   meta : 'API'
 })
 
-export const fetchDiffInDiffVars = {
+export const fetchDiffInDiffVars : Action = {
   type : FETCH_DIFF_IN_DIFF_VARS,
   payload : {
     method : 'GET',

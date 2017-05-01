@@ -1,5 +1,11 @@
-import {CLEAR_ERROR} from './Types'
+/**
+ * Error Actions
+ * @flow
+ */
 
-export const clearError = {
+import {CLEAR_ERROR} from './Types'
+import type {Action} from './Types'
+
+export const clearError : Action = {
   type : CLEAR_ERROR
 }

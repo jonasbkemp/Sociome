@@ -1,6 +1,11 @@
+/**
+ * Geo Actions
+ * @flow
+ */
 import {FETCH_STATES} from './Types'
+import type {Action} from './Types'
 
-export const fetchStates = {
+export const fetchStates : Action = {
   type : FETCH_STATES,
   payload : {
     method : 'GET',
@@ -9,6 +14,3 @@ export const fetchStates = {
   },
   meta : 'API'
 }
-
-
-

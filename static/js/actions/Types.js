@@ -13,7 +13,7 @@ export const SHOW_COMPONENT = 'SHOW_COMPONENT';
 export const HIDE_COMPONENT = 'HIDE_COMPONENT';
 export const FETCH_DIFF_IN_DIFF_VARS = 'FETCH_DIFF_IN_DIFF_VARS'
 
-export type data_t = {
+export type Data_t = {
   year : number,
   statecode : number,
   countycode : number,
@@ -22,25 +22,37 @@ export type data_t = {
 }
 
 // Type used with react-select
-export type select_t = {
+export type Select_t = {
   value : string,
   label : string
 }
 
-export type api_t = {
+export type API_t = {
   method : string,
   url : string,
   body : Object
 }
 
+export type LinearRegression_t = {
+  dependent : Select_t,
+  independent : Select_t,
+  controls : [Select_t]
+}
+
+export type DiffInDiff_t = {
+  policy : Select_t,
+  outcome : Select_t
+}
+
+
 import type {Element} from 'react'
 
-export type Action = 
+export type Action =
     {|type : SET_ERROR, payload : string|}
   | {|type : CLEAR_ERROR |}
-  | {|type : SET_DATASET, payload : select_t|}
-  | {|type : SET_SUB_CATEGORY, payload : select_t|}
-  | {|type : SET_CATEGORY, payload : select_t|}
+  | {|type : SET_DATASET, payload : Select_t|}
+  | {|type : SET_SUB_CATEGORY, payload : Select_t|}
+  | {|type : SET_CATEGORY, payload : Select_t|}
   | {|type : FETCH_DATA, payload : api_t|}
   | {|type : CHANGE_YEAR, payload : number|} //year index
   | {|type : DOWNLOAD_DATA, payload : api_t|}
