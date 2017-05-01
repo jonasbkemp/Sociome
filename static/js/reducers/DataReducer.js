@@ -1,3 +1,8 @@
+/**
+ * Data Reducer
+ * @flow
+ */
+
 import {
   SET_DATASET,
   SET_SUB_CATEGORY,
@@ -8,6 +13,8 @@ import {
 import {policyCategories} from '../data/PolicyCategories';
 import {demographicCategories} from '../data/DemographicCategories';
 import {healthOutcomesCategories} from '../data/HealthOutcomesCategories';
+
+import type {data_t, Action, select_t} from '../actions/Types'
 
 const initialState = {
   datasets : {
@@ -24,6 +31,7 @@ const initialState = {
       categories : healthOutcomesCategories
     }
   },
+  data : [],
   fields : [],
   selected : [],
   yearIndex : 0,                              //index into the `years array`
@@ -31,12 +39,12 @@ const initialState = {
   yearlyData : []
 }
 
-const setDataset = (state, dataset) => {
+const setDataset = (state : DataState, dataset : select_t) : DataState => {
   const selected = [{...dataset, children : state.datasets[dataset.value].categories}];
   return {...state, selected, fields : []}
 }
 
-const setCategory = (state, category) => {
+const setCategory = (state : DataState, category : select_t) : DataState => {
   var selected = state.selected.slice(0, 1);
   if(selected.length === 0){
     throw new Error('Selected category without selecting a dataset!');
@@ -52,7 +60,7 @@ const setCategory = (state, category) => {
   }
 }
 
-const setSubCategory = (state, subCategory) => {
+const setSubCategory = (state : DataState, subCategory : select_t) : DataState => {
   var selected = state.selected.slice(0, 2);
   if(selected.length !== 2){
     throw new Error('Selected Sub Category without selecting Category!');
@@ -66,11 +74,11 @@ const setSubCategory = (state, subCategory) => {
 // This relies on every datapoint having a `year` field and is 
 // sorted by that year field
 // http://stackoverflow.com/questions/26958118/finding-unique-numbers-from-sorted-array-in-less-than-on
-const getUniqueYears = data => {
+const getUniqueYears = (data : Array<data_t>) : Array<number> => {
   return _getUniqueYears(data, 0, data.length-1, false, [])
 }
 
-const _getUniqueYears = (data, left, right, skipFirst, years) => {
+const _getUniqueYears = (data : Array<data_t>, left : number, right : number, skipFirst : boolean, years : Array<number>) : Array<number> => {
   if(left > right)// `data` is empty
     return years
   // contiguous chunk of same values (a...a)
@@ -85,7 +93,7 @@ const _getUniqueYears = (data, left, right, skipFirst, years) => {
   return years
 }
 
-const setNewData = (state, data) => {
+const setNewData = (state : DataState, data : Array<data_t>) : DataState => {
   var years = getUniqueYears(data)
   return {
     ...state, 
@@ -98,9 +106,9 @@ const setNewData = (state, data) => {
 
 // Data is sorted by `year`.  Run a binary search
 // to find the first entry with that year
-const getFirstYear = (data, year) => {
-  var i = 0,
-    j = data.length - 1 ;
+const getFirstYear = (data : Array<data_t>, year : number) : number => {
+  var i = 0;
+  var j = data.length - 1;
 
   while(i <= j){
     var mid = Math.round((i+j) / 2);
@@ -116,8 +124,8 @@ const getFirstYear = (data, year) => {
   throw "Error: Couldn\'t find year";
 }
 
-const getYearlyData = (data, year) => {
-  var i = getFirstYear(data, year);
+const getYearlyData = (data : Array<data_t>, year : number) : Array<data_t> => {
+  var i : number = getFirstYear(data, year);
   var yearlyData = [];
 
   while(i < data.length && data[i].year === year){
@@ -127,7 +135,7 @@ const getYearlyData = (data, year) => {
   return yearlyData;
 }
 
-const updateYear = (state, yearIndex) => {
+const updateYear = (state : DataState, yearIndex : number) : DataState => {
   return {
     ...state, 
     yearIndex : yearIndex,
@@ -135,7 +143,7 @@ const updateYear = (state, yearIndex) => {
   }
 }
 
-export default (state=initialState, action) => {
+export default (state : DataState = initialState, action : Action) => {
   switch(action.type){
     case SET_DATASET:
       return setDataset(state, action.payload);
@@ -154,7 +162,15 @@ export default (state=initialState, action) => {
 
 
 
-
+export type DataState = {
+  datasets : Object,
+  fields : Array<Object>,
+  selected : Array<Object>,
+  yearIndex : number,
+  years : Array<number>,
+  yearlyData : Array<data_t>,
+  data : Array<data_t>
+}
 
 
 

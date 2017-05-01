@@ -9,7 +9,8 @@
     "build": "NODE_ENV=production webpack --progress",
     "test-debug": "node debug --harmony ./node_modules/jest-cli/bin/jest.js --runInBand",
     "test": "jest --coverage",
-    "deploy": "now --docker"
+    "deploy": "now --docker",
+    "flow": "./node_modules/.bin/flow"
   },
   "repository": {
     "type": "git",
@@ -62,8 +63,10 @@
   },
   "devDependencies": {
     "babel-jest": "^19.0.0",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "codecov": "^2.1.0",
     "enzyme": "^2.8.2",
+    "flow-bin": "^0.45.0",
     "jest": "^19.0.2",
     "jest-cli": "^19.0.2",
     "react-addons-test-utils": "^15.5.1",

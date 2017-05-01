@@ -1,10 +1,16 @@
-import {SET_ERROR, CLEAR_ERROR} from '../actions/Types'
+/**
+ * Error reducer
+ * @flow
+ */
 
-const initialState = {
+import {SET_ERROR, CLEAR_ERROR} from '../actions/Types'
+import type {Action} from '../actions/Types'
+
+const initialState : ErrorState = {
   msg : null
 }
 
-export default (state=initialState, action) => {
+export default (state : ErrorState = initialState, action : Action) => {
   if(action.meta && action.meta.error){
     return {...state, msg : action.payload}
   }
@@ -18,3 +24,6 @@ export default (state=initialState, action) => {
   }
 }
 
+export type ErrorState = {
+  msg : ?string
+}

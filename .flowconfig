@@ -1,0 +1,22 @@
+[ignore]
+.*/__tests__/.*
+.*/node_modules/.*
+flow-typed/*
+
+[include]
+./client
+./client/stores/
+./client/pages/
+./client/actions/
+
+[libs]
+flow-typed/npm
+
+[options]
+module.name_mapper='.*\.\(svg\|png\|jpg\|gif\)$' -> '<PROJECT_ROOT>/flow/npm/url-loader.js'
+module.name_mapper='^pages\/\(.*\)$' -> '<PROJECT_ROOT>/client/pages/\1'
+module.name_mapper='^pages$' -> '<PROJECT_ROOT>/client/pages'
+module.name_mapper='^components\/\(.*\)$' -> '<PROJECT_ROOT>/client/components/\1'
+module.name_mapper='^components$' -> '<PROJECT_ROOT>/client/components'
+module.name_mapper='^actions\/\(.*\)$' -> '<PROJECT_ROOT>/client/actions/\1'
+module.name_mapper='^actions$' -> '<PROJECT_ROOT>/client/actions'
