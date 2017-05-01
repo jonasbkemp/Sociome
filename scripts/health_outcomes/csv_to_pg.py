@@ -10,6 +10,11 @@ if not(os.path.exists('2016CHR_CSV_Trend_Data.csv')):
     url = 'https://github.com/ArnholdInstitute/Sociome-Data/raw/master/health_outcomes/2016CHR_CSV_Trend_Data.csv'
     check_output(['wget', '-O', '2016CHR_CSV_Trend_Data.csv', url])
 
+if not(os.path.exists('health_outcomes_metadata.csv')):
+    url = 'https://github.com/ArnholdInstitute/Sociome-Data/raw/master/health_outcomes/health_outcomes_metadata.csv'
+    check_output(['wget', '-O', 'health_outcomes_metadata.csv', url])
+
+
 def processYear(y):
     if type(y) == unicode and '-' in y:
         years = y.split('-')
@@ -19,6 +24,9 @@ def processYear(y):
         return y
     else:
         return int(y)
+
+data = pandas.read_csv('./health_outcomes_metadata.csv')
+data.to_sql('health_outcomes_metadata', engine, index=False, if_exists='replace')
 
 data = pandas.read_csv('2016CHR_CSV_Trend_Data.csv', encoding='latin1')
 
