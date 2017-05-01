@@ -1,6 +1,10 @@
+/**
+ * Client.jsx - Main entry point for the app
+ * @flow
+ */
 import React from "react";
 import ReactDOM from "react-dom";
-require('react-select/dist/react-select.css');
+import 'react-select/dist/react-select.css';
 import {Explore, Regression, Download, DiffInDiff} from './pages'
 import Layout from './Layout'
 import {BrowserRouter as Router, Route, Link, Switch} from 'react-router-dom'
@@ -19,15 +23,18 @@ const routes = [
 	},
 	{
 		path : '/regression',
-		component : Regression
+		component : Regression,
+		exact : false
 	},
 	{
 		path : '/download',
-		component : Download
+		component : Download,
+		exact : false
 	},
 	{
 		path : '/diff-in-diff',
-		component : DiffInDiff
+		component : DiffInDiff,
+		exact : false
 	}
 ]
 

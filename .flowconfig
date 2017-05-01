@@ -13,7 +13,7 @@ flow-typed/*
 flow-typed/npm
 
 [options]
-module.name_mapper='.*\.\(svg\|png\|jpg\|gif\)$' -> '<PROJECT_ROOT>/flow/npm/url-loader.js'
+module.name_mapper='.*\.\(svg\|png\|jpg\|gif\|css\)$' -> '<PROJECT_ROOT>/EmptyModule.js'
 module.name_mapper='^pages\/\(.*\)$' -> '<PROJECT_ROOT>/client/pages/\1'
 module.name_mapper='^pages$' -> '<PROJECT_ROOT>/client/pages'
 module.name_mapper='^components\/\(.*\)$' -> '<PROJECT_ROOT>/client/components/\1'
