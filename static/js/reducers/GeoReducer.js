@@ -6,7 +6,7 @@ import {FETCH_STATES} from '../actions/Types'
 import type {Action} from '../actions/Types'
 
 const initialState : GeoState = {
-  states : {}
+  states : null
 }
 
 export default (state : GeoState = initialState, action : Action) => {
@@ -19,5 +19,5 @@ export default (state : GeoState = initialState, action : Action) => {
 }
 
 export type GeoState = {
-  states : Object
+  states : ?Object
 }
