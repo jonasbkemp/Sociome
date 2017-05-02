@@ -1,9 +1,30 @@
+/**
+ * Field Menu component
+ * @flow
+ */
 import React from 'react';
 import * as DataActions from '../actions/DataActions';
 import Select from 'react-select';
 import {connect} from 'react-redux'
+import store from '../Store'
 
-class FieldMenu extends React.Component{
+import type {State} from '../Store'
+import type {Action, Select_t} from '../actions/Types'
+import type {MapStateToProps, MapDispatchToProps} from 'react-redux'
+import type {Dispatch} from 'redux'
+import type {DataState} from '../reducers/DataReducer'
+
+type Props = {
+	fields : Array<Select_t>,
+	years : Array<number>,
+	yearIndex : number
+}
+
+class FieldMenu extends React.Component<*,*,*>{
+	state : {
+		highlighted : ?number
+	}
+
 	constructor(){
 		super();
 		this.state = {
@@ -25,7 +46,7 @@ class FieldMenu extends React.Component{
 
 	changeYear = event => {
 		event.target.blur();
-		this.props.changeYear(event.target.value);
+		store.dispatch(DataActions.changeYear(event.target.value));
 	}
 
 	render(){
@@ -38,7 +59,7 @@ class FieldMenu extends React.Component{
 							<div 
 								onMouseEnter={this.mouseEnter}
 								onMouseLeave={this.mouseLeave}
-								onClick={() => this.props.setLastCategory(f)}
+								onClick={() => store.dispatch(DataActions.setLastCategory(f))}
 								key={f.value}
 								id={f.value}
 								style={{width : '100%', display : 'table-row', paddingBottom : 5, cursor : 'pointer'}}
@@ -87,10 +108,7 @@ class FieldMenu extends React.Component{
 	}
 }
 
-const mapStateToProps = state => state.data
-const mapDispatchToProps = dispatch => ({
-	setLastCategory : field => dispatch(DataActions.setLastCategory(field)),
-	changeYear : year => dispatch(DataActions.changeYear(year))
-})
+const mapStateToProps : MapStateToProps<State,Props,DataState> = (state : State) => state.data
+const mapDispatchToProps : MapDispatchToProps<State,*,*> = (dispatch : Dispatch<Action>) => ({})
 
 export default connect(mapStateToProps, mapDispatchToProps)(FieldMenu)

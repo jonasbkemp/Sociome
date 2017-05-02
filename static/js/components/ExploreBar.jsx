@@ -1,20 +1,36 @@
+/**
+ * @flow
+ */
+
 import React from 'react';
 import * as BS from 'react-bootstrap';
 import * as DataActions from '../actions/DataActions';
 import {connect} from 'react-redux'
+import store from '../Store'
 
-class ExploreBar extends React.Component{
-	selectDS = dataset => {
-		this.props.setDataset(dataset);
+import type {Action, Select_t} from '../actions/Types'
+import type {State} from '../Store'
+import type {MapStateToProps, MapDispatchToProps} from 'react-redux'
+import type {Dispatch} from 'redux' 
+import type {DataState} from '../reducers/DataReducer'
+
+type Props = {
+	data : DataState,
+	style : Object
+}
+
+export default class ExploreBar extends React.Component<*,Props,*>{
+	selectDS = (dataset : Select_t) => {
+		store.dispatch(DataActions.setDataset(dataset))
 	}
 
-	selectCategory = category => event => {
+	selectCategory = (category : Select_t) => (event : any) => {
 		event.target.blur()
-		this.props.setCategory(category);
+		store.dispatch(DataActions.setCategory(category))
 	}
 
-	selectSubCategory = subCategory => {
-		this.props.setSubCategory(subCategory);
+	selectSubCategory = (subCategory : Select_t) => {
+		store.dispatch(DataActions.setSubCategory(subCategory));
 	}
 
 	render(){
@@ -87,12 +103,3 @@ class ExploreBar extends React.Component{
 		)
 	}
 }
-
-const mapDispatchToProps = dispatch => ({
-	setDataset : dataset => dispatch(DataActions.setDataset(dataset)),
-	setCategory : category => dispatch(DataActions.setCategory(category)),
-	setSubCategory : (category, subCategory) => dispatch(DataActions.setSubCategory(category, subCategory))
-})
-
-const mapStateToProps = state => ({})
-export default connect(mapStateToProps, mapDispatchToProps)(ExploreBar)

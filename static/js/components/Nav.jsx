@@ -1,8 +1,16 @@
+/**
+ * Nav
+ * @flow
+ */
+
 import React from "react";
 import {Link} from 'react-router-dom';
 import * as BS from 'react-bootstrap';
 
 export default class Nav extends React.Component {
+    props : {
+        style : Object
+    }
     render() {
         return(
             <div style={{...this.props.style, position : 'absolute', left : 0, right : 0}}>

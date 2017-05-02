@@ -1,20 +1,44 @@
+/**
+ * Difference in Differences Results
+ * @flow
+ */
 import React from 'react';
-import {BarChart, Bar, Line, ResponsiveContainer, CartesianGrid,
-		Tooltip, XAxis, YAxis, Legend, LineChart, ReferenceLine} from 'recharts';
-import * as _ from 'lodash';
+import {
+	BarChart, 
+	Bar, 
+	Line, 
+	ResponsiveContainer, 
+	CartesianGrid,
+	Tooltip, 
+	XAxis, 
+	YAxis, 
+	Legend, 
+	LineChart, 
+	ReferenceLine
+} from 'recharts';
 
-export default class DiffInDiffResults extends React.Component{
+type Props = {
+	results : ?{
+		A : number,
+		B : number,
+		C : number,
+		D : number
+	}
+}
+
+export default class DiffInDiffResults extends React.Component<*,Props,*>{
 	//Recharts has an annoying flicker without this
-	shouldComponentUpdate(nextProps, nextState){
+	shouldComponentUpdate(nextProps : Props){
 		return this.props.results != nextProps.results;
 	}
 
 	render(){
 		var data = [];
 		if(this.props.results){
-			data.push({'Treatment Group' : this.props.results.C, 'Non-Treatment Group' : this.props.results.A, period : 'Pre-exposure'})
+			const results = this.props.results;
+			data.push({'Treatment Group' : results.C, 'Non-Treatment Group' : results.A, period : 'Pre-exposure'})
 			data.push({period : 'Year of Treatment'})
-			data.push({'Treatment Group' : this.props.results.D, 'Non-Treatment Group' : this.props.results.B, period : 'Post-exposure'})
+			data.push({'Treatment Group' : results.D, 'Non-Treatment Group' : results.B, period : 'Post-exposure'})
 		}
 
 

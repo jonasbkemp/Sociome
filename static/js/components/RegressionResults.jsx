@@ -1,5 +1,7 @@
+/**
+ * Regression Results
+ */
 import React from 'react';
-
 import {ScatterChart, Line, Legend, CartesianGrid, Scatter, XAxis, YAxis, ResponsiveContainer, Tooltip} from 'recharts';
 
 const SAMPLE_SIZE = 500;
@@ -10,13 +12,27 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-export default class RegressionResults extends React.Component{
-	constructor(props){
-		super(props);
+type Props = {
+	results : ?{
+		values : {
+			independent : Array<number>,
+			dependent : Array<number>,
+		},
+		coefficients : {
+			independent : number,
+			'(Interecept)' : number
+		}
 	}
+}
 
-	scatterPlotDataSample = () => {
+export default class RegressionResults extends React.Component{
+
+	props : Props
+
+	scatterPlotDataSample = () : Array<{independent : number, dependent : number}> => {
 		var data = [];
+		if(this.props.results == null)
+			return [];
 		var values = this.props.results.values;
 		const N = values.independent.length;
 		for(var i = 0; i < SAMPLE_SIZE; i++){
@@ -27,6 +43,8 @@ export default class RegressionResults extends React.Component{
 	}
 
 	scatterPlotData = () => {
+		if(this.props.results == null)
+			return [];
 		if(this.props.results.values.independent.length > SAMPLE_SIZE){
 			return this.scatterPlotDataSample()
 		}
@@ -39,6 +57,10 @@ export default class RegressionResults extends React.Component{
 	}
 
 	regressionLine = () => {
+		if(this.props.results == null){
+			return []
+		}
+
 		var values = this.props.results.values;
 		var coefficients = this.props.results.coefficients;
 
@@ -56,7 +78,7 @@ export default class RegressionResults extends React.Component{
 		]
 	}
 
-	shouldComponentUpdate(nextProps, nextState){
+	shouldComponentUpdate(nextProps : Props){
 		return this.props.results != nextProps.results;
 	}
 
