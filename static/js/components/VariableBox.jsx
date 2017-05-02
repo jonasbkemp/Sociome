@@ -1,3 +1,7 @@
+/**
+ * Variable Box component
+ * @flow
+ */
 import React from 'react';
 import {DropTarget} from 'react-dnd';
 
@@ -5,7 +9,8 @@ class VariableBox extends React.Component{
 	render(){
 		return this.props.connectDropTarget(
 			<div 
-				style={_.extend(this.props.style, {
+				style={{
+					...this.props.style, 
 					height : '12rem',
 					width : '100%',
 					backgroundColor : 'rgb(204,204,204)',
@@ -13,7 +18,7 @@ class VariableBox extends React.Component{
 					borderRadius : 20,
 					paddingBottom : 10,
 					position : 'relative',
-				})}
+				}}
 			>
 			{
 				this.props.items.map(i => 
