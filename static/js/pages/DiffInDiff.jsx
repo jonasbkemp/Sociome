@@ -1,21 +1,27 @@
+/**
+ * Difference in Differences page
+ * @flow
+ */
+
 import React from 'react';
-import ExploreBar from '../components/ExploreBar';
-import DnDFieldMenu from '../components/DnDFieldMenu';
-import update from 'react/lib/update';
 import DiffInDiffResults from '../components/DiffInDiffResults';
 import * as AnalysisActions from '../actions/AnalysisActions'
 import Select from 'react-select'
-import {states as States} from '../data/StateCodes';
 import {Button} from 'react-bootstrap'
-import * as _ from 'lodash'
 import {connect} from 'react-redux'
 
-class DiffInDiff extends React.Component{
+import type {Action} from '../actions/Types'
+import type {State} from '../Store'
+import type {MapStateToProps, MapDispatchToProps} from 'react-redux'
+import type {Dispatch} from 'redux'
+
+class DiffInDiff extends React.Component<*,*,*>{
 	constructor(props){
 		super(props);
 		this.state = {
 			policy : null,
 			outcome : null,
+			results : null
 		}
 	}
 
@@ -82,10 +88,10 @@ class DiffInDiff extends React.Component{
 	}
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps : MapStateToProps<State,*,*> = state => ({
 	vars : state.diffInDiff
 })
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps : MapDispatchToProps<State,*,*> = (dispatch : Dispatch<Action>) => ({
 	diffInDiff : args => dispatch(AnalysisActions.diffInDiff(args))
 })
 

@@ -1,4 +1,8 @@
-import React, {Component} from 'react';
+/**
+ * Download page
+ * @flow
+ */
+import React from 'react';
 import ExploreBar from '../components/ExploreBar';
 import ZoomMap from '../components/ZoomMap';
 import HTML5Backend from 'react-dnd-html5-backend';
@@ -10,7 +14,12 @@ import {Button} from 'react-bootstrap'
 import * as DataActions from '../actions/DataActions'
 import {connect} from 'react-redux'
 
-class Download extends Component{
+import type {Select_t, Action} from '../actions/Types'
+import type {MapStateToProps, MapDispatchToProps} from 'react-redux'
+import type {Dispatch} from 'redux'
+import type {State} from '../Store'
+
+class Download extends React.Component<*,*,*>{
   constructor(){
     super();
     this.state = {
@@ -34,7 +43,7 @@ class Download extends Component{
     this.setState(update(this.state, {
       items : {
         $push : [{
-          label : `${item.dataset}: ${item.label}`, 
+          label : `${item.dataset}: ${item.label}`,
           value : item.value,
           dataset : item.dataset,
           table : item.table,
@@ -69,7 +78,7 @@ class Download extends Component{
       <div class="row" style={{marginTop : 50}}>
         <div class="col-xs-3">
         {
-          fields.map(field => 
+          fields.map(field =>
             <div class="row" key={field.value}>
               <div class="col-xs-11 col-xs-offset-1">
                 <DraggableLabel
@@ -84,9 +93,9 @@ class Download extends Component{
         </div>
 
         <div class="col-xs-9 center-block">
-          <Dropbox 
+          <Dropbox
             style={{height : 300, width : '90%'}}
-            onDrop={this.handleDrop} 
+            onDrop={this.handleDrop}
             label='Drag Variables Here'
             accepts='field'
             items={this.state.items}
@@ -101,12 +110,11 @@ class Download extends Component{
   }
 }
 
-const mapStateToProps = state => state.data
+const mapStateToProps : MapStateToProps<State,*,*> = state => state.data
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps : MapDispatchToProps<State,*,*> = (dispatch :  Dispatch<Action>) => ({
   downloadData : fields => dispatch(DataActions.downloadData(fields))
 })
 
 
 export default connect(mapStateToProps, mapDispatchToProps)(Download)
-

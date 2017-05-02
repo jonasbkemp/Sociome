@@ -1,7 +1,17 @@
+/**
+ * Explore Page
+ * @flow
+ */
+
 import React, {Component} from 'react';
 import ZoomMap from '../components/ZoomMap';
 import FieldMenu from '../components/FieldMenu';
 import {connect} from 'react-redux'
+
+import type {MapDispatchToProps, MapStateToProps} from 'react-redux'
+import type {State} from '../Store'
+import type {Action} from '../actions/Types'
+import type {Dispatch} from 'redux'
 
 class Explore extends Component{
 	render(){
@@ -14,10 +24,10 @@ class Explore extends Component{
 				    	</div>
 				    	<div style={{display : 'table-cell', width : '75%'}}>
 				    		<div style={{width : '100%'}}>
-					    		<ZoomMap 
+					    		<ZoomMap
 					    			statesGeom={this.props.statesGeom}
 					    			style={{width : '100%'}}
-					    			data={this.props.data} 
+					    			data={this.props.data}
 					    			dataset={this.props.data && this.props.data.length > 100 ? 'health-outcomes' : 'policy'}
 					    		/>
 				    		</div>
@@ -29,11 +39,11 @@ class Explore extends Component{
 	}
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps : MapStateToProps<State,*,*> = state => ({
 	data : state.data.yearlyData,
 	statesGeom : state.geo.states
 })
 
-const mapDispatchToProps = dispatch => ({})
+const mapDispatchToProps : MapDispatchToProps<State,*,*> = (dispatch : Dispatch<Action>) => ({})
 
 export default connect(mapStateToProps, mapDispatchToProps)(Explore)
