@@ -70,12 +70,11 @@ runDiffInDiff <- function(query, policy, outcome){
 	names(df)[names(df) == outcome] <- 'outcome'
 
 	# Find a policy change
-
 	changeIdx = NULL
 	prev <- df[1,]
 	for(i in 2:nrow(df)) {
 	    row <- df[i,]
-	    if(row['policy'] != prev['policy'] && row['statecode'] == prev['statecode']){
+	    if(row['policy'] > prev['policy'] && row['statecode'] == prev['statecode']){
 	    	changeIdx = i
 	    	break;
 	    }
@@ -88,9 +87,6 @@ runDiffInDiff <- function(query, policy, outcome){
 	}
 
 	yearOfTreatment = df[changeIdx, 1]
-
-	# controlGroup didn't have same policy >= yearOfTreatment
-	# treatmentGroup did have that policy in that year
 
 	treatmentGroup = subset(df, policy==df[changeIdx,3] & year==yearOfTreatment)[,2]
 
@@ -124,15 +120,25 @@ runDiffInDiff <- function(query, policy, outcome){
 
 
 testDiffInDiff <- function(){
-	runDiffInDiff(
-     	"SELECT year,statecode,bplaces,uninsured FROM ((SELECT year,statecode,bplaces FROM policy WHERE  ( bplaces IS NOT NULL ) AND countycode=0 ) table_0
-		       INNER JOIN
-		       (SELECT year,statecode,countycode,uninsured->'rawvalue' as uninsured FROM health_outcomes WHERE  ( uninsured IS NOT NULL ) AND countycode=0 ) table_1
-		       USING (year,statecode)
-		     	) subQ ORDER BY statecode, countycode, year",
-     	"bplaces",
-     	"uninsured"
-   	)
+	# runDiffInDiff(
+ #     	"SELECT year,statecode,bplaces,uninsured FROM ((SELECT year,statecode,bplaces FROM policy WHERE  ( bplaces IS NOT NULL ) AND countycode=0 ) table_0
+	# 	       INNER JOIN
+	# 	       (SELECT year,statecode,countycode,uninsured->'rawvalue' as uninsured FROM health_outcomes WHERE  ( uninsured IS NOT NULL ) AND countycode=0 ) table_1
+	# 	       USING (year,statecode)
+	# 	     	) subQ ORDER BY statecode, countycode, year",
+ #     	"bplaces",
+ #     	"uninsured"
+ #   	)
+
+   	runDiffInDiff(
+	    "SELECT year,statecode,bgunban,premature_death FROM ((SELECT year,statecode,bgunban FROM policy WHERE  ( bgunban IS NOT NULL ) AND countycode=0 ) table_0
+	      INNER JOIN
+	      (SELECT year,statecode,countycode,premature_death->'rawvalue' as premature_death FROM health_outcomes WHERE  ( premature_death IS NOT NULL ) AND countycode=0 ) table_1
+	      USING (year,statecode)
+	    ) subQ ORDER BY statecode, countycode, year",
+	    "bgunban",
+	    "premature_death"
+  	)
 }
 
 runMultilevelModeling <- function(depVar, predVar){
