@@ -1,7 +1,17 @@
+/**
+ * Drag and Drop Field Menu component
+ * @flow
+ */
+
 import React from 'react';
 import VariableBox from '../components/VariableBox';
 import DraggableLabel from '../components/DraggableLabel'
 import {connect} from 'react-redux'
+
+import type {Action} from '../actions/Types'
+import type {State} from '../Store'
+import type {MapStateToProps, MapDispatchToProps} from 'react-redux'
+import type {Dispatch} from 'redux' 
 
 class DnDFieldMenu extends React.Component{
 	render(){
@@ -40,7 +50,7 @@ class DnDFieldMenu extends React.Component{
 	}
 }
 
-const mapStateToProps = state => state.data
-const mapDispatchToProps = dispatch => ({})
+const mapStateToProps : MapStateToProps<State,*,*> = state => state.data
+const mapDispatchToProps : MapDispatchToProps<State,*,*> = (dispatch : Dispatch<Action>) => ({})
 
 export default connect(mapStateToProps, mapDispatchToProps)(DnDFieldMenu)
