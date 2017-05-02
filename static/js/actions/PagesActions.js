@@ -14,13 +14,9 @@ import type {Element} from 'react'
  * Show `component` on top of whatever is rendered in `Layout`
  * @param  {React.Component} component : The component to be rendered
  */
-const showComponent = (component : Element<*>, style : Object, props : Object) : Action => ({
-  type : 'SHOW_COMPONENT',
-  payload : {
-    component : component,
-    style : style,
-    props : props
-  }
+const showComponent = (component : Element<*>) : Action => ({
+  type : SHOW_COMPONENT,
+  payload : component
 })
 
 /**

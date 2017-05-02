@@ -1,3 +1,8 @@
+/**
+ * Pages Reducer
+ * @flow
+ */
+
 import React from 'react'
 import Loader from 'halogen/PulseLoader'
 import {SHOW_COMPONENT, SET_ERROR, HIDE_COMPONENT} from '../actions/Types'
@@ -9,10 +14,8 @@ const initialState : PagesState = {
   loading : false
 }
 
-const loader = {
-  component : <Loader color="#26A65B" size="16px" margin="4px" style={{zIndex : 5000}}/>,
-  style : {}  
-}
+const loader = <Loader color="#26A65B" size="16px" margin="4px" style={{zIndex : 5000}}/>
+
 
 export default (state : PagesState = initialState, action : Action) => {
   if(action.meta && action.meta.issueLoader){
@@ -38,10 +41,6 @@ export default (state : PagesState = initialState, action : Action) => {
 }
 
 export type PagesState = {
-  popup : ?{
-    component : Element<*>,
-    style : Object,  //TODO: remove this field
-    props : Object   //TODO: remove this field
-  },
+  popup : ?Element<*>,
   loading : boolean
 }

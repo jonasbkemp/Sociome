@@ -44,7 +44,6 @@ export type DiffInDiff_t = {
   outcome : Select_t
 }
 
-
 import type {Element} from 'react'
 
 export type Action =
@@ -59,6 +58,6 @@ export type Action =
   | {|type : LINEAR_REGRESSION, payload : api_t|}
   | {|type : DIFF_IN_DIFF, payload : api_t|}
   | {|type : FETCH_STATES, payload : api_t|}
-  | {|type : SHOW_COMPONENT, payload : {component : Element<*>, style : Object, props : Object} |}
+  | {|type : SHOW_COMPONENT, payload : $Element<*> |}
   | {|type : HIDE_COMPONENT|}
   | {|type : FETCH_DIFF_IN_DIFF_VARS, payload : api_t|}

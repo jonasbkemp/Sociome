@@ -44,7 +44,7 @@ class Layout extends React.Component {
         {
           this.props.popup ?
             <div style={{...styles.cover, ...styles.shade, ...styles.loader}}>
-              {this.props.popup.component}
+              {this.props.popup}
             </div> : null
         }
         <div style={styles.cover}>
