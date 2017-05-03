@@ -16,6 +16,7 @@ import {
 	LineChart, 
 	ReferenceLine
 } from 'recharts';
+import {getStateInfo} from '../data/Statecodes'
 
 type Props = {
 	results : ?{
@@ -98,6 +99,16 @@ export default class DiffInDiffResults extends React.Component<*,Props,*>{
 
 		return(
 			<div style={{width : '100%', height : '100%', marginTop : 50}}>
+				<div style={{marginLeft : 75}}>
+					<h4>
+						Year of Treatment: {results.yearOfTreatment}
+					</h4>
+
+					<h4>
+						Treatment Group: {results.treatmentGroup.map(y => getStateInfo(y).state).join(', ')}
+					</h4>
+				</div>
+
 				<ResponsiveContainer  width='90%' height={400}>
 					<LineChart data={data} margin={{top : 20, left : 30}} >
 						<Line 

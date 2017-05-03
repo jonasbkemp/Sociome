@@ -116,7 +116,9 @@ runDiffInDiff <- function(query, policy, outcome){
 		A = unname(intercept),
 		B = unname(intercept + time),
 		C = unname(intercept + treated),
-		D = unname(intercept + time + treated + treated * time)
+		D = unname(intercept + time + treated + treated * time),
+		treatmentGroup = treatmentGroup,
+		yearOfTreatment = yearOfTreatment
 	)
 
 	return(toJSON(res));
