@@ -69,6 +69,10 @@ runDiffInDiff <- function(query, policy, outcome){
 	names(df)[names(df) == policy] <- 'policy'
 	names(df)[names(df) == outcome] <- 'outcome'
 
+	if(!is.numeric(df$outcome)){
+		df$outcome = as.numeric(df$outcome)
+	}
+
 	# Find a policy change
 	changeIdx = NULL
 	prev <- df[1,]
@@ -120,25 +124,25 @@ runDiffInDiff <- function(query, policy, outcome){
 
 
 testDiffInDiff <- function(){
-	# runDiffInDiff(
- #     	"SELECT year,statecode,bplaces,uninsured FROM ((SELECT year,statecode,bplaces FROM policy WHERE  ( bplaces IS NOT NULL ) AND countycode=0 ) table_0
-	# 	       INNER JOIN
-	# 	       (SELECT year,statecode,countycode,uninsured->'rawvalue' as uninsured FROM health_outcomes WHERE  ( uninsured IS NOT NULL ) AND countycode=0 ) table_1
-	# 	       USING (year,statecode)
-	# 	     	) subQ ORDER BY statecode, countycode, year",
- #     	"bplaces",
- #     	"uninsured"
- #   	)
+	runDiffInDiff(
+     	"SELECT year,statecode,bplaces,uninsured FROM ((SELECT year,statecode,bplaces FROM policy WHERE  ( bplaces IS NOT NULL ) AND countycode=0 ) table_0
+		       INNER JOIN
+		       (SELECT year,statecode,countycode,uninsured->'rawvalue' as uninsured FROM health_outcomes WHERE  ( uninsured IS NOT NULL ) AND countycode=0 ) table_1
+		       USING (year,statecode)
+		     	) subQ ORDER BY statecode, countycode, year",
+     	"bplaces",
+     	"uninsured"
+   	)
 
-   	runDiffInDiff(
-	    "SELECT year,statecode,bgunban,premature_death FROM ((SELECT year,statecode,bgunban FROM policy WHERE  ( bgunban IS NOT NULL ) AND countycode=0 ) table_0
-	      INNER JOIN
-	      (SELECT year,statecode,countycode,premature_death->'rawvalue' as premature_death FROM health_outcomes WHERE  ( premature_death IS NOT NULL ) AND countycode=0 ) table_1
-	      USING (year,statecode)
-	    ) subQ ORDER BY statecode, countycode, year",
-	    "bgunban",
-	    "premature_death"
-  	)
+   # 	runDiffInDiff(
+	  #   "SELECT year,statecode,bgunban,premature_death FROM ((SELECT year,statecode,bgunban FROM policy WHERE  ( bgunban IS NOT NULL ) AND countycode=0 ) table_0
+	  #     INNER JOIN
+	  #     (SELECT year,statecode,countycode,premature_death->'rawvalue' as premature_death FROM health_outcomes WHERE  ( premature_death IS NOT NULL ) AND countycode=0 ) table_1
+	  #     USING (year,statecode)
+	  #   ) subQ ORDER BY statecode, countycode, year",
+	  #   "bgunban",
+	  #   "premature_death"
+  	# )
 }
 
 runMultilevelModeling <- function(depVar, predVar){
@@ -310,6 +314,14 @@ runRegression <- function(query, dependent, independent, controls){
 	names(data)[names(data) == dependent] <- 'dependent'
 	names(data)[names(data) == independent] <- 'independent'
 
+	if(!is.numeric(data$independent)){
+		data$independent = as.numeric(data$independent)
+	}
+
+	if(!is.numeric(data$dependent)){
+		data$dependent = as.numeric(data$dependent)
+	}
+
 	model = 'dependent ~ independent'
 
 	fit <- lm(model, data=data)
@@ -330,12 +342,19 @@ runRegression <- function(query, dependent, independent, controls){
 
 
 testRegression <- function(){
-	runRegression(
-	    "SELECT year,statecode,countycode,median_family_income,per_capita_income FROM demographics WHERE  median_family_income IS NOT NULL  AND per_capita_income IS NOT NULL ", 
-	    "per_capita_income", 
-	    "median_family_income",
-	    list()
-   	)	
+	# runRegression(
+	#     "SELECT year,statecode,countycode,median_family_income,per_capita_income FROM demographics WHERE  median_family_income IS NOT NULL  AND per_capita_income IS NOT NULL ", 
+	#     "per_capita_income", 
+	#     "median_family_income",
+	#     list()
+ #   	)
+
+   	runRegression(
+    "SELECT year,statecode,countycode,violent_crime_rate->'rawvalue' as violent_crime_rate,uninsured->'rawvalue' as uninsured FROM health_outcomes WHERE  violent_crime_rate IS NOT NULL  AND uninsured IS NOT NULL ",
+    "uninsured",
+    "violent_crime_rate",
+    list()
+  )	
 }
 
 
