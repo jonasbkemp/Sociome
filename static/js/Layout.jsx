@@ -49,13 +49,12 @@ class Layout extends React.Component {
         }
         <div style={styles.cover}>
           <Nav style={{height : '88px'}} />
-          {/*<ExploreBar data={this.props.data} style={{height : '60px', marginTop : '88px'}}/>*/}
-          {this.props.msg ?
-            <Alert bsStyle='danger' onDismiss={this.handleAlertDismiss} style={{marginBottom: 0}}>
-              <strong><p class='text-center'> {this.props.msg} </p></strong>
-            </Alert> : null
-          }
           <div style={{...styles.cover, top : '88px'}}>
+            {this.props.msg ?
+              <Alert bsStyle='danger' onDismiss={this.handleAlertDismiss} style={{marginBottom: 0}}>
+                <strong><p class='text-center'> {this.props.msg} </p></strong>
+              </Alert> : null
+            }
             {this.props.children}
           </div>
         </div>
