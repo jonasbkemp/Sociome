@@ -63,28 +63,26 @@ export default class DraggableLabel_ extends React.Component<*,*,*>{
 class DraggableLabel extends React.Component{
   render(){
     return this.props.connectDragSource(
-      <div class="container-fluid">
-        <div style={styles.fieldContainer} class="row">
-          <div class={`col-xs-${this.props.noYears ? 12 : 7} text-center`}>
-            <p style={{margin : 5}}>{this.props.label}</p>
-          </div>
-          { 
-            this.props.noYears ? null : 
-            <div class="col-xs-5">
-            {
-              this.props.years ? 
-              <Select
-                clearable={false}
-                placeholder="Year"
-                style={{height : 20}}
-                options={this.props.years.map(y => ({value : y, label : y}))}
-                onChange={this.props.changeYear}
-                value={this.props.year}
-              /> : null
-            }
-            </div>
-          }
+      <div style={styles.fieldContainer}>
+        <div style={{flexGrow : 1}}>
+          <p style={{margin : 5}}>{this.props.label}</p>
         </div>
+        { 
+          this.props.noYears ? null : 
+          <div style={{flex : '0 0 70px', margin : '5px 5px 5px 0px'}}>
+          {
+            this.props.years ? 
+            <Select
+              clearable={false}
+              placeholder="Year"
+              style={{height : 20}}
+              options={this.props.years.map(y => ({value : y, label : y}))}
+              onChange={this.props.changeYear}
+              value={this.props.year}
+            /> : null
+          }
+          </div>
+        }
       </div>
     )
   }
