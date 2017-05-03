@@ -18,7 +18,7 @@ export const linearRegression = (args : LinearRegression_t) : Action => ({
 })
 
 export const diffInDiff = (args : DiffInDiff_t) : Action => ({
-  type : 'asdf',
+  type : DIFF_IN_DIFF,
   payload : {
     method : 'POST',
     url : '/DiffInDiff',

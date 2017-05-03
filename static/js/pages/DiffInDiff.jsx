@@ -77,6 +77,8 @@ class DiffInDiff extends React.Component<*,*,*>{
 				    	<div style={{display : 'table-cell', width : '75%'}}>
 				    		<div style={{width : '100%', height : 400}}>
 					    		<DiffInDiffResults 
+					    			policy={this.state.policy}
+					    			outcome={this.state.outcome}
 					    			results={this.state.results}
 					    		/>
 				    		</div>
