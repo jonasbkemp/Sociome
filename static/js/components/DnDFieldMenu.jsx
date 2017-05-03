@@ -4,9 +4,9 @@
  */
 
 import React from 'react';
-import VariableBox from '../components/VariableBox';
 import DraggableLabel from '../components/DraggableLabel'
 import {connect} from 'react-redux'
+import Dropbox from '../components/Dropbox'
 
 import type {Action} from '../actions/Types'
 import type {State} from '../Store'
@@ -35,11 +35,11 @@ class DnDFieldMenu extends React.Component{
 					<div class="col-xs-10 col-xs-offset-1">
 					{
 						this.props.bins.map((b, i) => 
-							<VariableBox
+							<Dropbox
 								key={i}
 								{...b}
 								noYears={this.props.noYears}
-								style={{marginBottom : 10}}
+								style={{marginBottom : 10, width : '100%'}}
 							/>
 						)
 					}
