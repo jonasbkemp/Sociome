@@ -16,7 +16,7 @@ import {
 	LineChart, 
 	ReferenceLine
 } from 'recharts';
-import {getStateInfo} from '../data/Statecodes'
+import {getStateInfo} from '../data/StateCodes'
 
 type Props = {
 	results : ?{
