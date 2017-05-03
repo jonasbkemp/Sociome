@@ -73,36 +73,40 @@ class Download extends React.Component<*,*,*>{
   }
 
   render(){
-    var fields = this.props.fields.filter(field => this.state.dropped[field.value] == null)
+    const {data} = this.props;
+    var fields = data.fields.filter(field => this.state.dropped[field.value] == null)
     return(
-      <div class="row" style={{marginTop : 50}}>
-        <div class="col-xs-3">
-        {
-          fields.map(field =>
-            <div class="row" key={field.value}>
-              <div class="col-xs-11 col-xs-offset-1">
-                <DraggableLabel
-                  type="field"
-                  {...field}
-                  noYears
-                />
+      <div>
+        <ExploreBar data={data} style={{height : '60px'}}/>
+        <div class='row' style={{marginTop : 50}}>
+          <div class="col-xs-3">
+          {
+            fields.map(field =>
+              <div class="row" key={field.value}>
+                <div class="col-xs-11 col-xs-offset-1">
+                  <DraggableLabel
+                    type="field"
+                    {...field}
+                    noYears
+                  />
+                </div>
               </div>
-            </div>
-          )
-        }
-        </div>
+            )
+          }
+          </div>
 
-        <div class="col-xs-9 center-block">
-          <Dropbox
-            style={{height : 300, width : '90%'}}
-            onDrop={this.handleDrop}
-            label='Drag Variables Here'
-            accepts='field'
-            items={this.state.items}
-          />
-          <Button style={{marginTop : 10}} bsStyle="primary" onClick={this.fetchData}>
-            Fetch Data
-          </Button>
+          <div class="col-xs-9 center-block">
+            <Dropbox
+              style={{height : 300, width : '90%'}}
+              onDrop={this.handleDrop}
+              label='Drag Variables Here'
+              accepts='field'
+              items={this.state.items}
+            />
+            <Button style={{marginTop : 10}} bsStyle="primary" onClick={this.fetchData}>
+              Fetch Data
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -110,7 +114,7 @@ class Download extends React.Component<*,*,*>{
   }
 }
 
-const mapStateToProps : MapStateToProps<State,*,*> = state => state.data
+const mapStateToProps : MapStateToProps<State,*,*> = state => state
 
 const mapDispatchToProps : MapDispatchToProps<State,*,*> = (dispatch :  Dispatch<Action>) => ({
   downloadData : fields => dispatch(DataActions.downloadData(fields))

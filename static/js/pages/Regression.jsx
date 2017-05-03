@@ -61,6 +61,7 @@ class Regression extends React.Component<*,*,*>{
 	}
 
 	generateModel = () => {
+		const that = this;
 		this.props.linearRegression({
 			dependent : this.state.bins[0].items[0],
 			independent : this.state.bins[1].items[0],
@@ -73,6 +74,7 @@ class Regression extends React.Component<*,*,*>{
 	render(){
 		return(
 			<div style={{width : "100%", height : '100%', overflow: "hidden"}}>
+				<ExploreBar data={this.props.data} style={{height : '60px'}}/>
 				<div style={{width : '100%', display : 'table', height : '100%'}}>
 				    <div style={{display : 'table-row'}}>
 				    	<div style={{display : 'table-cell', width : '30%', height : '100%', position : 'absolute'}}>
@@ -80,8 +82,7 @@ class Regression extends React.Component<*,*,*>{
 				    			generateModel={this.generateModel}
 				    			bins={this.state.bins}
 				    		/>
-				    		<div class='row'>
-				    			<div class='col-xs-8 col-xs-offset-2'>
+				    		<div style={{display : 'flex', justifyContent : 'center'}}>
 				    				<Button
 				    					bsStyle='primary'
 				    					disabled={!this.state.bins.slice(0, 2).every(b => b.items.length > 0)}
@@ -89,7 +90,6 @@ class Regression extends React.Component<*,*,*>{
 				    				>
 				    					Generate Model
 				    				</Button>
-				    			</div>
 				    		</div>
 				    	</div>
 				    	<div style={{display : 'table-cell', width : '70%'}}>
@@ -109,7 +109,7 @@ class Regression extends React.Component<*,*,*>{
 	}
 }
 
-const mapStateToProps : MapStateToProps<State,*,*> = state => ({})
+const mapStateToProps : MapStateToProps<State,*,*> = state => state
 const mapDispatchToProps : MapDispatchToProps<State,*,*> = (dispatch : Dispatch<Action>) => ({
 	linearRegression : args => dispatch(AnalysisActions.linearRegression(args))
 })
