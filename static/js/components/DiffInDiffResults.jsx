@@ -51,8 +51,8 @@ function splitText(text){
 			var firstLine = words.slice(0, i).join(' ')
 			var secondLine = words.slice(i).join(' ')
 			return [
-				<tspan key={1} x="0" dy="1.2em">{firstLine}</tspan>,
-				<tspan key={2} x="0" dy="1.2em">{secondLine}</tspan>
+				<tspan key={1} x="0.5" dy="1.2em">{firstLine}</tspan>,
+				<tspan key={2} x="0.5" dy="1.2em">{secondLine}</tspan>
 			]
 		}
 	}
@@ -63,11 +63,12 @@ const AxisLabel = ({ axisType, x, y, width, height, stroke, text }) => {
   const isVert = axisType === 'yAxis';
   const cx = isVert ? x : x + (width / 2);
   const cy = isVert ? (height / 2) + y : y + height + 10;
-  const rot = isVert ? `270 ${cx} ${cy}` : 0;
+  var rot = isVert ? `270 ${cx} ${cy}` : 0;
 
   var children = text;
-  if(children.length > 40){
+  if(children.length > 50){
   	children = splitText(children);
+  	rot = isVert ? `270 0 ${cy}` : 0;
   }
 
   return (
@@ -96,8 +97,8 @@ export default class DiffInDiffResults extends React.Component<*,Props,*>{
 		data.push({'Treatment Group' : results.D, 'Non-Treatment Group' : results.B, period : 'Post-exposure'})
 
 		return(
-			<div style={{width : '100%', height : '100%', paddingTop : '10%'}}>
-				<ResponsiveContainer  width='90%' height='100%'>
+			<div style={{width : '100%', height : '100%', marginTop : 50}}>
+				<ResponsiveContainer  width='90%' height={400}>
 					<LineChart data={data} margin={{top : 20, left : 30}} >
 						<Line 
 							type="monotone" 
