@@ -47,7 +47,7 @@ const styles = {
     backgroundColor : 'rgb(204,204,204)',
     overflow : 'scroll',
     borderRadius : 20,
-    paddingBottom : 10,
+    padding : 5,
     position : 'relative',
   }
 }
